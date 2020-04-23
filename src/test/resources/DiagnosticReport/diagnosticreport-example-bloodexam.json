@@ -1,6 +1,11 @@
 {
   "resourceType": "DiagnosticReport",
   "id": "f001",
+  "meta": {
+    "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab"
+    ]
+  },
   "identifier": [
     {
       "use": "official",

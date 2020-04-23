@@ -9,3 +9,8 @@ mvn install
 ```
 mvn spring-boot:run
 ```
+
+### Run integration tests
+```
+mvn verify
+```
