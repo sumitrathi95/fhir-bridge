@@ -1,0 +1,128 @@
+{
+	"info": {
+		"_postman_id": "33af76d4-b2ad-43b4-b137-ee89867bb93a",
+		"name": "FHIR-Bridge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "FHIR",
+			"item": [
+				{
+					"name": "Create DiagnosticReport",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0e6b0a6a-790f-4428-9bbe-ec2299a162f6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"resourceType\": \"DiagnosticReport\",\n\t\"meta\": {\n\t\t\"profile\": [\"https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab\"]\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fhir/DiagnosticReport",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"fhir",
+								"DiagnosticReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Observation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Observation\",\n    \"id\": \"blood-pressure\",\n    \"meta\": {\n        \"profile\": [\n            \"https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest\"\n        ]\n    },\n    \"identifier\": [\n        {\n            \"system\": \"urn:ietf:rfc:3986\",\n            \"value\": \"urn:uuid:187e0c12-8dd2-67e2-99b2-bf273c878281\"\n        }\n    ],\n    \"basedOn\": [\n        {\n            \"identifier\": {\n                \"system\": \"https://acme.org/identifiers\",\n                \"value\": \"1234\"\n            }\n        }\n    ],\n    \"status\": \"final\",\n    \"category\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\n                    \"code\": \"vital-signs\",\n                    \"display\": \"Vital Signs\"\n                }\n            ]\n        }\n    ],\n    \"code\": {\n        \"coding\": [\n            {\n                \"system\": \"http://loinc.org\",\n                \"code\": \"85354-9\",\n                \"display\": \"Blood pressure panel with all children optional\"\n            }\n        ],\n        \"text\": \"Blood pressure systolic & diastolic\"\n    },\n    \"subject\": {\n        \"reference\": \"Patient/example\"\n    },\n    \"effectiveDateTime\": \"2012-09-17\",\n    \"performer\": [\n        {\n            \"reference\": \"Practitioner/example\"\n        }\n    ],\n    \"interpretation\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation\",\n                    \"code\": \"L\",\n                    \"display\": \"low\"\n                }\n            ],\n            \"text\": \"Below low normal\"\n        }\n    ],\n    \"bodySite\": {\n        \"coding\": [\n            {\n                \"system\": \"http://snomed.info/sct\",\n                \"code\": \"368209003\",\n                \"display\": \"Right arm\"\n            }\n        ]\n    },\n    \"component\": [\n        {\n            \"code\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://loinc.org\",\n                        \"code\": \"8480-6\",\n                        \"display\": \"Systolic blood pressure\"\n                    },\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"271649006\",\n                        \"display\": \"Systolic blood pressure\"\n                    },\n                    {\n                        \"system\": \"http://acme.org/devices/clinical-codes\",\n                        \"code\": \"bp-s\",\n                        \"display\": \"Systolic Blood pressure\"\n                    }\n                ]\n            },\n            \"valueQuantity\": {\n                \"value\": 107,\n                \"unit\": \"mmHg\",\n                \"system\": \"http://unitsofmeasure.org\",\n                \"code\": \"mm[Hg]\"\n            },\n            \"interpretation\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation\",\n                            \"code\": \"N\",\n                            \"display\": \"normal\"\n                        }\n                    ],\n                    \"text\": \"Normal\"\n                }\n            ]\n        },\n        {\n            \"code\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://loinc.org\",\n                        \"code\": \"8462-4\",\n                        \"display\": \"Diastolic blood pressure\"\n                    }\n                ]\n            },\n            \"valueQuantity\": {\n                \"value\": 60,\n                \"unit\": \"mmHg\",\n                \"system\": \"http://unitsofmeasure.org\",\n                \"code\": \"mm[Hg]\"\n            },\n            \"interpretation\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation\",\n                            \"code\": \"L\",\n                            \"display\": \"low\"\n                        }\n                    ],\n                    \"text\": \"Below low normal\"\n                }\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/fhir/Observation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"fhir",
+								"Observation"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "REST",
+			"item": [
+				{
+					"name": "Say hello",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/hello",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"hello"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f6f77d40-8f1c-4f47-ab9d-052eedd5a417",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e5882d54-d819-46ac-abec-e3b5294c0aa1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
