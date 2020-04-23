@@ -1,3 +1,4 @@
 logging:
   level:
+    ca.uhn.fhir: debug
     org.springframework: debug

@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +21,14 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
     @SuppressWarnings("unused")
     public MethodOutcome createObservation(@ResourceParam Observation observation) {
         IdType id = new IdType(1L);
-        observation.setId(id);
 
-        MethodOutcome methodOutcome = new MethodOutcome(id);
-        methodOutcome.setResource(observation);
-        return methodOutcome;
+        observation.setId(id);
+        observation.getMeta().setVersionId("1");
+        observation.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
+
+        return new MethodOutcome(id)
+                .setCreated(true)
+                .setResource(observation);
     }
 
     @Override
