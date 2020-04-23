@@ -23,6 +23,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                  <!-- to include the client lib jar -->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -67,6 +71,14 @@
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
             <version>6.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ehrbase</groupId>
+            <artifactId>client_library</artifactId>
+            <version>0.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/client-library-0.3.0.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
