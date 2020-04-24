@@ -1,54 +1,81 @@
 package org.ehrbase.fhirbridge.config;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
-import ca.uhn.fhir.spring.boot.autoconfigure.FhirRestfulServerCustomizer;
+import org.ehrbase.fhirbridge.fhir.DiagnosticReportResourceProvider;
+import org.ehrbase.fhirbridge.fhir.ObservationResourceProvider;
 import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.*;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.StructureDefinition;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
-public class FhirConfiguration implements FhirRestfulServerCustomizer {
+public class FhirConfiguration {
 
-    private final FhirContext fhirContext;
+    private final ResourceLoader resourceLoader;
 
-    public FhirConfiguration(FhirContext fhirContext) {
-        this.fhirContext = fhirContext;
+    public FhirConfiguration(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
-    @Override
-    public void customize(RestfulServer server) {
-        DefaultProfileValidationSupport defaultSupport = new DefaultProfileValidationSupport();
-        SnapshotGeneratingValidationSupport snapshotSupport = new SnapshotGeneratingValidationSupport(fhirContext, defaultSupport);
+    @Bean
+    public FhirContext fhirContext() {
+        FhirContext context = FhirContext.forR4();
+        context.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+        return context;
+    }
 
+    @Bean
+    public ServletRegistrationBean<RestfulServer> fhirServletRegistration() {
+        ServletRegistrationBean<RestfulServer> bean = new ServletRegistrationBean<>(fhirServlet(), "/fhir/*");
+        bean.setLoadOnStartup(1);
+        return bean;
+    }
+
+    @Bean
+    public RestfulServer fhirServlet() {
+        RestfulServer server = new RestfulServer(fhirContext());
+        server.registerProvider(new ObservationResourceProvider());
+        server.registerProvider(new DiagnosticReportResourceProvider());
+        server.registerInterceptor(requestValidatingInterceptor());
+        return server;
+    }
+
+    @Bean
+    public RequestValidatingInterceptor requestValidatingInterceptor() {
         ValidationSupportChain supportChain = new ValidationSupportChain();
-        supportChain.addValidationSupport(defaultSupport);
-        supportChain.addValidationSupport(snapshotSupport);
 
+        DefaultProfileValidationSupport defaultProfileSupport = new DefaultProfileValidationSupport();
+        supportChain.addValidationSupport(defaultProfileSupport);
+
+        // TODO: Generate snapshots outside of the app?
         PrePopulatedValidationSupport prePopulatedSupport = new PrePopulatedValidationSupport();
-
-        InputStream in = FhirConfiguration.class.getClassLoader().getResourceAsStream("profile/custom-resources.xml");
-        Bundle bundle = fhirContext.newXmlParser().parseResource(Bundle.class, in);
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource() instanceof StructureDefinition) {
-                StructureDefinition structure = (StructureDefinition) entry.getResource();
-                prePopulatedSupport.addStructureDefinition(supportChain.generateSnapshot(structure, structure.getUrl(),
-                        null, structure.getName()));
+        SnapshotGeneratingValidationSupport snapshotSupport = new SnapshotGeneratingValidationSupport(fhirContext(), defaultProfileSupport);
+        try (InputStream input = resourceLoader.getResource("classpath:/profile/custom-resources.xml").getInputStream()) {
+            Bundle bundle = fhirContext().newXmlParser().parseResource(Bundle.class, input);
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                if (entry.getResource() instanceof StructureDefinition) {
+                    StructureDefinition structure = (StructureDefinition) entry.getResource();
+                    prePopulatedSupport.addStructureDefinition(snapshotSupport.generateSnapshot(structure, structure.getUrl(),
+                            null, structure.getName()));
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException("An I/O exception has occurred while loading custom profiles");
         }
-
         supportChain.addValidationSupport(prePopulatedSupport);
 
-        CachingValidationSupport cachingSupport = new CachingValidationSupport(supportChain);
-        FhirInstanceValidator instanceValidator = new FhirInstanceValidator(cachingSupport);
         RequestValidatingInterceptor interceptor = new RequestValidatingInterceptor();
-        interceptor.addValidatorModule(instanceValidator);
-
-        server.registerInterceptor(interceptor);
+        interceptor.addValidatorModule(new FhirInstanceValidator(new CachingValidationSupport(supportChain)));
+        return interceptor;
     }
 }

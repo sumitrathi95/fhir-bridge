@@ -1,11 +1,9 @@
-hapi:
-  fhir:
-    rest:
-      default-response-encoding: json
-    version: r4
 logging:
   level:
+    ca.uhn.fhir: info
+    org.hl7.fhir: warn
     org.ehrbase.fhirbridge: info
 server:
   servlet:
     context-path: /fhir-bridge
+  port: 8080
