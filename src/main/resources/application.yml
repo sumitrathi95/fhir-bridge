@@ -1,3 +1,7 @@
+fhir-bridge:
+  fhir:
+    narrative-generation: true
+    url-mapping: /fhir/*
 logging:
   level:
     ca.uhn.fhir: info

@@ -21,22 +21,27 @@ import java.io.InputStream;
 @Configuration
 public class FhirConfiguration {
 
+    private final FhirBridgeProperties fhirBridgeProperties;
+
     private final ResourceLoader resourceLoader;
 
-    public FhirConfiguration(ResourceLoader resourceLoader) {
+    public FhirConfiguration(FhirBridgeProperties fhirBridgeProperties, ResourceLoader resourceLoader) {
+        this.fhirBridgeProperties = fhirBridgeProperties;
         this.resourceLoader = resourceLoader;
     }
 
     @Bean
     public FhirContext fhirContext() {
         FhirContext context = FhirContext.forR4();
-        context.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+        if (fhirBridgeProperties.getFhir().isNarrativeGeneration()) {
+            context.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+        }
         return context;
     }
 
     @Bean
     public ServletRegistrationBean<RestfulServer> fhirServletRegistration() {
-        ServletRegistrationBean<RestfulServer> bean = new ServletRegistrationBean<>(fhirServlet(), "/fhir/*");
+        ServletRegistrationBean<RestfulServer> bean = new ServletRegistrationBean<>(fhirServlet(), fhirBridgeProperties.getFhir().getUrlMapping());
         bean.setLoadOnStartup(1);
         return bean;
     }
