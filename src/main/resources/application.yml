@@ -1,6 +1,6 @@
 fhir-bridge:
   fhir:
-    narrative-generation: true
+    narrative-generation: false
     url-mapping: /fhir/*
 logging:
   level:

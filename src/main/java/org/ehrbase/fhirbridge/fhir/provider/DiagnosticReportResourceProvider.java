@@ -1,25 +1,34 @@
-package org.ehrbase.fhirbridge.fhir;
+package org.ehrbase.fhirbridge.fhir.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
+import org.springframework.stereotype.Component;
 
-public class DiagnosticReportResourceProvider implements IResourceProvider {
+/**
+ * Resource provider for DiagnosticReport
+ */
+@Component
+public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
+
+    public DiagnosticReportResourceProvider(FhirContext fhirContext) {
+        super(fhirContext);
+    }
 
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
-        IdType id = new IdType(1L);
+        checkProfiles(diagnosticReport);
 
-        diagnosticReport.setId(id);
+        diagnosticReport.setId(new IdType(1L));
         diagnosticReport.getMeta().setVersionId("1");
         diagnosticReport.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
-        return new MethodOutcome(id)
+        return new MethodOutcome()
                 .setCreated(true)
                 .setResource(diagnosticReport);
     }
@@ -27,5 +36,10 @@ public class DiagnosticReportResourceProvider implements IResourceProvider {
     @Override
     public Class<DiagnosticReport> getResourceType() {
         return DiagnosticReport.class;
+    }
+
+    @Override
+    public boolean isDefaultProfileSupported() {
+        return false;
     }
 }
