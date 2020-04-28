@@ -4,20 +4,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
-import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
-import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
-import org.ehrbase.client.templateprovider.TemplateProvider;
 import org.ehrbase.fhirbridge.mapping.FhirToOpenehr;
-import org.ehrbase.laborbefund.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.net.URI;
-import java.util.UUID;
 
 
 /**

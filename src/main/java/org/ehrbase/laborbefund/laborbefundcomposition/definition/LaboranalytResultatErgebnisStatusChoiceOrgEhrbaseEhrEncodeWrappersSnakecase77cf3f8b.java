@@ -1,4 +1,0 @@
-package org.ehrbase.laborbefund.laborbefundcomposition.definition;
-
-public interface LaboranalytResultatErgebnisStatusChoiceOrgEhrbaseEhrEncodeWrappersSnakecase77cf3f8b {
-}

@@ -10,4 +10,9 @@ logging:
 server:
   servlet:
     context-path: /fhir-bridge
+  port: 8888
+
+ehrbase:
+  address: localhost
   port: 8080
+  path: /ehrbase/rest/openehr/v1/
