@@ -44,6 +44,7 @@ public class FhirBridgeApplicationIT {
 
     @BeforeEach
     public void setUp() {
+        context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
     }
 
