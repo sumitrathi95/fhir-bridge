@@ -3,7 +3,7 @@
   "id": "blood-pressure",
   "meta": {
     "profile": [
-      "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest"
+      "http://hl7.org/fhir/StructureDefinition/vitalsigns"
     ]
   },
   "identifier": [

@@ -19,6 +19,8 @@ public class FhirBridgeProperties {
 
         private String urlMapping;
 
+        private Validation validation = new Validation();
+
         public boolean isNarrativeGeneration() {
             return narrativeGeneration;
         }
@@ -33,6 +35,23 @@ public class FhirBridgeProperties {
 
         public void setUrlMapping(String urlMapping) {
             this.urlMapping = urlMapping;
+        }
+
+        public Validation getValidation() {
+            return validation;
+        }
+    }
+
+    public static class Validation {
+
+        private boolean enabled;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 }

@@ -1,15 +1,10 @@
-package org.ehrbase.fhirbridge.fhir;
+package org.ehrbase.fhirbridge.fhir.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
-import ca.uhn.fhir.rest.annotation.Validate;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
-import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import org.ehrbase.client.openehrclient.CompositionEndpoint;
 import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
-import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
 import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
 import org.ehrbase.client.templateprovider.TemplateProvider;
@@ -18,21 +13,28 @@ import org.ehrbase.laborbefund.laborbefundcomposition.LaborbefundComposition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
-public class ObservationResourceProvider implements IResourceProvider {
+
+/**
+ * Resource provider for Observation
+ */
+@Component
+public class ObservationResourceProvider extends AbstractResourceProvider {
+
+    public ObservationResourceProvider(FhirContext fhirContext) {
+        super(fhirContext);
+    }
+
 
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createObservation(@ResourceParam Observation observation) {
-        IdType id = new IdType(1L);
-
-        observation.setId(id);
-        observation.getMeta().setVersionId("1");
-        observation.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
+        checkProfiles(observation);
 
         // test map FHIR to openEHR
         try {
@@ -41,14 +43,17 @@ public class ObservationResourceProvider implements IResourceProvider {
             LaborbefundComposition composition = FhirToOpenehr.map(observation);
 
             // try to setup the rest client
+            /*
             File templatesFolder = new File("templates");
             TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
             DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
+             */
             //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
 
+            /*
             UUID ehr = client.ehrEndpoint().createEhr();
-
             System.out.println("New EHR uid: "+ ehr.toString());
+             */
 
             /*
             CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
@@ -64,26 +69,22 @@ public class ObservationResourceProvider implements IResourceProvider {
             e.printStackTrace();
         }
 
-        return new MethodOutcome(id)
+        observation.setId(new IdType(1L));
+        observation.getMeta().setVersionId("1");
+        observation.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
+
+        return new MethodOutcome()
                 .setCreated(true)
                 .setResource(observation);
-    }
-
-    @Validate
-    @SuppressWarnings("unused")
-    public MethodOutcome validateObservation(@ResourceParam Observation observation,
-                                             @Validate.Mode ValidationModeEnum mode,
-                                             @Validate.Profile String profile) {
-
-        if (!observation.hasValueQuantity()) {
-            throw new UnprocessableEntityException("Value is required in FHIR Observation and should be Quantity");
-        }
-
-        return new MethodOutcome();
     }
 
     @Override
     public Class<Observation> getResourceType() {
         return Observation.class;
+    }
+
+    @Override
+    public boolean isDefaultProfileSupported() {
+        return false;
     }
 }
