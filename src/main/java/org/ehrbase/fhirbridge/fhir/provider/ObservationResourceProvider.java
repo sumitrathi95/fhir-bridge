@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import org.ehrbase.client.openehrclient.CompositionEndpoint;
 import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
 import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
@@ -47,15 +48,15 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             File templatesFolder = new File("templates");
             TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
             DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
-             */
+
             //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
 
-            /*
+
             UUID ehr = client.ehrEndpoint().createEhr();
             System.out.println("New EHR uid: "+ ehr.toString());
-             */
 
-            /*
+
+
             CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
             LaborbefundComposition representation = client.compositionEndpoint(ehr).mergeCompositionEntity(composition);
 
@@ -64,6 +65,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 System.out.println("Composition created "+ representation.getVersionUid().getUuid());
             }
             */
+
 
         } catch (Exception e) {
             e.printStackTrace();

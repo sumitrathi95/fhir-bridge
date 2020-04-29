@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.github.ehrbase</groupId>
             <artifactId>ehrbase_client_library</artifactId>
-            <version>v0.3.1.fhir</version>
+            <version>v0.3.2.fhir</version>
         </dependency>
         <!-- Test Dependencies -->
         <dependency>
