@@ -4,12 +4,24 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import org.ehrbase.client.openehrclient.CompositionEndpoint;
+import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
+import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
+import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
+import org.ehrbase.client.templateprovider.TemplateProvider;
 import org.ehrbase.fhirbridge.mapping.FhirToOpenehr;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.net.URI;
+import java.util.UUID;
 
 
 /**
@@ -18,10 +30,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ObservationResourceProvider extends AbstractResourceProvider {
 
-    public ObservationResourceProvider(FhirContext fhirContext) {
+    @Autowired
+    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
         super(fhirContext);
+        this.service = service;
     }
 
+    private final EhrbaseService service;
 
     @Create
     @SuppressWarnings("unused")
@@ -31,31 +46,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         // test map FHIR to openEHR
         try {
             System.out.println("----------------------------------------");
+            //System.out.println(this.service.toString()); // the service is injected OK
 
             LaborbefundComposition composition = FhirToOpenehr.map(observation);
-
-            // try to setup the rest client
-            /*
-            File templatesFolder = new File("templates");
-            TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
-            DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
-             */
-            //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
-
-            /*
-            UUID ehr = client.ehrEndpoint().createEhr();
-            System.out.println("New EHR uid: "+ ehr.toString());
-             */
-
-            /*
-            CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
-            LaborbefundComposition representation = client.compositionEndpoint(ehr).mergeCompositionEntity(composition);
-
-            if (representation != null)
-            {
-                System.out.println("Composition created "+ representation.getVersionUid().getUuid());
-            }
-            */
+            UUID ehr_id = service.createEhr(); // <<< reflections error!
+//            VersionUid version_uid = service.saveLab(ehr_id, composition);
 
         } catch (Exception e) {
             e.printStackTrace();
