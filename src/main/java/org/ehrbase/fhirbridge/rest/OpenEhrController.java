@@ -1,15 +1,21 @@
 package org.ehrbase.fhirbridge.rest;
 
+import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.EhrbaseService;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @RestController
@@ -34,6 +40,17 @@ public class OpenEhrController {
     public ResponseEntity<VersionUid> postLabor(
             @PathVariable(value = "ehr_id") UUID ehrId,
             @RequestBody LaborbefundComposition body) {
+
+        // TESTING
+        body = new LaborbefundComposition();
+        body.setComposer(new PartySelf());
+        body.setLanguage(Language.DE);
+        body.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        body.setStartTimeValue(OffsetDateTime.now());
+        body.setSettingDefiningcode(SettingDefiningcode.NURSINGHOMECARE);
+        body.setTerritory(Territory.DE);
+        // END
+
         VersionUid versionUid = service.saveLab(ehrId, body);
         return ResponseEntity.ok(versionUid);
     }
