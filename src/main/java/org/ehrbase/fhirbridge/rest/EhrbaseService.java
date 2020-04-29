@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge;
+package org.ehrbase.fhirbridge.rest;
 
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
