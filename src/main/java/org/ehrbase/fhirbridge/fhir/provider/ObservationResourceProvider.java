@@ -4,21 +4,14 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import org.ehrbase.client.openehrclient.CompositionEndpoint;
-import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
-import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
-import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
-import org.ehrbase.client.templateprovider.TemplateProvider;
+import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.FhirToOpenehr;
 import org.ehrbase.laborbefund.laborbefundcomposition.LaborbefundComposition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.net.URI;
-import java.util.UUID;
 
 
 /**
@@ -31,44 +24,48 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         super(fhirContext);
     }
 
-
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createObservation(@ResourceParam Observation observation) {
         checkProfiles(observation);
 
-        // test map FHIR to openEHR
-        try {
-            System.out.println("----------------------------------------");
+        // TODO: Do we need to handle the case where several profiles are defined and valid?
+        if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB)) {
+            try {
+                System.out.println("----------------------------------------");
+                // test map FHIR to openEHR
 
-            LaborbefundComposition composition = FhirToOpenehr.map(observation);
+                LaborbefundComposition composition = FhirToOpenehr.map(observation);
 
-            // try to setup the rest client
-            /*
-            File templatesFolder = new File("templates");
-            TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
-            DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
+                // try to setup the rest client
+                /*
+                File templatesFolder = new File("templates");
+                TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
+                DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
 
-            //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
-
-
-            UUID ehr = client.ehrEndpoint().createEhr();
-            System.out.println("New EHR uid: "+ ehr.toString());
+                //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
 
 
+                UUID ehr = client.ehrEndpoint().createEhr();
+                System.out.println("New EHR uid: "+ ehr.toString());
 
-            CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
-            LaborbefundComposition representation = client.compositionEndpoint(ehr).mergeCompositionEntity(composition);
 
-            if (representation != null)
-            {
-                System.out.println("Composition created "+ representation.getVersionUid().getUuid());
+
+                CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
+                LaborbefundComposition representation = client.compositionEndpoint(ehr).mergeCompositionEntity(composition);
+
+                if (representation != null)
+                {
+                    System.out.println("Composition created "+ representation.getVersionUid().getUuid());
+                }
+                */
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            */
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST)) {
+            // Map CoronavirusNachweisTest to openEHR
+        } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
+            // Map BodyTemp to openEHR
         }
 
         observation.setId(new IdType(1L));
