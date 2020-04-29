@@ -2,6 +2,9 @@ fhir-bridge:
   fhir:
     narrative-generation: false
     url-mapping: /fhir/*
+    validation:
+      terminology:
+        server-url: https://r4.ontoserver.csiro.au/fhir/
 logging:
   level:
     ca.uhn.fhir: info

@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
+import org.ehrbase.fhirbridge.fhir.validation.TerminologyValidationSupport;
 import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.CachingValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
@@ -70,6 +71,7 @@ public class FhirConfiguration {
     public RequestValidatingInterceptor requestValidatingInterceptor() {
         ValidationSupportChain chain = new ValidationSupportChain();
         chain.addValidationSupport(new DefaultProfileValidationSupport());
+//        chain.addValidationSupport(terminologyValidationSupport());
         chain.addValidationSupport(prePopulatedValidationSupport());
 
         FhirInstanceValidator module = new FhirInstanceValidator(new CachingValidationSupport(chain));
@@ -96,5 +98,10 @@ public class FhirConfiguration {
             throw new FhirBridgeException("Profiles initialization failed", e);
         }
         return validationSupport;
+    }
+
+    @Bean
+    public TerminologyValidationSupport terminologyValidationSupport() {
+        return new TerminologyValidationSupport(fhirContext());
     }
 }

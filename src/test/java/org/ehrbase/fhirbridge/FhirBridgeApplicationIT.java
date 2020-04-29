@@ -63,10 +63,10 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createConditionUsingWrongProfile() {
+    public void createConditionUsingInvalidProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                 () -> client.create()
-                        .resource(getContent("classpath:/Condition/condition-invalid-profile.json"))
+                        .resource(getContent("classpath:/Condition/condition-invalid-profile-example.json"))
                         .execute());
 
         Assertions.assertEquals("Profile mismatch on type for https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab: " +
@@ -77,7 +77,7 @@ public class FhirBridgeApplicationIT {
     public void createDiagnosticReportLab() throws IOException {
         Date now = new Date();
         MethodOutcome outcome = client.create()
-                .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-example-diagnosticreportlab.json"))
+                .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json"))
                 .execute();
 
         Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
@@ -88,23 +88,61 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createDiagnosticReportWithoutProfile() {
+    public void createDiagnosticReportUsingDefaultProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                 () -> client.create()
-                        .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-default-profile.json"))
+                        .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-example.json"))
                         .execute());
 
         OperationOutcome outcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, outcome.getIssue().size());
         Assertions.assertEquals("Default profile is not supported for DiagnosticReport. One of the following profiles is expected: " +
-                "[https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]", OperationOutcomeUtil.getFirstIssueDetails(context,
-                exception.getOperationOutcome()));
+                        "[https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+    }
+
+    @Test
+    public void createDiagnosticReportUsingUnsupportedProfile() {
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> client.create()
+                        .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-hla-genetics-results-example.json"))
+                        .execute());
+
+        OperationOutcome outcome = (OperationOutcome) exception.getOperationOutcome();
+        Assertions.assertEquals(1, outcome.getIssue().size());
+        Assertions.assertEquals("Profile http://hl7.org/fhir/StructureDefinition/hlaresult is not supported for DiagnosticReport. " +
+                        "One of the following profiles is expected: [https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+    }
+
+    @Test
+    public void createBodyTemp() throws IOException {
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                .execute();
+
+        Assertions.assertEquals(true, methodOutcome.getCreated());
+        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(methodOutcome.getResource());
+        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createCoronavirusNachweisTest() throws IOException {
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                .execute();
+
+        Assertions.assertEquals(true, methodOutcome.getCreated());
+        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(methodOutcome.getResource());
+        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
 
     @Test
     public void createOperationLab() throws IOException {
         MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-example-observationlab.json"))
+                .resource(getContent("classpath:/Observation/observation-observationlab-example.json"))
                 .execute();
 
         Assertions.assertEquals(true, methodOutcome.getCreated());
@@ -115,26 +153,33 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createCoronavirusNachweis() throws IOException {
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-example-coronavirusnachweistest.json"))
-                .execute();
-
-        Assertions.assertEquals(true, methodOutcome.getCreated());
-        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
-        Assertions.assertNotNull(methodOutcome.getResource());
-        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
-    }
-
-    @Test
-    public void createCoronavirusNachweisFailed() {
+    public void createObservationUsingDefaultProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                 () -> client.create()
-                        .resource(getContent("classpath:/Observation/observation-example-bloodpresure.json"))
+                        .resource(getContent("classpath:/Observation/observation-example.json"))
                         .execute());
 
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
+        Assertions.assertEquals("Default profile is not supported for Observation. One of the following profiles is expected: " +
+                        "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+    }
+
+    @Test
+    public void createObservationUsingUnsupportedProfile() {
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> client.create()
+                        .resource(getContent("classpath:/Observation/observation-vitalsigns-example.json"))
+                        .execute());
+
+        OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
+        Assertions.assertEquals(1, operationOutcome.getIssue().size());
+        Assertions.assertEquals("Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: " +
+                        "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     private String getContent(String location) throws IOException {
