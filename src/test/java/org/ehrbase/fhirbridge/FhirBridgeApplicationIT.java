@@ -118,7 +118,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createBodyTemp() throws IOException {
         MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                .resource(getContent("classpath:/Observation/observation-bodytemp-example.json"))
                 .execute();
 
         Assertions.assertEquals(true, methodOutcome.getCreated());

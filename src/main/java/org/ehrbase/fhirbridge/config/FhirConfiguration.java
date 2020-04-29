@@ -7,7 +7,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
-import org.ehrbase.fhirbridge.fhir.validation.TerminologyValidationSupport;
+import org.ehrbase.fhirbridge.fhir.validation.TerminologyServerValidationSupport;
 import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.CachingValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
@@ -71,11 +71,12 @@ public class FhirConfiguration {
     public RequestValidatingInterceptor requestValidatingInterceptor() {
         ValidationSupportChain chain = new ValidationSupportChain();
         chain.addValidationSupport(new DefaultProfileValidationSupport());
-//        chain.addValidationSupport(terminologyValidationSupport());
         chain.addValidationSupport(prePopulatedValidationSupport());
+        chain.addValidationSupport(terminologyValidationSupport());
 
         FhirInstanceValidator module = new FhirInstanceValidator(new CachingValidationSupport(chain));
         module.setErrorForUnknownProfiles(true);
+//        module.setNoTerminologyChecks(true);
 
         RequestValidatingInterceptor interceptor = new RequestValidatingInterceptor();
         interceptor.addValidatorModule(module);
@@ -101,7 +102,8 @@ public class FhirConfiguration {
     }
 
     @Bean
-    public TerminologyValidationSupport terminologyValidationSupport() {
-        return new TerminologyValidationSupport(fhirContext());
+    public TerminologyServerValidationSupport terminologyValidationSupport() {
+        String serverBaseUrl = fhirBridgeProperties.getFhir().getValidation().getTerminology().getServerBaseUrl();
+        return new TerminologyServerValidationSupport(fhirContext(), serverBaseUrl);
     }
 }
