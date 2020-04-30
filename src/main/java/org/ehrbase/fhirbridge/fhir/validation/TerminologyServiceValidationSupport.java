@@ -1,32 +1,62 @@
 package org.ehrbase.fhirbridge.fhir.validation;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.support.ConceptValidationOptions;
+import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.util.ParametersUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.common.hapi.validation.support.BaseValidationSupport;
+import org.hl7.fhir.instance.model.api.IBaseParameters;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.utilities.validation.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.lang.NonNull;
 
-public class TerminologyServiceValidationSupport implements BaseValidationSupport, MessageSourceAware {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+
+public class TerminologyServiceValidationSupport extends BaseValidationSupport implements IValidationSupport {
 
     private final Logger logger = LoggerFactory.getLogger(TerminologyServiceValidationSupport.class);
 
     private final IGenericClient client;
 
-    private MessageSourceAccessor messages;
-
-    public TerminologyServiceValidationSupport(IGenericClient client) {
-        this.client = client;
+    public TerminologyServiceValidationSupport(FhirContext fhirContext, String serverBaseUrl) {
+        super(fhirContext);
+        client = fhirContext.newRestfulGenericClient(serverBaseUrl);
     }
 
     @Override
-    public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
+    public ValueSetExpansionOutcome expandValueSet(IValidationSupport theRootValidationSupport, @Nullable ValueSetExpansionOptions theExpansionOptions, @Nonnull IBaseResource theValueSetToExpand) {
+        return null;
+    }
+
+    @Override
+    public List<IBaseResource> fetchAllConformanceResources() {
+        return null;
+    }
+
+    @Override
+    public IBaseResource fetchCodeSystem(String theSystem) {
+        return null;
+    }
+
+    @Override
+    public LookupCodeResult lookupCode(IValidationSupport theRootValidationSupport, String theSystem, String theCode) {
+        return null;
+    }
+
+    @Override
+    public boolean isValueSetSupported(IValidationSupport theRootValidationSupport, String theValueSetUrl) {
+        return false;
+    }
+
+    @Override
+    public boolean isCodeSystemSupported(IValidationSupport theRootValidationSupport, String theSystem) {
         Bundle response = client.search()
                 .forResource(CodeSystem.class)
                 .where(CodeSystem.URL.matches().value(theSystem))
@@ -38,42 +68,73 @@ public class TerminologyServiceValidationSupport implements BaseValidationSuppor
     }
 
     @Override
-    public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
-        if (StringUtils.isNotBlank(theValueSetUrl)) {
-            return null;
-        }
-        return lookup(theCodeSystem, theCode);
+    public IBaseResource fetchValueSet(String theValueSetUrl) {
+        return null;
     }
 
-    public CodeValidationResult lookup(String system, String code) {
-        Parameters reqParams = new Parameters();
-        reqParams.addParameter("system", new UriType(system));
-        reqParams.addParameter("code", code);
+    @Override
+    public CodeValidationResult validateCode(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions,
+                                             String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
+
+        IBaseParameters requestParams = ParametersUtil.newInstance(getFhirContext());
+        ParametersUtil.addParameterToParametersUri(getFhirContext(), requestParams, "system", theCodeSystem);
+        ParametersUtil.addParameterToParametersString(getFhirContext(), requestParams, "code", theCode);
 
         try {
-            Parameters respParams = client
+            Parameters responseParams = client
                     .operation()
                     .onType(CodeSystem.class)
                     .named("lookup")
-                    .withParameters(reqParams)
+                    .withParameters(requestParams)
                     .returnResourceType(Parameters.class)
                     .execute();
 
-            CodeSystem.ConceptDefinitionComponent definition = new CodeSystem.ConceptDefinitionComponent(new CodeType(code));
-            StringType display = (StringType) respParams.getParameter("display");
-            StringType name = (StringType) respParams.getParameter("name");
-            StringType version = (StringType) respParams.getParameter("version");
-            CodeValidationResult result = new CodeValidationResult(null, null, definition, display.getValue());
-            result.setCodeSystemName(name.getValue());
-            result.setCodeSystemVersion(version.getValue());
-            return result;
+            StringType name = (StringType) responseParams.getParameter("name");
+            StringType version = (StringType) responseParams.getParameter("version");
+            StringType display = (StringType) responseParams.getParameter("display");
+            return new CodeValidationResult()
+                    .setCode(theCode)
+                    .setCodeSystemName(name.getValue())
+                    .setCodeSystemVersion(version.getValue())
+                    .setDisplay(display.getValue());
         } catch (ResourceNotFoundException e) {
-            return new CodeValidationResult(ValidationMessage.IssueSeverity.ERROR, messages.getMessage("error.codeNotFound", new Object[]{code, system}));
+            return new CodeValidationResult()
+                    .setSeverity(IssueSeverity.ERROR)
+                    .setMessage("Code not found in code system");
         }
     }
 
     @Override
-    public void setMessageSource(@NonNull MessageSource messageSource) {
-        this.messages = new MessageSourceAccessor(messageSource);
+    public CodeValidationResult validateCodeInValueSet(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions,
+                                                       String theCodeSystem, String theCode, String theDisplay, @Nonnull IBaseResource theValueSet) {
+        if (StringUtils.isNotBlank(theCodeSystem)) {
+            IBaseParameters requestParams = ParametersUtil.newInstance(getFhirContext());
+            ParametersUtil.addParameterToParametersUri(getFhirContext(), requestParams, "system", theCodeSystem);
+            ParametersUtil.addParameterToParametersString(getFhirContext(), requestParams, "code", theCode);
+            ParametersUtil.addParameterToParameters(getFhirContext(), requestParams, "valueSet", theValueSet);
+
+            Parameters responseParams = client
+                    .operation()
+                    .onType(ValueSet.class)
+                    .named("validate-code")
+                    .withParameters(requestParams)
+                    .returnResourceType(Parameters.class)
+                    .execute();
+
+            BooleanType result = (BooleanType) responseParams.getParameter("result");
+            if (result.booleanValue()) {
+                StringType display = (StringType) responseParams.getParameter("display");
+                return new CodeValidationResult()
+                        .setCode(theCode)
+                        .setDisplay(display.getValue());
+            } else {
+                StringType message = (StringType) responseParams.getParameter("message");
+                return new CodeValidationResult()
+                        .setSeverity(IssueSeverity.ERROR)
+                        .setMessage(message.getValue());
+            }
+        }
+
+        return null;
     }
 }
