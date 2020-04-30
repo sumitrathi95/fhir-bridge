@@ -1,5 +1,6 @@
 logging:
   level:
     ca.uhn.fhir: debug
+    org.ehrbase.fhirbridge: debug
     org.hl7.fhir: debug
     org.springframework: info

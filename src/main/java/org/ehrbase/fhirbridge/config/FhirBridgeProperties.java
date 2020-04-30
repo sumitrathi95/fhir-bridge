@@ -53,7 +53,17 @@ public class FhirBridgeProperties {
 
     public static class Terminology {
 
+        private boolean enabled;
+
         private String serverBaseUrl;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getServerBaseUrl() {
             return serverBaseUrl;

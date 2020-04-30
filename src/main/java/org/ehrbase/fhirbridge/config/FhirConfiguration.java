@@ -3,12 +3,14 @@ package org.ehrbase.fhirbridge.config;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
-import org.ehrbase.fhirbridge.fhir.validation.TerminologyServerValidationSupport;
-import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
+import org.ehrbase.fhirbridge.fhir.validation.CustomDefaultProfileValidationSupport;
+import org.ehrbase.fhirbridge.fhir.validation.TerminologyServiceValidationSupport;
+import org.hl7.fhir.r4.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.CachingValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.r4.hapi.validation.PrePopulatedValidationSupport;
@@ -17,6 +19,7 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,13 +73,14 @@ public class FhirConfiguration {
     @Bean
     public RequestValidatingInterceptor requestValidatingInterceptor() {
         ValidationSupportChain chain = new ValidationSupportChain();
-        chain.addValidationSupport(new DefaultProfileValidationSupport());
-        chain.addValidationSupport(prePopulatedValidationSupport());
-        chain.addValidationSupport(terminologyValidationSupport());
+        chain.addValidationSupport(new CustomDefaultProfileValidationSupport());
+        for (IValidationSupport validationSupport : beanFactory.getBeansOfType(IValidationSupport.class).values()) {
+            chain.addValidationSupport(validationSupport);
+        }
 
         FhirInstanceValidator module = new FhirInstanceValidator(new CachingValidationSupport(chain));
         module.setErrorForUnknownProfiles(true);
-//        module.setNoTerminologyChecks(true);
+        module.setNoTerminologyChecks(!fhirBridgeProperties.getFhir().getValidation().getTerminology().isEnabled());
 
         RequestValidatingInterceptor interceptor = new RequestValidatingInterceptor();
         interceptor.addValidatorModule(module);
@@ -102,8 +106,10 @@ public class FhirConfiguration {
     }
 
     @Bean
-    public TerminologyServerValidationSupport terminologyValidationSupport() {
+    @ConditionalOnProperty(name = "fhir-bridge.fhir.validation.terminology.enabled", havingValue = "true")
+    public TerminologyServiceValidationSupport terminologyServiceValidationSupport() {
         String serverBaseUrl = fhirBridgeProperties.getFhir().getValidation().getTerminology().getServerBaseUrl();
-        return new TerminologyServerValidationSupport(fhirContext(), serverBaseUrl);
+        IGenericClient client = fhirContext().getRestfulClientFactory().newGenericClient(serverBaseUrl);
+        return new TerminologyServiceValidationSupport(client);
     }
 }
