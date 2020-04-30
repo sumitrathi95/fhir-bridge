@@ -8,6 +8,7 @@ import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -180,6 +181,18 @@ public class FhirBridgeApplicationIT {
                         "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
                         "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+    }
+
+    @Test
+    public void createQuestionnaireResponse() throws IOException {
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/QuestionnaireResponse/covapp-response.json"))
+                .execute();
+
+        Assertions.assertEquals(true, methodOutcome.getCreated());
+        Assertions.assertTrue(methodOutcome.getResource() instanceof QuestionnaireResponse);
+        Assertions.assertNotNull(methodOutcome.getResource());
+        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
 
     private String getContent(String location) throws IOException {
