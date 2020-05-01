@@ -50,7 +50,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
             LaborbefundComposition composition = FhirToOpenehr.map(observation);
             UUID ehr_id = service.createEhr(); // <<< reflections error!
-//            VersionUid version_uid = service.saveLab(ehr_id, composition);
+            VersionUid version_uid = service.saveLab(ehr_id, composition);
 
         } catch (Exception e) {
             e.printStackTrace();
