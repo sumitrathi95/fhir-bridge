@@ -7,7 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.FhirToOpenehr;
-import org.ehrbase.laborbefund.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;

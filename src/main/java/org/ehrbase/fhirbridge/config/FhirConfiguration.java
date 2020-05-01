@@ -6,6 +6,7 @@ import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
@@ -22,9 +23,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 @Configuration
 public class FhirConfiguration {
@@ -64,6 +67,7 @@ public class FhirConfiguration {
         RestfulServer server = new RestfulServer(fhirContext());
         server.registerProviders(beanFactory.getBeansOfType(AbstractResourceProvider.class).values());
         server.registerInterceptor(requestValidatingInterceptor());
+        server.registerInterceptor(corsValidatingInterceptor());
         return server;
     }
 
@@ -95,6 +99,26 @@ public class FhirConfiguration {
         return interceptor;
     }
 
+    @Bean
+    public CorsInterceptor corsValidatingInterceptor() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedHeader("x-fhir-starter");
+        config.addAllowedHeader("Origin");
+        config.addAllowedHeader("Accept");
+        config.addAllowedHeader("X-Requested-With");
+        config.addAllowedHeader("Content-Type");
+
+        config.addAllowedOrigin("*");
+
+        config.addExposedHeader("Location");
+        config.addExposedHeader("Content-Location");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // Create the interceptor and register it
+        return new CorsInterceptor(config);
+    }
+
+    @Bean
     public PrePopulatedValidationSupport prePopulatedValidationSupport() {
         PrePopulatedValidationSupport validationSupport = new PrePopulatedValidationSupport(fhirContext());
         IParser parser = fhirContext().newXmlParser();

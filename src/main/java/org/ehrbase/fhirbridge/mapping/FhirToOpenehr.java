@@ -1,8 +1,8 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import org.hl7.fhir.r4.model.Observation;
-import org.ehrbase.laborbefund.laborbefundcomposition.*;
-import org.ehrbase.laborbefund.laborbefundcomposition.definition.*;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.*;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.*;
 import org.hl7.fhir.r4.model.Quantity;
 
 import java.math.BigDecimal;
