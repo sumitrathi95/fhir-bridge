@@ -10,7 +10,6 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,8 +114,6 @@ public class FhirBridgeApplicationIT {
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
-
-    @Disabled("Issue with UCUM node need to be fixed in HAPI-FHIR")
     @Test
     public void createBodyTemp() throws IOException {
         MethodOutcome methodOutcome = client.create()
@@ -130,15 +127,18 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createCoronavirusNachweisTest() throws IOException {
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
-                .execute();
+    public void createCoronavirusNachweisTest() {
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> client.create()
+                        .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                        .execute());
 
-        Assertions.assertEquals(true, methodOutcome.getCreated());
-        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
-        Assertions.assertNotNull(methodOutcome.getResource());
-        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+        OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
+        Assertions.assertEquals(4, operationOutcome.getIssue().size());
+        OperationOutcome.OperationOutcomeIssueComponent issue = operationOutcome.getIssue().get(3);
+        Assertions.assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
+        Assertions.assertEquals("Observation.code.coding[0]", issue.getLocation().get(0).toString());
+
     }
 
     @Test
