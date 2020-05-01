@@ -1,4 +1,0 @@
-package org.ehrbase.laborbefund.laborbefundcomposition.definition;
-
-public interface LaboranalytResultatProbeChoiceOrgEhrbaseEhrEncodeWrappersSnakecase21ca139c {
-}
