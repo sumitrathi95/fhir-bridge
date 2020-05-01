@@ -26,4 +26,8 @@ public class ProfileUtils {
                 .map(profileUrl -> Profile.resolve(profileUrl.getValue()))
                 .collect(Collectors.toList());
     }
+
+    public static boolean hasProfile(Resource resource, Profile profile) {
+        return getProfiles(resource).contains(profile);
+    }
 }

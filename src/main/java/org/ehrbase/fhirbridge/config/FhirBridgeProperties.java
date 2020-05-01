@@ -19,7 +19,7 @@ public class FhirBridgeProperties {
 
         private String urlMapping;
 
-        private Validation validation = new Validation();
+        private final Validation validation = new Validation();
 
         public boolean isNarrativeGeneration() {
             return narrativeGeneration;
@@ -44,7 +44,18 @@ public class FhirBridgeProperties {
 
     public static class Validation {
 
+        private final Terminology terminology = new Terminology();
+
+        public Terminology getTerminology() {
+            return terminology;
+        }
+    }
+
+    public static class Terminology {
+
         private boolean enabled;
+
+        private String serverBaseUrl;
 
         public boolean isEnabled() {
             return enabled;
@@ -52,6 +63,14 @@ public class FhirBridgeProperties {
 
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
+        }
+
+        public String getServerBaseUrl() {
+            return serverBaseUrl;
+        }
+
+        public void setServerBaseUrl(String serverBaseUrl) {
+            this.serverBaseUrl = serverBaseUrl;
         }
     }
 }
