@@ -10,14 +10,8 @@ fhir-bridge:
 logging:
   level:
     ca.uhn.fhir: info
-    org.ehrbase.fhirbridge: info
+    org.ehrbase.fhirbridge: debug
     org.hl7.fhir: info
 server:
   servlet:
     context-path: /fhir-bridge
-  port: 8888
-
-ehrbase:
-  address: localhost
-  port: 8080
-  path: /ehrbase/rest/openehr/v1/
