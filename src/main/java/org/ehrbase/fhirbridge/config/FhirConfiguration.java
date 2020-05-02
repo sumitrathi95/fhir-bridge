@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.config;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -138,7 +139,7 @@ public class FhirConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "fhir-bridge.fhir.validation.terminology.mode", havingValue = "remote")
-    public RemoteTerminologyServerValidationSupport remoteTerminologyServerValidationSupport() {
+    public IValidationSupport remoteTerminologyServerValidationSupport() {
         String serverUrl = fhirProperties.getValidation().getTerminology().getRemote().getServerUrl();
         IGenericClient client = fhirContext().newRestfulGenericClient(serverUrl);
         return new RemoteTerminologyServerValidationSupport(fhirContext(), client);

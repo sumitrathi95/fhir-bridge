@@ -16,7 +16,6 @@ server:
   servlet:
     context-path: /fhir-bridge
   port: 8888
-
 ehrbase:
   address: localhost
   port: 8080

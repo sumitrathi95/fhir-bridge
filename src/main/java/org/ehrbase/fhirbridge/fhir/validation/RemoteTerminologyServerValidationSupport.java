@@ -12,6 +12,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -20,6 +21,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings({"SpringElInspection", "ELValidationInJSP"})
 public class RemoteTerminologyServerValidationSupport implements IValidationSupport, MessageSourceAware {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteTerminologyServerValidationSupport.class);
@@ -37,6 +39,7 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
         this.client = client;
     }
 
+    @Cacheable(cacheNames = "validateCodeInValueSet", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSet.url")
     @Override
     public CodeValidationResult validateCodeInValueSet(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions,
                                                        String theCodeSystem, String theCode, String theDisplay, @Nonnull IBaseResource theValueSet) {
@@ -98,6 +101,7 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
         }
     }
 
+    @Cacheable(cacheNames = "codeSystemSupported", key = "#theSystem")
     @Override
     public boolean isCodeSystemSupported(IValidationSupport theRootValidationSupport, String theSystem) {
         logger.debug("Perform '/CodeSystem/_search' operation: url={}", theSystem);
@@ -114,6 +118,7 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
         return (response.getTotal() > 0);
     }
 
+    @Cacheable(cacheNames = "validateCode", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSetUrl")
     @Override
     public CodeValidationResult validateCode(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions, String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
         if (StringUtils.isEmpty(theValueSetUrl)) {
