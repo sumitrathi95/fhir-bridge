@@ -16,9 +16,12 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FhirToOpenehr {
+/**
+ * FHIR to openEHR - Laboratory report
+ */
+public class F2OLabReport {
 
-    static public LaborbefundComposition map(Observation fhirObsservation) throws Exception {
+    static public LaborbefundComposition map(Observation fhirObservation) throws Exception {
 
         LaborbefundComposition composition = new LaborbefundComposition();
 
@@ -30,7 +33,7 @@ public class FhirToOpenehr {
 
 
         try {
-            fhir_value = fhirObsservation.getValueQuantity();
+            fhir_value = fhirObservation.getValueQuantity();
             fhir_value_numeric = fhir_value.getValue();
         } catch (Exception e) {
             System.out.println("---> "+ e.getMessage());

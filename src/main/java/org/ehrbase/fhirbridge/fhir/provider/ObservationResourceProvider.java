@@ -15,7 +15,9 @@ import org.ehrbase.client.templateprovider.TemplateProvider;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 
-import org.ehrbase.fhirbridge.mapping.FhirToOpenehr;
+import org.ehrbase.fhirbridge.mapping.F2OLabReport;
+import org.ehrbase.fhirbridge.mapping.F2OTemperature;
+import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.IdType;
@@ -53,30 +55,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             try {
                 System.out.println("----------------------------------------");
                 // test map FHIR to openEHR
-                LaborbefundComposition composition = FhirToOpenehr.map(observation);
+                LaborbefundComposition composition = F2OLabReport.map(observation);
                 UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid version_uid = service.saveLab(ehr_id, composition);
-              
-                // try to setup the rest client
-                /*
-                File templatesFolder = new File("templates");
-                TemplateProvider templateProvider = new FileBasedTemplateProvider(templatesFolder.toPath());
-                DefaultRestClient client = new DefaultRestClient(new OpenEhrClientConfig(new URI("http://localhost:8080/ehrbase/rest/openehr/v1/")), templateProvider);
-
-                //templateProvider.listTemplateIds().stream().forEach(t -> client.templateEndpoint().ensureExistence(t));
-
-
-                UUID ehr = client.ehrEndpoint().createEhr();
-                System.out.println("New EHR uid: "+ ehr.toString());
-
-                CompositionEndpoint compositionEndpoint = client.compositionEndpoint(ehr);
-                LaborbefundComposition representation = client.compositionEndpoint(ehr).mergeCompositionEntity(composition);
-
-                if (representation != null)
-                {
-                    System.out.println("Composition created "+ representation.getVersionUid().getUuid());
-                }
-                */
+                VersionUid versionUid = service.saveLab(ehr_id, composition);
+                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -84,6 +66,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             // Map CoronavirusNachweisTest to openEHR
         } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
             // Map BodyTemp to openEHR
+            try {
+                System.out.println("----------------------------------------");
+                // test map FHIR to openEHR
+                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
+                UUID ehr_id = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveTemp(ehr_id, composition);
+                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         observation.setId(new IdType(1L));
