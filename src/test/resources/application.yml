@@ -15,3 +15,7 @@ logging:
 server:
   servlet:
     context-path: /fhir-bridge
+ehrbase:
+  address: localhost
+  port: 8080
+  path: /ehrbase/rest/openehr/v1/
