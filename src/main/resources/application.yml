@@ -6,8 +6,8 @@ fhir-bridge:
       terminology:
         #mode: remote
         mode: off
-        remote:
-          server-url: https://r4.ontoserver.csiro.au/fhir/
+        #remote:
+          #server-url: https://r4.ontoserver.csiro.au/fhir/
 logging:
   level:
     ca.uhn.fhir: info

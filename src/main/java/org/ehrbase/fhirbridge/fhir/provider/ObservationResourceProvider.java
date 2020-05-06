@@ -55,8 +55,9 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         // TODO: Do we need to handle the case where several profiles are defined and valid?
         if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB)) {
 
+            System.out.println(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB "+ observation.getIdentifier().get(0).getValue());
+
             try {
-                System.out.println("----------------------------------------");
                 // test map FHIR to openEHR
                 LaborbefundComposition composition = F2OLabReport.map(observation);
                 UUID ehr_id = service.createEhr(); // <<< reflections error!
@@ -64,14 +65,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println(e.getMessage());
             }
 
         } else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST)) {
 
+            System.out.println(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
+
             // Map CoronavirusNachweisTest to openEHR
             try {
-                System.out.println("----------------------------------------");
                 // test map FHIR to openEHR
                 KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
                 UUID ehr_id = service.createEhr(); // <<< reflections error!
@@ -79,14 +82,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println(e.getMessage());
             }
 
         } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
+            System.out.println(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
+
             // Map BodyTemp to openEHR
             try {
-                System.out.println("----------------------------------------");
                 // test map FHIR to openEHR
                 IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
                 UUID ehr_id = service.createEhr(); // <<< reflections error!
@@ -94,7 +99,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 

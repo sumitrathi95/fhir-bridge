@@ -88,6 +88,20 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
+    public void createDiagnosticReportLabContainedObservation() throws IOException {
+        Date now = new Date();
+        MethodOutcome outcome = client.create()
+                .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json"))
+                .execute();
+
+        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
     public void createDiagnosticReportUsingDefaultProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                 () -> client.create()
@@ -143,7 +157,7 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createOperationLab() throws IOException {
+    public void createObservationLab() throws IOException {
         MethodOutcome methodOutcome = client.create()
                 .resource(getContent("classpath:/Observation/observation-observationlab-example.json"))
                 .execute();
