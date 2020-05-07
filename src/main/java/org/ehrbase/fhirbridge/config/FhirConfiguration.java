@@ -47,6 +47,11 @@ public class FhirConfiguration {
         this.beanFactory = beanFactory;
     }
 
+    public FhirProperties getFhirProperties()
+    {
+        return this.fhirProperties;
+    }
+
     @Bean
     public FhirContext fhirContext() {
         FhirContext context = FhirContext.forR4();
@@ -84,15 +89,26 @@ public class FhirConfiguration {
             supportChain.addValidationSupport(new InMemoryTerminologyServerValidationSupport(fhirContext()));
             supportChain.addValidationSupport(new CommonCodeSystemsTerminologyService(fhirContext()));
         }
+
+
+        // *********************************************************************************************************
         // Support for remote validation
-        if (fhirProperties.getValidation().getTerminology().getMode() == TerminologyMode.REMOTE) {
+        //
+        if (fhirProperties.getValidation().getTerminology().getMode() == TerminologyMode.REMOTE)
+        {
             supportChain.addValidationSupport(remoteTerminologyServerValidationSupport());
+        }
+        else
+        {
+            logger.debug(">>>>>>>>>>>>> NOT DOING REMOTE VALIDATION");
         }
 
         // ValidatorModule configuration
         FhirInstanceValidator validatorModule = new FhirInstanceValidator(new CachingValidationSupport(supportChain));
         validatorModule.setErrorForUnknownProfiles(true);
         validatorModule.setNoTerminologyChecks(fhirProperties.getValidation().getTerminology().getMode() == TerminologyMode.OFF);
+        //
+        // *********************************************************************************************************
 
         // Interceptor configuration
         RequestValidatingInterceptor interceptor = new RequestValidatingInterceptor();

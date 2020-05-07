@@ -4,9 +4,9 @@ fhir-bridge:
     url-mapping: /fhir/*
     validation:
       terminology:
-        mode: remote
-        remote:
-          server-url: https://r4.ontoserver.csiro.au/fhir/
+        mode: off
+        #remote:
+        #  server-url: https://r4.ontoserver.csiro.au/fhir/
 logging:
   level:
     ca.uhn.fhir: info

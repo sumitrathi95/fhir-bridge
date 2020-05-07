@@ -6,9 +6,12 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.apache.commons.io.IOUtils;
+import org.ehrbase.fhirbridge.config.FhirConfiguration;
+import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
+import org.hl7.fhir.r4.utils.EOperationOutcome;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +42,9 @@ public class FhirBridgeApplicationIT {
     private FhirContext context;
 
     @Autowired
+    private FhirConfiguration config;
+
+    @Autowired
     private ResourceLoader resourceLoader;
 
     private IGenericClient client;
@@ -49,6 +55,7 @@ public class FhirBridgeApplicationIT {
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
     }
 
+    
     @Test
     public void createCondition() throws IOException {
         Date now = new Date();
@@ -141,19 +148,40 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
 
+
     @Test
-    public void createCoronavirusNachweisTest() {
-        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                () -> client.create()
-                        .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
-                        .execute());
+    public void createCoronavirusNachweisTest() throws IOException {
 
-        OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
-        Assertions.assertEquals(4, operationOutcome.getIssue().size());
-        OperationOutcome.OperationOutcomeIssueComponent issue = operationOutcome.getIssue().get(3);
-        Assertions.assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
-        Assertions.assertEquals("Observation.code.coding[0]", issue.getLocation().get(0).toString());
+        System.out.println("--------------------------- createCoronavirusNAchweisTest");
 
+        // Remote terminology validation will make this resource fail because the LOINC codes are not yet there
+        if (config.getFhirProperties().getValidation().getTerminology().getMode() == TerminologyMode.EMBEDDED) {
+
+            UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                    () -> client.create()
+                            .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                            .execute());
+
+            OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
+
+            System.out.println("------------------------------- " + operationOutcome.getIssue().get(0).getDiagnostics());
+
+            Assertions.assertEquals(4, operationOutcome.getIssue().size());
+            OperationOutcome.OperationOutcomeIssueComponent issue = operationOutcome.getIssue().get(3);
+            Assertions.assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
+            Assertions.assertEquals("Observation.code.coding[0]", issue.getLocation().get(0).toString());
+        }
+        else // Remote terminology validation is OFF, example wont fail
+        {
+            MethodOutcome methodOutcome = client.create()
+                    .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                    .execute();
+
+            Assertions.assertEquals(true, methodOutcome.getCreated());
+            Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
+            Assertions.assertNotNull(methodOutcome.getResource());
+            Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+        }
     }
 
     @Test
@@ -210,6 +238,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(methodOutcome.getResource());
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
+
 
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
