@@ -12,6 +12,8 @@ import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -22,6 +24,8 @@ import java.util.UUID;
 @Component
 public class ConditionResourceProvider extends AbstractResourceProvider {
 
+    private final Logger logger = LoggerFactory.getLogger(ConditionResourceProvider.class);
+
     public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service) {
         super(fhirContext);
         this.service = service;
@@ -31,15 +35,37 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createCondition(@ResourceParam Condition condition) {
+    public MethodOutcome createCondition(@ResourceParam Condition condition) throws Exception {
 
-        // we don't have a profile for the diagnostic report to filter
+        // Patient/xxx => xxx
+        String subjectIdValue = null;
+        String ehr_id = null;
+        UUID ehr_uid = null;
+        try
+        {
+            subjectIdValue = condition.getSubject().getReference().split("/")[1];
+            ehr_id = service.ehrIdBySubjectId(subjectIdValue);
+            if (ehr_id != null)
+            {
+                ehr_uid = UUID.fromString(ehr_id);
+            }
+            else
+            {
+                logger.error("EHR for patient "+ subjectIdValue +" doesn't exists");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Can't get the patient ID from the resource");
+        }
+
+        // TODO: we don't have a profile for the diagnostic report to filter
         try {
             System.out.println("----------------------------------------");
             // test map FHIR to openEHR
             DiagnoseComposition composition = F2ODiagnose.map(condition);
-            UUID ehr_id = service.createEhr(); // <<< reflections error!
-            VersionUid versionUid = service.saveDiagnosis(ehr_id, composition);
+            //UUID ehr_id = service.createEhr(); // <<< reflections error!
+            VersionUid versionUid = service.saveDiagnosis(ehr_uid, composition);
             System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
 
         } catch (Exception e) {

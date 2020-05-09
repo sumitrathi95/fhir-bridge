@@ -25,6 +25,8 @@ import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +41,8 @@ import java.util.UUID;
 @Component
 public class ObservationResourceProvider extends AbstractResourceProvider {
 
+    private final Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
+
     @Autowired
     public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
         super(fhirContext);
@@ -49,8 +53,30 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createObservation(@ResourceParam Observation observation) {
+    public MethodOutcome createObservation(@ResourceParam Observation observation) throws Exception {
         checkProfiles(observation);
+
+        // Patient/xxx => xxx
+        String subjectIdValue = null;
+        String ehr_id = null;
+        UUID ehr_uid = null;
+        try
+        {
+            subjectIdValue = observation.getSubject().getReference().split("/")[1];
+            ehr_id = service.ehrIdBySubjectId(subjectIdValue);
+            if (ehr_id != null)
+            {
+                ehr_uid = UUID.fromString(ehr_id);
+            }
+            else
+            {
+                logger.error("EHR for patient "+ subjectIdValue +" doesn't exists");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Can't get the patient ID from the resource");
+        }
 
         // TODO: Do we need to handle the case where several profiles are defined and valid?
         if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB)) {
@@ -60,10 +86,9 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             try {
                 // test map FHIR to openEHR
                 LaborbefundComposition composition = F2OLabReport.map(observation);
-                UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveLab(ehr_id, composition);
+                //UUID ehr_id = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveLab(ehr_uid, composition);
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
-
             } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println(e.getMessage());
@@ -77,10 +102,9 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             try {
                 // test map FHIR to openEHR
                 KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
-                UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTest(ehr_id, composition);
+                //UUID ehr_id = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveTest(ehr_uid, composition);
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
-
             } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println(e.getMessage());
@@ -94,10 +118,9 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             try {
                 // test map FHIR to openEHR
                 IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
-                UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTemp(ehr_id, composition);
+                //UUID ehr_id = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveTemp(ehr_uid, composition);
                 System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
-
             } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println(e.getMessage());

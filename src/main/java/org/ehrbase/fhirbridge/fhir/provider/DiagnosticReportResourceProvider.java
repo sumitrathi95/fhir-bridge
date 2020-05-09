@@ -13,6 +13,8 @@ import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Component
 public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
 
+    private final Logger logger = LoggerFactory.getLogger(DiagnosticReportResourceProvider.class);
+
     @Autowired
     public DiagnosticReportResourceProvider(FhirContext fhirContext, EhrbaseService service) {
         super(fhirContext);
@@ -34,18 +38,49 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
+    public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) throws Exception {
         checkProfiles(diagnosticReport);
 
         System.out.println(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT "+ diagnosticReport.getIdentifier().get(0).getValue());
         System.out.println(">>>>>>>>>>>>>>>>>> CONTAINED " + diagnosticReport.getContained().size());
+        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getReference()); // Patient/XXXX
+        /*
+        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getType()); // null
+        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getIdentifier().getValue()); // null
+        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getDisplay()); // null
+        */
+
+        // Patient/xxx => xxx
+        String subjectIdValue = null;
+        String ehr_id = null;
+        UUID ehr_uid = null;
+        try
+        {
+            subjectIdValue = diagnosticReport.getSubject().getReference().split("/")[1];
+            ehr_id = service.ehrIdBySubjectId(subjectIdValue);
+            if (ehr_id != null)
+            {
+                ehr_uid = UUID.fromString(ehr_id);
+            }
+            else
+            {
+                logger.error("EHR for patient "+ subjectIdValue +" doesn't exists");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Can't get the patient ID from the resource");
+        }
+
+
+        //System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + subjectIdValue);
 
         if (ProfileUtils.hasProfile(diagnosticReport, Profile.DIAGNOSTIC_REPORT_LAB)) {
             try {
                 LaborbefundComposition composition = F2OLabReport.map(diagnosticReport);
-                UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveLab(ehr_id, composition);
-                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
+                //UUID ehr_id = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveLab(ehr_uid, composition);
+                System.out.println("Composition created with UID " + versionUid.toString() + " for FHIR profile " + Profile.BODY_TEMP);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

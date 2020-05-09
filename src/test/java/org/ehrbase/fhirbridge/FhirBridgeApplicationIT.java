@@ -8,6 +8,7 @@ import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
+import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
@@ -49,13 +50,15 @@ public class FhirBridgeApplicationIT {
 
     private IGenericClient client;
 
+    @Autowired
+    private EhrbaseService service;
+
     @BeforeEach
     public void setUp() {
         context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
     }
 
-    
     @Test
     public void createCondition() throws IOException {
         Date now = new Date();
@@ -148,7 +151,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
 
-
     @Test
     public void createCoronavirusNachweisTest() throws IOException {
 
@@ -237,6 +239,20 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(methodOutcome.getResource() instanceof QuestionnaireResponse);
         Assertions.assertNotNull(methodOutcome.getResource());
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void testEhrExistsDoesExist()
+    {
+        // FIXME: this will only work if the ehr is created previously with a specific ehr_status, we currently removed
+        // the ehr_status from the service.createEhr()
+        Assertions.assertTrue(service.ehrExistsBySubjectId("07f602e0-579e-4fe3-95af-381728bf0d49"));
+    }
+
+    @Test
+    public void testEhrExistsDoesNotExist()
+    {
+        Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
 
 

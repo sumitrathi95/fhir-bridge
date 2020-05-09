@@ -43,7 +43,7 @@
     "text": "Blood pressure systolic & diastolic"
   },
   "subject": {
-    "reference": "Patient/example"
+    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49"
   },
   "effectiveDateTime": "2012-09-17",
   "performer": [
