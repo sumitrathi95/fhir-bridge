@@ -68,6 +68,7 @@
                             <addClasspath>true</addClasspath>
                             <mainClass>org.ehrbase.fhirbridge.FhirBridgeApplication</mainClass>
                             <classpathPrefix>lib/</classpathPrefix>
+                            <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
                 </configuration>
