@@ -21,7 +21,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.report.v1")
-@Template("Intensivmedizinisches Monitoring Körpertemperatur")
+@Template("Intensivmedizinisches Monitoring Korpertemperatur")
 public class IntensivmedizinischesMonitoringKorpertemperaturComposition {
   @Id
   private VersionUid versionUid;
