@@ -246,7 +246,7 @@ public class FhirBridgeApplicationIT {
     {
         // FIXME: this will only work if the ehr is created previously with a specific ehr_status, we currently removed
         // the ehr_status from the service.createEhr()
-        Assertions.assertTrue(service.ehrExistsBySubjectId("07f602e0-579e-4fe3-95af-381728bf0d49"));
+        Assertions.assertTrue(service.ehrExistsBySubjectId("88a2d7db-6c78-4cd5-9610-30eb548e2e82"));
     }
 
     @Test

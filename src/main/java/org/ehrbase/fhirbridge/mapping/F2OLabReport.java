@@ -5,14 +5,11 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.*;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.*;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.*;
-import org.hl7.fhir.r4.model.Quantity;
 
 import com.nedap.archie.rm.generic.*;
-import org.hl7.fhir.r4.model.ResourceType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -192,10 +189,14 @@ public class F2OLabReport {
         // value quantity is expected
         Quantity fhir_value = null;
         BigDecimal fhir_value_numeric = null;
+        String fhirCodeName = null;
+        DateTimeType fhirEffectiveDateTime = null;
 
         try {
             fhir_value = fhirObservation.getValueQuantity();
             fhir_value_numeric = fhir_value.getValue();
+            fhirCodeName = fhirObservation.getCode().getCoding().get(0).getDisplay();
+            fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
         } catch (Exception e) {
             System.out.println("---> "+ e.getMessage());
         }
@@ -203,6 +204,14 @@ public class F2OLabReport {
         if (fhir_value_numeric == null)
         {
             throw new Exception("Value is required in FHIR Observation and should be Quantity");
+        }
+        if (fhirEffectiveDateTime == null)
+        {
+            throw new Exception("effectiveDateTime is required in FHIR Observation");
+        }
+        if (fhirCodeName == null)
+        {
+            throw new Exception("code is required in FHIR Observation");
         }
 
         // mapping to openEHR
@@ -215,6 +224,10 @@ public class F2OLabReport {
         LaboranalytResultatCluster resultCluster = new LaboranalytResultatCluster();
         resultCluster.setAnalytResultat(resultValue);
         resultCluster.setAnalytResultatValue("result"); // this is the ELEMENT.name
+        resultCluster.setUntersuchterAnalytValue(fhirCodeName);
+        resultCluster.setUntersuchterAnalytValueName("Analyte name");
+        resultCluster.setZeitpunktErgebnisStatusValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+        resultCluster.setZeitpunktErgebnisStatusValueName("Result status time");
 
         return resultCluster;
     }
