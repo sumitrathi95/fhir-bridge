@@ -20,7 +20,7 @@
         <commons-lang3.version>3.10</commons-lang3.version>
         <commons-text.version>1.8</commons-text.version>
         <errorprone.version>2.3.4</errorprone.version>
-        <hapi-fhir.version>5.0.0-SNAPSHOT</hapi-fhir.version>
+        <hapi-fhir.version>5.0.2</hapi-fhir.version>
         <guava.version>28.1-jre</guava.version>
         <jackson.version>2.10.3</jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
