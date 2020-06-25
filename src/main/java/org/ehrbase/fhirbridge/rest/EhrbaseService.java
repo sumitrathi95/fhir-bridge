@@ -59,6 +59,10 @@ public class EhrbaseService {
         return results.size() > 0;
     }
 
+    public DefaultRestClient getClient() {
+        return client;
+    }
+
     public String ehrIdBySubjectId(String subject_id)
     {
         Query<Record1<String>> query = Query.buildNativeQuery("SELECT e/ehr_id/value FROM EHR e WHERE e/ehr_status/subject/external_ref/id/value = '"+ subject_id +"'", String.class);
