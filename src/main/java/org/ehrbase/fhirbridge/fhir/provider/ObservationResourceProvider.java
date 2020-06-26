@@ -27,10 +27,7 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +89,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 Observation observation;
                 TemporalAccessor temporal;
                 KorpertemperaturBeliebigesEreignisPointEvent event;
+                Coding coding;
 
                 for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
                 {
@@ -111,12 +109,35 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     observation.getValueQuantity().setValue(event.getTemperaturMagnitude().doubleValue());
                     observation.getValueQuantity().setUnit(event.getTemperaturUnits());
 
-                    // TODO: finish mappings
+
+                    // set patient
+                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+
+
+                    // set codes that come hardcoded in the inbound resources
+                    observation.getCategory().add(new CodeableConcept());
+                    coding = observation.getCategory().get(0).addCoding();
+                    coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
+                    coding.setCode("vital-signs");
+
+                    coding = observation.getCode().addCoding();
+                    coding.setSystem("http://loing.org");
+                    coding.setCode("8310-5");
+
+                    observation.setStatus(Observation.ObservationStatus.FINAL);
+
+                    observation.getMeta().addProfile("http://hl7.org/fhir/StructureDefinition/bodytemp");
+
+                    observation.setId("bodytemp");
+
+
 
                     // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
                     // and if we return FHIR resources, the IDs we return should be consistent for instance if we want to
                     // provide a get by ID operation via the FHIR API.
                     observation.setId(UUID.randomUUID().toString());
+                    //observation.setId(compo.getVersionUid().toString()); // the versionUid is null for the compo
+                    //System.out.println(compo.getVersionUid()); // this is nul...
 
                     // adds observation to the result
                     result.add(observation);
