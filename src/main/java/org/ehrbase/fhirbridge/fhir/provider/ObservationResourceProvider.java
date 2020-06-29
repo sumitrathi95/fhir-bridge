@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import com.ibm.icu.text.AlphabeticIndex;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
+import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.CompositionEndpoint;
 import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
 import org.ehrbase.client.openehrclient.VersionUid;
@@ -74,6 +75,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
             // get all compositions for the body temperature template
             // TODO: filter by patient if the patient id parameter is used
+            /*
             Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
                 Query.buildNativeQuery("SELECT c FROM EHR e CONTAINS COMPOSITION c where "
                      + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
@@ -81,19 +83,32 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                      IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
 
             List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>>();
+            */
+            // Workaround for not getting the composition uid in the result (https://github.com/ehrbase/openEHR_SDK/issues/44)
+            Query<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> query =
+                    Query.buildNativeQuery("SELECT c, c/uid/value FROM EHR e CONTAINS COMPOSITION c where "
+                                    + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
+                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                            IntensivmedizinischesMonitoringKorpertemperaturComposition.class, String.class);
+
+            List<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> results = new ArrayList<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>>();
+
             try
             {
                 results = service.getClient().aqlEndpoint().execute(query);
 
                 IntensivmedizinischesMonitoringKorpertemperaturComposition compo;
+                String uid;
                 Observation observation;
                 TemporalAccessor temporal;
                 KorpertemperaturBeliebigesEreignisPointEvent event;
                 Coding coding;
 
-                for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
+                //for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
+                for (Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String> record: results)
                 {
                     compo = record.value1();
+                    uid = record.value2();
 
                     // Map back compo -> fhir observation
                     observation = new Observation();
@@ -135,7 +150,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
                     // and if we return FHIR resources, the IDs we return should be consistent for instance if we want to
                     // provide a get by ID operation via the FHIR API.
-                    observation.setId(UUID.randomUUID().toString());
+                    //observation.setId(UUID.randomUUID().toString());
+                    observation.setId(uid); // workaround
                     //observation.setId(compo.getVersionUid().toString()); // the versionUid is null for the compo
                     //System.out.println(compo.getVersionUid()); // this is nul...
 
