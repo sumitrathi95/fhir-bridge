@@ -159,6 +159,14 @@
             <artifactId>client-library</artifactId>
             <version>0.3.0</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.github.ehrbase.openEHR_SDK</groupId>-->
+<!--            <artifactId>client-library</artifactId>-->
+<!--            <version>d97d209</version>&lt;!&ndash; FIXME: THIS IS A SPECIFIC COMMIT &ndash;&gt;-->
+<!--&lt;!&ndash;            <version>v0.3.4</version> This gets back the reflections errors&ndash;&gt;-->
+<!--        </dependency>-->
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -181,6 +189,7 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
                 <groupId>ca.uhn.hapi.fhir</groupId>
                 <artifactId>hapi-fhir-base</artifactId>

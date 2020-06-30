@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import com.ibm.icu.text.AlphabeticIndex;
 import org.ehrbase.client.aql.query.Query;
+import org.ehrbase.client.aql.record.Record;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.CompositionEndpoint;
@@ -27,6 +28,9 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.LaboranalytResultatAnalytResultatDvquantity;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.LaboranalytResultatCluster;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.StandortJedesEreignisPointEvent;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -114,12 +118,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     observation = new Observation();
 
 
-                    // observations [0] -> origin
+                    // observations [0] . origin => effective_time
                     temporal = compo.getKorpertemperatur().get(0).getOriginValue();
                     observation.getEffectiveDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
 
 
-                    // observations [0] -> events [0] ->
+                    // observations [0] . events [0] . value -> observation . value
                     event = (KorpertemperaturBeliebigesEreignisPointEvent)compo.getKorpertemperatur().get(0).getBeliebigesEreignis().get(0);
                     observation.getValueQuantity().setValue(event.getTemperaturMagnitude().doubleValue());
                     observation.getValueQuantity().setUnit(event.getTemperaturUnits());
@@ -141,7 +145,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                     observation.setStatus(Observation.ObservationStatus.FINAL);
 
-                    observation.getMeta().addProfile("http://hl7.org/fhir/StructureDefinition/bodytemp");
+                    observation.getMeta().addProfile(Profile.BODY_TEMP.getUrl());
 
                     observation.setId("bodytemp");
 
@@ -160,6 +164,182 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 }
 
                 System.out.println(results.size());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if (profile.getValue().equals(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl()))
+        {
+            // another approach, asking for the data points in AQL directly without retrieving the whole compo
+            // this doesnt work https://github.com/ehrbase/openEHR_SDK/issues/45
+            /*
+            Query<Record> query = Query.buildNativeQuery(
+                "SELECT c/uid/value as uid, eval/data[at0001]/items[at0015]/value/value as effective_time "+
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
+                "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
+                "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'"
+            );
+
+            List<Record> results = new ArrayList<Record>();
+            */
+
+            Query<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> query = Query.buildNativeQuery(
+            "SELECT c, c/uid/value "+
+                    "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
+                    "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
+                    "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                    KennzeichnungErregernachweisSARSCoV2Composition.class, String.class
+            );
+
+            //List<Record> results = new ArrayList<Record>();
+            List<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> results = new ArrayList<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>>();
+
+            try
+            {
+                results = service.getClient().aqlEndpoint().execute(query);
+
+                String uid;
+                KennzeichnungErregernachweisSARSCoV2Composition compo;
+
+                Observation observation;
+                TemporalAccessor temporal;
+                KorpertemperaturBeliebigesEreignisPointEvent event;
+                Coding coding;
+
+                for (Record2<KennzeichnungErregernachweisSARSCoV2Composition, String> record: results)
+                //for (Record record: results)
+                {
+                    compo = record.value1();
+                    uid = record.value2();
+
+                    /*
+                    uid = (String)record.value(0);
+                    effective_time = (TemporalAccessor)record.value(1);
+                    */
+                    System.out.println(record); // org.ehrbase.client.aql.record.RecordImp
+                    System.out.println(record.values().length);
+                    System.out.println(record.fields().length);
+
+                    // Map back compo -> fhir observation
+                    observation = new Observation();
+
+
+
+                    // evaluation time -> effective_time
+                    temporal = compo.getKennzeichnungErregernachweis().getZeitpunktDerKennzeichnungValue();
+                    observation.getEffectiveDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
+
+                    // FIXME: cant map the code back because the compo has a boolean derived from the code in the FHIR resource
+                    if (compo.getKennzeichnungErregernachweis().isErregernachweisValue())
+                    {
+                        // This is not right, could not the value that came initially in the FHIR observation
+                        coding = observation.getCode().addCoding();
+                        coding.setSystem("http://loing.org");
+                        coding.setCode("94532-9");
+                        coding.setDisplay("SARS coronavirus+SARS-like coronavirus+SARS coronavirus 2+MERS coronavirus RNA [Presence] in Respiratory specimen by NAA with probe detection");
+                    }
+
+
+                    // set patient
+                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+
+                    observation.setStatus(Observation.ObservationStatus.FINAL);
+
+                    observation.getMeta().addProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl());
+
+
+                    // FIXME: we are also not storing referenceRange
+
+
+                    // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
+                    observation.setId(uid); // workaround
+                    //observation.setId(UUID.randomUUID().toString());
+
+
+                    // adds observation to the result
+                    result.add(observation);
+                }
+
+                System.out.println(results.size());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if (profile.getValue().equals(Profile.OBSERVATION_LAB.getUrl()))
+        {
+            Query<Record2<LaborbefundComposition, String>> query =
+                Query.buildNativeQuery("SELECT c, c/uid/value FROM EHR e CONTAINS COMPOSITION c where "
+                                    + "c/archetype_details/template_id/value = 'Laborbefund' AND "
+                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                            LaborbefundComposition.class, String.class);
+
+            List<Record2<LaborbefundComposition, String>> results = new ArrayList<Record2<LaborbefundComposition, String>>();
+
+            try
+            {
+                results = service.getClient().aqlEndpoint().execute(query);
+
+                LaborbefundComposition compo;
+                String uid;
+                Observation observation;
+                TemporalAccessor temporal;
+                Coding coding;
+
+                for (Record2<LaborbefundComposition, String> record: results)
+                {
+                    compo = record.value1();
+                    uid = record.value2();
+
+                    // Map back compo -> fhir observation
+                    observation = new Observation();
+
+                    LaboranalytResultatCluster cluster = ((StandortJedesEreignisPointEvent)compo.getLaborergebnis().get(0).getJedesEreignis().get(0)).getLaboranalytResultat().get(0);
+
+                    // cluster . time -> observation . effective_date
+                    temporal = cluster.getZeitpunktErgebnisStatusValue();
+                    observation.getEffectiveDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
+
+                    // cluster . value -> observation . value
+                    LaboranalytResultatAnalytResultatDvquantity value = ((LaboranalytResultatAnalytResultatDvquantity)cluster.getAnalytResultat());
+                    observation.getValueQuantity().setValue(value.getAnalytResultatMagnitude());
+                    observation.getValueQuantity().setUnit(value.getAnalytResultatUnits());
+                    observation.getValueQuantity().setSystem("http://unitsofmeasure.org");
+                    observation.getValueQuantity().setCode(value.getAnalytResultatUnits());
+
+                    // set codes that come hardcoded in the inbound resources
+
+                    // observation . category
+                    observation.getCategory().add(new CodeableConcept());
+                    coding = observation.getCategory().get(0).addCoding();
+                    coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
+                    coding.setCode("laboratory");
+                    coding = observation.getCategory().get(0).addCoding();
+                    coding.setSystem("http://loing.org");
+                    coding.setCode("26436-6");
+
+                    // observation . code
+                    coding = observation.getCode().addCoding();
+                    coding.setSystem("http://loing.org");
+                    coding.setCode("59826-8");
+                    coding.setDisplay("Creatinine [Moles/volume] in Blood");
+                    observation.getCode().setText("Kreatinin");
+
+                    // set patient
+                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+
+                    observation.setStatus(Observation.ObservationStatus.FINAL);
+
+                    observation.getMeta().addProfile(Profile.OBSERVATION_LAB.getUrl());
+
+                    observation.setId(uid);
+
+                    // adds observation to the result
+                    result.add(observation);
+                }
             }
             catch (Exception e)
             {
@@ -203,7 +383,6 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             throw new Exception("Can't get the patient ID from the resource");
         }
 
-        // TODO: Do we need to handle the case where several profiles are defined and valid?
         if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
         {
             System.out.println(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB "+ observation.getIdentifier().get(0).getValue());
