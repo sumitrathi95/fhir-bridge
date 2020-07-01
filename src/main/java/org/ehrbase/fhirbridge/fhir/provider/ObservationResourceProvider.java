@@ -64,7 +64,6 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     private final EhrbaseService service;
 
     @Search
-    // search with no params
     public List<Observation> getAllObservations(
         @OptionalParam(name="_profile") UriParam profile,
         @RequiredParam(name=Observation.SP_SUBJECT+'.'+Patient.SP_IDENTIFIER)TokenParam subject_id
@@ -219,13 +218,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     effective_time = (TemporalAccessor)record.value(1);
                     */
                     System.out.println(record); // org.ehrbase.client.aql.record.RecordImp
-                    System.out.println(record.values().length);
-                    System.out.println(record.fields().length);
+                    System.out.println(record.values().length); // using Record instead of Record2 gives 0
+                    System.out.println(record.fields().length); // using Record instead of Record2 gives 0
 
                     // Map back compo -> fhir observation
                     observation = new Observation();
 
 
+                    // mapping back to FHIR
 
                     // evaluation time -> effective_time
                     temporal = compo.getKennzeichnungErregernachweis().getZeitpunktDerKennzeichnungValue();

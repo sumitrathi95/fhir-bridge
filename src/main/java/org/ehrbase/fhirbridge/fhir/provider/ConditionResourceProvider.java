@@ -1,21 +1,30 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.Create;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import org.ehrbase.client.aql.query.Query;
+import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.mapping.F2ODiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
+import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -26,12 +35,98 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ConditionResourceProvider.class);
 
+    @Autowired
     public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service) {
         super(fhirContext);
         this.service = service;
     }
 
     private final EhrbaseService service;
+
+    @Search
+    public List<Condition> getAllConditions(
+            @OptionalParam(name="_profile") UriParam profile,
+            @RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
+    )
+    {
+        System.out.println("SEARCH CONDITION! profile: " + profile);
+        List<Condition> result = new ArrayList<Condition>();
+
+        // *************************************************************************************
+        // We don't have a profile to ask for, we will try to map from a Diagnose composition
+        // to a general condition.
+        // *************************************************************************************
+
+        Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(
+            "SELECT c, c/uid/value "+
+                "FROM EHR e CONTAINS COMPOSITION c "+
+                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
+                "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+            DiagnoseComposition.class, String.class
+        );
+
+        List<Record2<DiagnoseComposition, String>> results = new ArrayList<Record2<DiagnoseComposition, String>>();
+
+        try
+        {
+            results = service.getClient().aqlEndpoint().execute(query);
+
+            String uid;
+            DiagnoseComposition compo;
+            TemporalAccessor temporal;
+            String text;
+
+            Condition condition;
+            Coding coding;
+
+            for (Record2<DiagnoseComposition, String> record: results)
+            {
+                compo = record.value1();
+                uid = record.value2();
+
+                condition = new Condition();
+
+
+                // mapping back to FHIR
+
+                // FIXME: the severity code stored in openEHR is the atcode of the constaint, is not the SNOMED code
+                // this is because the OPT was designed this way and the generated code from the client lib
+                // generates a ENUM with those codes.
+
+                // severity code
+                text = ((AtiopathogeneseSchweregradDvcodedtext)compo.getDiagnose().getSchweregrad()).getSchweregradDefiningcode().getCode();
+                coding = condition.getSeverity().addCoding();
+                coding.setCode(text);
+                coding.setSystem("http://snomed.info/sct");
+
+                // diagnose code
+                text = compo.getDiagnose().getDerDiagnoseDefiningcode().getCode();
+                coding = condition.getCode().addCoding();
+                coding.setCode(text);
+                coding.setSystem("http://fhir.de/CodeSystem/dimdi/icd-10-gm");
+
+                // date onset
+                temporal = compo.getDiagnose().getDerErstdiagnoseValue();
+                condition.getOnsetDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
+
+                // body site
+                text = compo.getDiagnose().getKorperstelleValueStructure();
+                condition.addBodySite().addCoding().setDisplay(text);
+
+
+                // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
+                condition.setId(uid);
+
+                result.add(condition);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 
     @Create
     @SuppressWarnings("unused")
@@ -59,7 +154,10 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             throw new Exception("Can't get the patient ID from the resource");
         }
 
+        // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
+        // *************************************************************************************
+
         try {
             System.out.println("----------------------------------------");
             // test map FHIR to openEHR
