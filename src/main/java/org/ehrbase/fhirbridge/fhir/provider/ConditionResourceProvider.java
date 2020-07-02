@@ -5,13 +5,16 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.ehrbase.client.aql.query.Query;
+import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.mapping.F2ODiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
@@ -43,6 +46,115 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     private final EhrbaseService service;
 
+    private Condition getConditionFromCompo(DiagnoseComposition compo, String uid)
+    {
+        Condition condition = new Condition();
+
+        TemporalAccessor temporal;
+        String text;
+        Coding coding;
+
+        // mapping back to FHIR
+
+        // the severity code stored in openEHR is the atcode of the constraint, is not the SNOMED code
+        // this is because the OPT was designed this way and the generated code from the client lib
+        // generates a ENUM with those codes.
+
+        // severity code
+        text = ((AtiopathogeneseSchweregradDvcodedtext)compo.getDiagnose().getSchweregrad()).getSchweregradDefiningcode().getCode();
+
+        // transforms atcodes in snomed codes
+        switch (text)
+        {
+            case "at0049": // TODO: the enum classes need a method to create the Enum from the code value to avoid hardcoding
+                text = "24484000";
+                break;
+            case "at0048":
+                text = "6736007";
+                break;
+            case "at0047":
+                text = "255604002";
+                break;
+        }
+
+        coding = condition.getSeverity().addCoding();
+        coding.setCode(text);
+        coding.setSystem("http://snomed.info/sct");
+
+        // diagnose code
+        text = compo.getDiagnose().getDerDiagnoseDefiningcode().getCode();
+        coding = condition.getCode().addCoding();
+        coding.setCode(text);
+        coding.setSystem("http://fhir.de/CodeSystem/dimdi/icd-10-gm");
+
+        // date onset
+        temporal = compo.getDiagnose().getDerErstdiagnoseValue();
+        condition.getOnsetDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
+
+        // body site
+        text = compo.getDiagnose().getKorperstelleValueStructure();
+        condition.addBodySite().addCoding().setDisplay(text);
+
+
+        // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
+        condition.setId(uid);
+
+        return condition;
+    }
+
+    @Read()
+    public Condition getConditionById(@IdParam IdType identifier)
+    {
+        Condition result = new Condition();
+
+        //System.out.println(identifier.getIdPart());
+        // identifier.getValue() is the Resource/theId
+
+        Query<Record1<DiagnoseComposition>> query = Query.buildNativeQuery(
+        "SELECT c "+
+                "FROM EHR e CONTAINS COMPOSITION c "+
+                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
+                "c/uid/value = '"+ identifier.getIdPart() +"'",
+            DiagnoseComposition.class
+        );
+
+        List<Record1<DiagnoseComposition>> results;
+
+        try
+        {
+            results = service.getClient().aqlEndpoint().execute(query);
+
+            String uid = identifier.getValue();
+            DiagnoseComposition compo;
+
+            if (results.size() == 0)
+            {
+                throw new ResourceNotFoundException("Resource not found"); // causes 404
+            }
+
+            compo = results.get(0).value1();
+
+            result = getConditionFromCompo(compo, uid);
+        }
+        catch (ResourceNotFoundException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        /*
+        // ...populate...
+        retVal.addIdentifier().setSystem("urn:mrns").setValue("12345");
+        retVal.addName().setFamily("Smith").addGiven("Tester").addGiven("Q");
+        */
+
+
+        return result;
+    }
+
     @Search
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
@@ -65,7 +177,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             DiagnoseComposition.class, String.class
         );
 
-        List<Record2<DiagnoseComposition, String>> results = new ArrayList<Record2<DiagnoseComposition, String>>();
+        List<Record2<DiagnoseComposition, String>> results;
 
         try
         {
@@ -73,64 +185,14 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
             String uid;
             DiagnoseComposition compo;
-            TemporalAccessor temporal;
-            String text;
-
             Condition condition;
-            Coding coding;
 
             for (Record2<DiagnoseComposition, String> record: results)
             {
                 compo = record.value1();
                 uid = record.value2();
 
-                condition = new Condition();
-
-
-                // mapping back to FHIR
-
-                // the severity code stored in openEHR is the atcode of the constraint, is not the SNOMED code
-                // this is because the OPT was designed this way and the generated code from the client lib
-                // generates a ENUM with those codes.
-
-                // severity code
-                text = ((AtiopathogeneseSchweregradDvcodedtext)compo.getDiagnose().getSchweregrad()).getSchweregradDefiningcode().getCode();
-
-                // transforms atcodes in snomed codes
-                switch (text)
-                {
-                    case "at0049": // TODO: the enum classes need a method to create the Enum from the code value to avoid hardcoding
-                        text = "24484000";
-                    break;
-                    case "at0048":
-                        text = "6736007";
-                    break;
-                    case "at0047":
-                        text = "255604002";
-                    break;
-                }
-
-                coding = condition.getSeverity().addCoding();
-                coding.setCode(text);
-                coding.setSystem("http://snomed.info/sct");
-
-                // diagnose code
-                text = compo.getDiagnose().getDerDiagnoseDefiningcode().getCode();
-                coding = condition.getCode().addCoding();
-                coding.setCode(text);
-                coding.setSystem("http://fhir.de/CodeSystem/dimdi/icd-10-gm");
-
-                // date onset
-                temporal = compo.getDiagnose().getDerErstdiagnoseValue();
-                condition.getOnsetDateTimeType().setValue(Date.from(((OffsetDateTime)temporal).toInstant()));
-
-                // body site
-                text = compo.getDiagnose().getKorperstelleValueStructure();
-                condition.addBodySite().addCoding().setDisplay(text);
-
-
-                // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
-                condition.setId(uid);
+                condition = getConditionFromCompo(compo, uid);
 
                 result.add(condition);
             }
@@ -139,6 +201,35 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         {
             e.printStackTrace();
         }
+
+
+        // ****************************************************
+        // test if we can get partial structures from the query
+        // this is getting NPE from the server https://github.com/ehrbase/ehrbase/issues/270
+        /*
+        Query<Record2<DiagnoseEvaluation, String>> test_query = Query.buildNativeQuery(
+                "SELECT eval, c/uid/value "+
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
+                        "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
+                        "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                DiagnoseEvaluation.class, String.class
+        );
+
+        List<Record2<DiagnoseEvaluation, String>> test_results = service.getClient().aqlEndpoint().execute(test_query);
+
+        String uid;
+        DiagnoseEvaluation eval;
+
+        for (Record2<DiagnoseEvaluation, String> test_record: test_results)
+        {
+            eval = test_record.value1();
+            uid = test_record.value2();
+
+            System.out.println(eval.toString());
+            System.out.println(uid);
+        }
+        */
+        // ****************************************************
 
         return result;
     }
