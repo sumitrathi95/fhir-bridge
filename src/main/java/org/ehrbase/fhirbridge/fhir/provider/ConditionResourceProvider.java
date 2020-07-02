@@ -89,12 +89,27 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
                 // mapping back to FHIR
 
-                // FIXME: the severity code stored in openEHR is the atcode of the constaint, is not the SNOMED code
+                // the severity code stored in openEHR is the atcode of the constraint, is not the SNOMED code
                 // this is because the OPT was designed this way and the generated code from the client lib
                 // generates a ENUM with those codes.
 
                 // severity code
                 text = ((AtiopathogeneseSchweregradDvcodedtext)compo.getDiagnose().getSchweregrad()).getSchweregradDefiningcode().getCode();
+
+                // transforms atcodes in snomed codes
+                switch (text)
+                {
+                    case "at0049": // TODO: the enum classes need a method to create the Enum from the code value to avoid hardcoding
+                        text = "24484000";
+                    break;
+                    case "at0048":
+                        text = "6736007";
+                    break;
+                    case "at0047":
+                        text = "255604002";
+                    break;
+                }
+
                 coding = condition.getSeverity().addCoding();
                 coding.setCode(text);
                 coding.setSystem("http://snomed.info/sct");
