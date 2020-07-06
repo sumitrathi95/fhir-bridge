@@ -158,10 +158,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Search
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
+            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id
+            //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
     )
     {
-        System.out.println("SEARCH CONDITION! profile: " + profile);
+        System.out.println("SEARCH CONDITION! subject_id: " + subject_id);
         List<Condition> result = new ArrayList<Condition>();
 
         // *************************************************************************************

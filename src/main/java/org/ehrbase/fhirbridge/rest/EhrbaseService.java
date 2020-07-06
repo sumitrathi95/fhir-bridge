@@ -89,7 +89,6 @@ public class EhrbaseService {
     }
 
     public VersionUid saveDiagnosis(UUID ehrId, DiagnoseComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
 

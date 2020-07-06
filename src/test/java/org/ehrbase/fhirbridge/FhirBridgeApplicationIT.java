@@ -8,10 +8,9 @@ import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
+import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.QuestionnaireResponse;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.utils.EOperationOutcome;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -196,7 +195,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
         Assertions.assertNotNull(methodOutcome.getResource());
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
-
     }
 
     @Test
@@ -257,6 +255,58 @@ public class FhirBridgeApplicationIT {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
 
+    @Test
+    public void searchBodyTemp() throws IOException {
+        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
+        Bundle bundle = client.search()
+                .forResource(Observation.class)
+                .withProfile(Profile.BODY_TEMP.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .returnBundle(Bundle.class)
+                .execute();
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void searchTestRrsults() throws IOException {
+        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
+        Bundle bundle = client.search()
+                .forResource(Observation.class)
+                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .returnBundle(Bundle.class)
+                .execute();
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void searchObservationLab() throws IOException {
+        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
+        Bundle bundle = client.search()
+                .forResource(Observation.class)
+                .withProfile(Profile.OBSERVATION_LAB.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .returnBundle(Bundle.class)
+                .execute();
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void searchDiagnose() throws IOException {
+         // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
+         Bundle bundle = client.search()
+                .forResource(Condition.class)
+                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .returnBundle(Bundle.class)
+                .execute();
+
+         System.out.println("CONDITIONS: " +bundle.getTotal());
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
+    }
 
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);

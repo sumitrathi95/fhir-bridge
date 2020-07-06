@@ -66,7 +66,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     @Search
     public List<Observation> getAllObservations(
         @OptionalParam(name="_profile") UriParam profile,
-        @RequiredParam(name=Observation.SP_SUBJECT+'.'+Patient.SP_IDENTIFIER)TokenParam subject_id
+        @RequiredParam(name=Patient.SP_IDENTIFIER)TokenParam subject_id
     )
     {
         System.out.println("SEARCH OBS! "+ profile);
