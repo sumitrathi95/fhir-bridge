@@ -3,6 +3,7 @@ package org.ehrbase.fhirbridge.fhir.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -158,8 +159,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Search
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id
-            //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
+            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id,
+            @OptionalParam(name=Condition.SP_RECORDED_DATE) DateRangeParam dateRange
     )
     {
         System.out.println("SEARCH CONDITION! subject_id: " + subject_id);
@@ -170,13 +171,23 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // to a general condition.
         // *************************************************************************************
 
-        Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(
+        String aql =
             "SELECT c, c/uid/value "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
-                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
-            DiagnoseComposition.class, String.class
-        );
+            "FROM EHR e CONTAINS COMPOSITION c "+
+            "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
+            "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'";
+
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+
+            if (dateRange.getUpperBound() != null)
+                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+        }
+
+        Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(aql, DiagnoseComposition.class, String.class);
 
         List<Record2<DiagnoseComposition, String>> results;
 
