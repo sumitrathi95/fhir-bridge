@@ -1,13 +1,27 @@
 # FHIR Bridge
 
 ## Project setup
+
+### Build
 ```
-mvn install
+mvn clean install
+```
+
+### Build without running tests
+```
+mvn clean install -DskipTests
 ```
 
 ### Run the application
+
+Option 1:
 ```
 mvn spring-boot:run
+```
+
+Option 2: (update the version number accordingly)
+```
+java -jar target/fhir-bridge-1.0.0-SNAPSHOT.jar 
 ```
 
 ### Run integration tests
@@ -16,7 +30,7 @@ mvn verify
 ```
 
 
-## Mappings
+## FHIR to openEHR Mappings
 
 | FHIR Resource    | FHIR Profile                 | openEHR OPT         |
 | ---------------- | ---------------------------- | ------------------- |
@@ -37,6 +51,8 @@ mvn verify
   GET /template/adl1.4/$template_id. Raised an [issue][issue1] to check it.
 
 [issue1]: https://github.com/ehrbase/project_management/issues/273
+
+* For the Condition we don't have a FHIR profile, this case uses the native Condition resource.
 
 
 ### Mapping Resources
@@ -60,3 +76,62 @@ Note 1: 8888 is the default port of the API offered by the fhir-bridge app and t
 Note 2: it uses 8080 as default port to communicate to EHRBASE, if another port is needed, please add -e EHRBASE_PORT=NNNN
 
 Note 3: if you need to run fhir-bridge on another port please add -e SERVER_PORT=MMMM and change -p MMMM:MMMM
+
+
+## Testing FHIR operations
+
+There is an [Insomnia REST Client][insomnia] configuration in the root of the project, that contains requests to the FHIR interface.
+
+From Insomnia, import the JSON file, and you will see some requests are created for you.
+
+When you click on a request in Insomnia, you will see some parameters or URLs have a blue box, that denotes a reference to a
+value contained in another request's response payload, it helps to set values dynamically for testing without manual copy and paste.
+
+[insomnia]: https://insomnia.rest/
+
+
+### Create EHR Request (EHRBASE)
+
+Before executing the FHIR requests, one EHR should be created in EHRBASE with a specific subject_id (patient id).
+This is the "FHIR-BRIDGE create EHR in EHRBASE first!", that points to "http://localhost:8080/ehrbase/rest/openehr/v1/ehr".
+Change this URL accordingly, depending on where you have EHRBASE running, but maintain the payload.
+
+
+### Create Resource Requests (FHIR)
+
+There are four requests used to create resources using the FHIR interface. When the FHIR-bridge receives those FHIR resources,
+executes the mappings mentioned above and commits the correspondent openEHR COMPOSITIONs to EHRBASE. These requests are:
+
+ * FHIR-BRIDGE POST Body Temp
+ * FHIR-BRIDGE POST Condition
+ * FHIR-BRIDGE POST SARS COV 2
+ * FHIR-BRIDGE POST Lab Result (Observation)
+
+All those are POST requests, and the successful response should have status code 201 Created.
+
+
+### Search Resources Requests (FHIR)
+
+There are four requests used to execute the FHIR search operation over the resources mapped in the "create resources" requests.
+For the Observation search, the profile is a required parameter. For the Condition the profile is not used because we don't have 
+a profile for it (mentioned above in the "mappings" section). There is another parameter required, that is mapped to the patient
+identifier, that is the "identifier" parameter. These requests are:
+
+ * FHIR-BRIDGE test search Body Temp
+ * FHIR-BRIDGE test search Condition
+ * FHIR-BRIDGE test search SARS COV 2
+ * FHIR-BRIDGE test search Lab Result (Observation)
+ 
+All those are GET requests, and the successful response should have a status code 200 OK. The response payload is a FHIR Bundle resource.
+
+
+### Get Resource by ID Requests (FHIR)
+
+As a test we implemented a GET resource operation for the conditions, that uses the URL associated with each resource returned
+by the search operation. The response for the GET operation should be an individual resource.
+
+The GET request is:
+
+ * FHIR-BRIDGE test get Condition
+
+Right now we are mapping the COMPOSITION.uid to the FHIR resource ID, so the ID will look like this: d4090552-d85c-4828-9282-3dbabb9c4d43::local.ehrbase.org::1 
