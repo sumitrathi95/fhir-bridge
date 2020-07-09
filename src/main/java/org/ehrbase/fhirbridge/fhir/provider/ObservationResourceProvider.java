@@ -4,9 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.param.*;
 import com.ibm.icu.text.AlphabeticIndex;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record;
@@ -68,7 +66,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     public List<Observation> getAllObservations(
         @OptionalParam(name="_profile") UriParam profile,
         @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id,
-        @OptionalParam(name=Observation.SP_DATE) DateRangeParam dateRange
+        @OptionalParam(name=Observation.SP_DATE) DateRangeParam dateRange,
+        @OptionalParam(name=Observation.SP_VALUE_QUANTITY) QuantityParam qty
     )
     {
         System.out.println("SEARCH OBS! "+ profile);
@@ -92,7 +91,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             // Workaround for not getting the composition uid in the result (https://github.com/ehrbase/openEHR_SDK/issues/44)
             String aql =
                 "SELECT c, c/uid/value "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS OBSERVATION o[openEHR-EHR-OBSERVATION.body_temperature.v2] "+
                 "WHERE c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "+
                 "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'";
 
@@ -104,6 +103,35 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 if (dateRange.getUpperBound() != null)
                     aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+            }
+
+            if (qty != null)
+            {
+                ParamPrefixEnum prefix = qty.getPrefix();
+                String operator = "";
+                if (prefix == null) operator = "=";
+                else {
+                    switch (prefix) {
+                        case EQUAL:
+                            operator = "=";
+                            break;
+                        case LESSTHAN:
+                            operator = "<";
+                            break;
+                        case GREATERTHAN:
+                            operator = ">";
+                            break;
+                        case LESSTHAN_OR_EQUALS:
+                            operator = "<=";
+                            break;
+                        case GREATERTHAN_OR_EQUALS:
+                            operator = ">=";
+                            break;
+                    }
+                }
+
+                if (!operator.isBlank())
+                    aql += " AND o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude "+ operator +" "+ qty.getValue();
             }
 
             Query<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> query =
