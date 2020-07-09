@@ -17,6 +17,7 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -160,7 +161,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
             @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id,
-            @OptionalParam(name=Condition.SP_RECORDED_DATE) DateRangeParam dateRange
+            @OptionalParam(name=Condition.SP_RECORDED_DATE) DateRangeParam dateRange,
+            @OptionalParam(name=Condition.SP_CODE) TokenParam code
     )
     {
         System.out.println("SEARCH CONDITION! subject_id: " + subject_id);
@@ -173,10 +175,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
         String aql =
             "SELECT c, c/uid/value "+
-            "FROM EHR e CONTAINS COMPOSITION c "+
+            "FROM EHR e CONTAINS COMPOSITION c "+ //CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+ // FIXME: adding this makes EHRBASE to throw NPE
             "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
             "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'";
 
+        // filters
         if (dateRange != null)
         {
             // with date range we can also receive just one bound
@@ -186,6 +189,33 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             if (dateRange.getUpperBound() != null)
                 aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
         }
+
+        /* FIXME: can't do this yeat because of NPE from EHRBASE
+        if (code != null)
+        {
+            System.out.println(code.getValue());
+            String openEHRDiagnosis;
+            switch (code.getValue())
+            {
+                case "B97.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.B972.getCode();
+                    break;
+                case "U07.1":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.U071.getCode();
+                    break;
+                case "U07.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.U072.getCode();
+                    break;
+                case "B34.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.B342.getCode();
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + code.getValue());
+            }
+
+            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code = '"+ openEHRDiagnosis +"'";
+        }
+        */
 
         Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(aql, DiagnoseComposition.class, String.class);
 
@@ -221,7 +251,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         /*
         Query<Record2<DiagnoseEvaluation, String>> test_query = Query.buildNativeQuery(
                 "SELECT eval, c/uid/value "+
-                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
                         "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
                         "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
                 DiagnoseEvaluation.class, String.class
