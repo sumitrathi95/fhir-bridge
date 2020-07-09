@@ -175,7 +175,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
         String aql =
             "SELECT c, c/uid/value "+
-            "FROM EHR e CONTAINS COMPOSITION c "+ //CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+ // FIXME: adding this makes EHRBASE to throw NPE
+            "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
             "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
             "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'";
 
@@ -190,7 +190,6 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
                 aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
         }
 
-        /* FIXME: can't do this yeat because of NPE from EHRBASE
         if (code != null)
         {
             System.out.println(code.getValue());
@@ -199,24 +198,26 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             {
                 case "B97.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.B972.getCode();
-                    break;
+                break;
                 case "U07.1":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.U071.getCode();
-                    break;
+                break;
                 case "U07.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.U072.getCode();
-                    break;
+                break;
                 case "B34.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.B342.getCode();
-                    break;
+                break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + code.getValue());
             }
 
-            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code = '"+ openEHRDiagnosis +"'";
+            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
+            //aql += " WHERE eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
         }
-        */
 
+
+        // execute the query
         Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(aql, DiagnoseComposition.class, String.class);
 
         List<Record2<DiagnoseComposition, String>> results;
