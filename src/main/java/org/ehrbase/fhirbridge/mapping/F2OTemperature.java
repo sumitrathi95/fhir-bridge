@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.provider.ObservationResourceProvider;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturObservation;
@@ -16,6 +17,8 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Quantity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -26,6 +29,8 @@ import java.util.List;
  * FHIR 2 openEHR - body temperature
  */
 public class F2OTemperature {
+
+    private static final Logger logger = LoggerFactory.getLogger(F2OTemperature.class);
 
     static public IntensivmedizinischesMonitoringKorpertemperaturComposition map(Observation fhirObservation) throws Exception {
 
@@ -43,7 +48,7 @@ public class F2OTemperature {
             fhirValue = fhirObservation.getValueQuantity();
             fhirValueNumeric = fhirValue.getValue();
         } catch (Exception e) {
-            System.out.println("---> "+ e.getMessage());
+            logger.error("---> "+ e.getMessage());
         }
 
         if (fhirValueNumeric == null)

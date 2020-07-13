@@ -162,7 +162,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
     )
     {
-        System.out.println("SEARCH CONDITION! subject_id: " + subject_id);
+        logger.info("SEARCH CONDITION! subject_id: " + subject_id);
         List<Condition> result = new ArrayList<Condition>();
 
         // *************************************************************************************
@@ -266,12 +266,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // *************************************************************************************
 
         try {
-            System.out.println("----------------------------------------");
             // test map FHIR to openEHR
             DiagnoseComposition composition = F2ODiagnose.map(condition);
             //UUID ehr_id = service.createEhr(); // <<< reflections error!
             VersionUid versionUid = service.saveDiagnosis(ehr_uid, composition);
-            System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
+            logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
 
         } catch (Exception e) {
             e.printStackTrace();

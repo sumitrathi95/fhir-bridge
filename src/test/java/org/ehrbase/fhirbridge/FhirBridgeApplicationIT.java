@@ -11,11 +11,12 @@ import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.r4.utils.EOperationOutcome;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -34,6 +35,8 @@ import java.util.Date;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FhirBridgeApplicationIT {
+
+    private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
 
     @LocalServerPort
     private int port;
@@ -153,7 +156,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createCoronavirusNachweisTest() throws IOException {
 
-        System.out.println("--------------------------- createCoronavirusNAchweisTest");
+        logger.info("--------------------------- createCoronavirusNAchweisTest");
 
         // Remote terminology validation will make this resource fail because the LOINC codes are not yet there
         if (config.getFhirProperties().getValidation().getTerminology().getMode() == TerminologyMode.EMBEDDED) {
@@ -165,7 +168,7 @@ public class FhirBridgeApplicationIT {
 
             OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
 
-            System.out.println("------------------------------- " + operationOutcome.getIssue().get(0).getDiagnostics());
+            logger.info("------------------------------- " + operationOutcome.getIssue().get(0).getDiagnostics());
 
             Assertions.assertEquals(4, operationOutcome.getIssue().size());
             OperationOutcome.OperationOutcomeIssueComponent issue = operationOutcome.getIssue().get(3);
@@ -303,7 +306,7 @@ public class FhirBridgeApplicationIT {
                 .returnBundle(Bundle.class)
                 .execute();
 
-         System.out.println("CONDITIONS: " +bundle.getTotal());
+        logger.info("CONDITIONS: " +bundle.getTotal());
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }

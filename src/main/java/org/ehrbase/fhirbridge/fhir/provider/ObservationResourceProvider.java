@@ -69,7 +69,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         @RequiredParam(name=Patient.SP_IDENTIFIER)TokenParam subject_id
     )
     {
-        System.out.println("SEARCH OBS! "+ profile);
+        logger.info("SEARCH OBS! "+ profile);
         List<Observation> result = new ArrayList<Observation>();
 
         if (profile.getValue().equals(Profile.BODY_TEMP.getUrl()))
@@ -162,7 +162,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     result.add(observation);
                 }
 
-                System.out.println(results.size());
+                logger.info("Results size: "+ results.size());
             }
             catch (Exception e)
             {
@@ -213,13 +213,13 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     compo = record.value1();
                     uid = record.value2();
 
-                    /*
+                    /* not working because results are not populated when using Record
                     uid = (String)record.value(0);
                     effective_time = (TemporalAccessor)record.value(1);
                     */
-                    System.out.println(record); // org.ehrbase.client.aql.record.RecordImp
-                    System.out.println(record.values().length); // using Record instead of Record2 gives 0
-                    System.out.println(record.fields().length); // using Record instead of Record2 gives 0
+                    logger.debug(record.toString()); // org.ehrbase.client.aql.record.RecordImp
+                    logger.debug("Values size: "+ record.values().length); // using Record instead of Record2 gives 0
+                    logger.debug("Fields size: "+ record.fields().length); // using Record instead of Record2 gives 0
 
                     // Map back compo -> fhir observation
                     observation = new Observation();
@@ -262,7 +262,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     result.add(observation);
                 }
 
-                System.out.println(results.size());
+                logger.debug("Resultds size: "+ results.size());
             }
             catch (Exception e)
             {
@@ -348,7 +348,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         else
         {
-            System.out.println("Not equal "+ profile.getValue() +" "+ Profile.BODY_TEMP.getUrl());
+            logger.error("Not equal "+ profile.getValue() +" "+ Profile.BODY_TEMP.getUrl());
         }
 
         return result;
@@ -385,7 +385,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
         if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
         {
-            System.out.println(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB "+ observation.getIdentifier().get(0).getValue());
+            logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB "+ observation.getIdentifier().get(0).getValue());
 
             try
             {
@@ -393,17 +393,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 LaborbefundComposition composition = F2OLabReport.map(observation);
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveLab(ehr_uid, composition);
-                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
+                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
             }
             catch (Exception e)
             {
                 //e.printStackTrace();
-                System.out.println(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
         else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST))
         {
-            System.out.println(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
+            logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
 
             // Map CoronavirusNachweisTest to openEHR
             try {
@@ -411,16 +411,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTest(ehr_uid, composition);
-                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
+                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
             } catch (Exception e) {
                 //e.printStackTrace();
-                System.out.println(e.getMessage());
+                logger.error(e.getMessage());
             }
 
         }
         else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP))
         {
-            System.out.println(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
+            logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
 
             // Map BodyTemp to openEHR
             try
@@ -429,12 +429,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTemp(ehr_uid, composition);
-                System.out.println("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
+                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
             }
             catch (Exception e)
             {
                 //e.printStackTrace();
-                System.out.println(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 
