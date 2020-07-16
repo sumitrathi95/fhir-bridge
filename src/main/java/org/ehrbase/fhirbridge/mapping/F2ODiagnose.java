@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradChoice;
@@ -20,7 +21,9 @@ import java.util.List;
  */
 public class F2ODiagnose {
 
-    static public DiagnoseComposition map(Condition fhirCondition) throws Exception {
+    private F2ODiagnose(){}
+
+    public static DiagnoseComposition map(Condition fhirCondition) {
 
         DiagnoseComposition composition = new DiagnoseComposition();
 
@@ -42,7 +45,7 @@ public class F2ODiagnose {
         SchweregradDefiningcode openEHRSeverity;
         if (!fhirSeverity.getSystem().equalsIgnoreCase("http://snomed.info/sct"))
         {
-            throw new Exception("severity code system should be http://snomed.info/sct, found "+ fhirSeverity.getSystem());
+            throw new UnprocessableEntityException("severity code system should be http://snomed.info/sct, found "+ fhirSeverity.getSystem());
         }
         switch (fhirSeverity.getCode())
         {
@@ -56,7 +59,7 @@ public class F2ODiagnose {
                 openEHRSeverity = SchweregradDefiningcode.LEICHT;
             break;
             default:
-                throw new IllegalStateException("Unexpected value: " + fhirSeverity.getCode());
+                throw new UnprocessableEntityException("Unexpected value: " + fhirSeverity.getCode());
         }
 
         AtiopathogeneseSchweregradDvcodedtext severityCoded = new AtiopathogeneseSchweregradDvcodedtext();
@@ -70,7 +73,7 @@ public class F2ODiagnose {
         DerDiagnoseDefiningcode openEHRDiagnosis;
         if (!fhirDiagnosis.getSystem().equalsIgnoreCase("http://fhir.de/CodeSystem/dimdi/icd-10-gm"))
         {
-            throw new Exception("code.system should be http://fhir.de/CodeSystem/dimdi/icd-10-gm but found"+ fhirDiagnosis.getSystem());
+            throw new UnprocessableEntityException("code.system should be http://fhir.de/CodeSystem/dimdi/icd-10-gm but found"+ fhirDiagnosis.getSystem());
         }
         switch (fhirDiagnosis.getCode())
         {
@@ -115,11 +118,11 @@ public class F2ODiagnose {
         composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        composition.setStartTimeValue(OffsetDateTime.now());
+        composition.setStartTimeValue(fhirCondition.getRecordedDateElement().getValueAsCalendar().toZonedDateTime());
 
-// https://github.com/ehrbase/ehrbase_client_library/issues/31
-//        PartyProxy composer = new PartyIdentified();
-//        composition.setComposer(composer);
+        // https://github.com/ehrbase/ehrbase_client_library/issues/31
+        //        PartyProxy composer = new PartyIdentified();
+        //        composition.setComposer(composer);
 
         composition.setComposer(new PartySelf());
 
