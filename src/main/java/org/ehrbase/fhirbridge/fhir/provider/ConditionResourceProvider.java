@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
@@ -237,7 +238,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createCondition(@ResourceParam Condition condition) throws Exception {
+    public MethodOutcome createCondition(@ResourceParam Condition condition) {
 
         // Patient/xxx => xxx
         String subjectIdValue = null;
@@ -253,12 +254,12 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             }
             else
             {
-                logger.error("EHR for patient "+ subjectIdValue +" doesn't exists");
+                throw new ResourceNotFoundException("EHR for patient "+ subjectIdValue +" doesn't exists");
             }
         }
         catch (Exception e)
         {
-            throw new Exception("Can't get the patient ID from the resource");
+            throw new UnprocessableEntityException("Couldn't get the EHR ID", e);
         }
 
         // *************************************************************************************

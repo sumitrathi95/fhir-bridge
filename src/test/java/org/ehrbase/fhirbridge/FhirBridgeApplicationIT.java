@@ -33,7 +33,7 @@ import java.util.Date;
  * Integration Tests
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class FhirBridgeApplicationIT {
 
     private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
@@ -62,7 +62,7 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createCondition() throws IOException {
+    public void createDiagnoseCondition() throws IOException {
         Date now = new Date();
         MethodOutcome outcome = client.create()
                 .resource(getContent("classpath:/Condition/condition-example.json"))
@@ -154,7 +154,7 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createCoronavirusNachweisTest() throws IOException {
+    public void createCoronavirusLabResults() throws IOException {
 
         logger.info("--------------------------- createCoronavirusNAchweisTest");
 
@@ -242,15 +242,15 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
     }
 
-    /* FIXME: we need to use the status in the create ehr service, we are using null in the client library because the current create has an issue.
+    // FIXME: we need to use the status in the create ehr service, we are using null in the client library because the current create has an issue.
+    // for now the workaround is to use the Insomnia request to create the EHR for this patient before running the tests
     @Test
     public void testEhrExistsDoesExist()
     {
         // FIXME: this will only work if the ehr is created previously with a specific ehr_status, we currently removed
         // the ehr_status from the service.createEhr()
-        Assertions.assertTrue(service.ehrExistsBySubjectId("88a2d7db-6c78-4cd5-9610-30eb548e2e82"));
+        Assertions.assertTrue(service.ehrExistsBySubjectId("07f602e0-579e-4fe3-95af-381728bf0d49"));
     }
-    */
 
     @Test
     public void testEhrExistsDoesNotExist()
@@ -260,6 +260,12 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void searchBodyTemp() throws IOException {
+
+        // Needs at least one temp, can't rely on the tess execution order
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/Observation/observation-bodytemp-example.json"))
+                .execute();
+
         // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
@@ -272,7 +278,14 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void searchTestRrsults() throws IOException {
+    public void searchCoronavirusLabResults() throws IOException {
+
+        // Needs at least one lab result, can't rely on the tess execution order
+        // WARNING: this will fail if terminology validation is turned on
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                .execute();
+
         // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
@@ -286,6 +299,12 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void searchObservationLab() throws IOException {
+
+        // Needs at least one observation lab, can't rely on the tess execution order
+        MethodOutcome methodOutcome = client.create()
+                .resource(getContent("classpath:/Observation/observation-observationlab-example.json"))
+                .execute();
+
         // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
@@ -298,13 +317,19 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void searchDiagnose() throws IOException {
-         // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
-         Bundle bundle = client.search()
-                .forResource(Condition.class)
-                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
-                .returnBundle(Bundle.class)
+    public void searchDiagnoseCondition() throws IOException {
+
+        // Needs at least one condition, can't rely on the tess execution order
+        MethodOutcome outcome = client.create()
+                .resource(getContent("classpath:/Condition/condition-example.json"))
                 .execute();
+
+        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
+        Bundle bundle = client.search()
+            .forResource(Condition.class)
+            .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+            .returnBundle(Bundle.class)
+            .execute();
 
         logger.info("CONDITIONS: " +bundle.getTotal());
 

@@ -17,7 +17,7 @@ public class F2OSarsTestResult {
 
     private F2OSarsTestResult() {}
 
-    static public KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) {
+    public static KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) {
 
         KennzeichnungErregernachweisSARSCoV2Composition composition = new KennzeichnungErregernachweisSARSCoV2Composition();
 

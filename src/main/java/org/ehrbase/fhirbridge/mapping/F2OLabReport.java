@@ -70,7 +70,7 @@ public class F2OLabReport {
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(OffsetDateTime.now());
 
-        // https://github.com/ehrbase/ehrbase_client_library/issues/31
+        // FIXME: https://github.com/ehrbase/ehrbase_client_library/issues/31
         //        PartyProxy composer = new PartyIdentified();
         //        composition.setComposer(composer);
 
@@ -90,7 +90,7 @@ public class F2OLabReport {
 
         LaborbefundComposition composition = new LaborbefundComposition();
 
-        logger.debug("Contained size: "+ fhirDiagnosticReport.getContained().size());
+        logger.debug("Contained size: {}", fhirDiagnosticReport.getContained().size());
 
         // one contained Observation is expected
         if (fhirDiagnosticReport.getContained().size() != 1)
