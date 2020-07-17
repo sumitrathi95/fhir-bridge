@@ -41,9 +41,9 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
     public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) throws Exception {
         checkProfiles(diagnosticReport);
 
-        System.out.println(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT "+ diagnosticReport.getIdentifier().get(0).getValue());
-        System.out.println(">>>>>>>>>>>>>>>>>> CONTAINED " + diagnosticReport.getContained().size());
-        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getReference()); // Patient/XXXX
+        logger.info(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT "+ diagnosticReport.getIdentifier().get(0).getValue());
+        logger.info(">>>>>>>>>>>>>>>>>> CONTAINED " + diagnosticReport.getContained().size());
+        logger.info(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getReference()); // Patient/XXXX
         /*
         System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getType()); // null
         System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getIdentifier().getValue()); // null
@@ -80,9 +80,9 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
                 LaborbefundComposition composition = F2OLabReport.map(diagnosticReport);
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveLab(ehr_uid, composition);
-                System.out.println("Composition created with UID " + versionUid.toString() + " for FHIR profile " + Profile.BODY_TEMP);
+                logger.info("Composition created with UID " + versionUid.toString() + " for FHIR profile " + Profile.BODY_TEMP);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 

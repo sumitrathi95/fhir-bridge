@@ -15,7 +15,9 @@ import java.util.List;
  */
 public class F2OSarsTestResult {
 
-    static public KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) throws Exception {
+    private F2OSarsTestResult() {}
+
+    public static KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) {
 
         KennzeichnungErregernachweisSARSCoV2Composition composition = new KennzeichnungErregernachweisSARSCoV2Composition();
 
@@ -35,14 +37,15 @@ public class F2OSarsTestResult {
                 "41991-1",
                 "60275-5",
                 "60534-5",
-                "41458-1"
+                "41458-1",
+                "94532-9"
         );
 
 
         // ========================================================================================
         // FHIR values
         DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
-        String fhirValue = fhirObservation.getCode().getCoding().get(0).getDisplay();
+        String fhirValue = fhirObservation.getCode().getCoding().get(0).getDisplay(); // FIXME: the code and value should be assigned to the pathogen name node in the Compo, but the template binds just one specific value there (hardcoded)
         String fhirCode = fhirObservation.getCode().getCoding().get(0).getCode();
         String fhirTerminology = fhirObservation.getCode().getCoding().get(0).getSystem();
 
@@ -59,7 +62,7 @@ public class F2OSarsTestResult {
 
         evaluation.setErregernachweisInDerKlinikValue(false); // FIXME: FHIR don't have enough data to know if the pathogen was detected in the clinic.
 
-        // WARNING: Can't map with the code from FHIR since the code in the openEHR template is fixed
+        // FIXME: Can't map with the code from FHIR since the code in the openEHR template is fixed
         ErregernameDefiningcode code = ErregernameDefiningcode.COV; //new ErregernameDefiningcode(fhirValue, null, fhirTerminology, fhirCode);
         evaluation.setErregernameDefiningcode(code);
 
@@ -74,9 +77,9 @@ public class F2OSarsTestResult {
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(OffsetDateTime.now());
 
-// https://github.com/ehrbase/ehrbase_client_library/issues/31
-//        PartyProxy composer = new PartyIdentified();
-//        composition.setComposer(composer);
+        // FIXME: https://github.com/ehrbase/ehrbase_client_library/issues/31
+        //        PartyProxy composer = new PartyIdentified();
+        //        composition.setComposer(composer);
 
         composition.setComposer(new PartySelf());
 

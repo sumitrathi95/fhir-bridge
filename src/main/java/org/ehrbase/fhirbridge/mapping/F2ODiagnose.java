@@ -1,26 +1,28 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
-import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradChoice;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.SchweregradDefiningcode;
-import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
-import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.definition.KennzeichnungErregernachweisEvaluation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * FHIR 2 openEHR - Diagnose
  */
 public class F2ODiagnose {
 
-    static public DiagnoseComposition map(Condition fhirCondition) throws Exception {
+    private static final Logger logger = LoggerFactory.getLogger(F2ODiagnose.class);
+
+    private F2ODiagnose(){}
+
+    public static DiagnoseComposition map(Condition fhirCondition) {
 
         DiagnoseComposition composition = new DiagnoseComposition();
 
@@ -42,7 +44,7 @@ public class F2ODiagnose {
         SchweregradDefiningcode openEHRSeverity;
         if (!fhirSeverity.getSystem().equalsIgnoreCase("http://snomed.info/sct"))
         {
-            throw new Exception("severity code system should be http://snomed.info/sct, found "+ fhirSeverity.getSystem());
+            throw new UnprocessableEntityException("severity code system should be http://snomed.info/sct, found "+ fhirSeverity.getSystem());
         }
         switch (fhirSeverity.getCode())
         {
@@ -56,7 +58,7 @@ public class F2ODiagnose {
                 openEHRSeverity = SchweregradDefiningcode.LEICHT;
             break;
             default:
-                throw new IllegalStateException("Unexpected value: " + fhirSeverity.getCode());
+                throw new UnprocessableEntityException("Unexpected value: " + fhirSeverity.getCode());
         }
 
         AtiopathogeneseSchweregradDvcodedtext severityCoded = new AtiopathogeneseSchweregradDvcodedtext();
@@ -70,7 +72,7 @@ public class F2ODiagnose {
         DerDiagnoseDefiningcode openEHRDiagnosis;
         if (!fhirDiagnosis.getSystem().equalsIgnoreCase("http://fhir.de/CodeSystem/dimdi/icd-10-gm"))
         {
-            throw new Exception("code.system should be http://fhir.de/CodeSystem/dimdi/icd-10-gm but found"+ fhirDiagnosis.getSystem());
+            throw new UnprocessableEntityException("code.system should be http://fhir.de/CodeSystem/dimdi/icd-10-gm but found"+ fhirDiagnosis.getSystem());
         }
         switch (fhirDiagnosis.getCode())
         {
@@ -115,11 +117,21 @@ public class F2ODiagnose {
         composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        composition.setStartTimeValue(OffsetDateTime.now());
 
-// https://github.com/ehrbase/ehrbase_client_library/issues/31
-//        PartyProxy composer = new PartyIdentified();
-//        composition.setComposer(composer);
+        // check if the condition has a recorded date, if not, use the onset
+        DateTimeType aDate = fhirCondition.getRecordedDateElement();
+        logger.debug("recorded is {}", aDate);
+        if (aDate.isEmpty())
+        {
+            logger.debug("recorded date is null trying onset");
+            aDate = fhirCondition.getOnsetDateTimeType();
+            logger.debug("onset is {}", aDate);
+        }
+        composition.setStartTimeValue(aDate.getValueAsCalendar().toZonedDateTime());
+
+        // https://github.com/ehrbase/ehrbase_client_library/issues/31
+        //        PartyProxy composer = new PartyIdentified();
+        //        composition.setComposer(composer);
 
         composition.setComposer(new PartySelf());
 

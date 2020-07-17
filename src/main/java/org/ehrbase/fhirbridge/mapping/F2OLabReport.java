@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
@@ -10,6 +11,8 @@ import org.ehrbase.fhirbridge.opt.laborbefundcomposition.*;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.*;
 
 import com.nedap.archie.rm.generic.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -24,14 +27,17 @@ import static org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus.*;
  */
 public class F2OLabReport {
 
+    private static final Logger logger = LoggerFactory.getLogger(F2OLabReport.class);
+
+    private F2OLabReport() {}
+
     /**
      * this maps a single lab observation to a composition, the map(DiagnosticReport) method maps a
      * DiagnosticReport with a direct contained Observation to a composition.
-     * @param fhirObservation
-     * @return
-     * @throws Exception
+     * @param fhirObservation the FHIR Observation resource received in the API.
+     * @return the Composition defined by the laborbefund template.
      */
-    static public LaborbefundComposition map(Observation fhirObservation) throws Exception {
+    public static LaborbefundComposition map(Observation fhirObservation) {
 
         LaborbefundComposition composition = new LaborbefundComposition();
 
@@ -39,19 +45,19 @@ public class F2OLabReport {
 
         StandortJedesEreignisPointEvent resultEvent = new StandortJedesEreignisPointEvent();
         resultEvent.setTimeValue(OffsetDateTime.now()); // mandatory
-        List items = new ArrayList();
+        List<LaboranalytResultatCluster> items = new ArrayList<>();
         items.add(resultCluster);
         resultEvent.setLaboranalytResultat(items);
 
         LaborergebnisObservation resultObs = new LaborergebnisObservation();
-        List events = new ArrayList();
+        List<StandortJedesEreignisChoice> events = new ArrayList<>();
         events.add(resultEvent);
         resultObs.setJedesEreignis(events);
         resultObs.setOriginValue(OffsetDateTime.now()); // mandatory
         resultObs.setLanguage(Language.EN);
         resultObs.setSubject(new PartySelf());
 
-        List observations = new ArrayList();
+        List<LaborergebnisObservation> observations = new ArrayList<>();
         observations.add(resultObs);
         composition.setLaborergebnis(observations);
 
@@ -64,9 +70,9 @@ public class F2OLabReport {
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(OffsetDateTime.now());
 
-// https://github.com/ehrbase/ehrbase_client_library/issues/31
-//        PartyProxy composer = new PartyIdentified();
-//        composition.setComposer(composer);
+        // FIXME: https://github.com/ehrbase/ehrbase_client_library/issues/31
+        //        PartyProxy composer = new PartyIdentified();
+        //        composition.setComposer(composer);
 
         composition.setComposer(new PartySelf());
 
@@ -77,22 +83,23 @@ public class F2OLabReport {
     /**
      * this maps a DiagnosticReport with a direct contained Observation to an
      * openEHR composition generated for the Laborbefund template.
-     * @param fhirDiagnosticReport
-     * @return
-     * @throws Exception
+     * @param fhirDiagnosticReport the DiagnosticReport FHIR resource received in the API
+     * @return the Composition defined by the laborbefund template
      */
-    static public LaborbefundComposition map(DiagnosticReport fhirDiagnosticReport) throws Exception {
+    public static LaborbefundComposition map(DiagnosticReport fhirDiagnosticReport) {
 
         LaborbefundComposition composition = new LaborbefundComposition();
+
+        logger.debug("Contained size: {}", fhirDiagnosticReport.getContained().size());
 
         // one contained Observation is expected
         if (fhirDiagnosticReport.getContained().size() != 1)
         {
-            throw new Exception("One contained Observation was expected "+ fhirDiagnosticReport.getContained().size() +" were received in DiagnosticReport "+ fhirDiagnosticReport.getId());
+            throw new UnprocessableEntityException("One contained Observation was expected "+ fhirDiagnosticReport.getContained().size() +" were received in DiagnosticReport "+ fhirDiagnosticReport.getId());
         }
         if (fhirDiagnosticReport.getContained().get(0).getResourceType() != ResourceType.Observation)
         {
-            throw new Exception("One contained Observation was expected, contained is there but is not Observation, it is "+ fhirDiagnosticReport.getContained().get(0).getResourceType().toString());
+            throw new UnprocessableEntityException("One contained Observation was expected, contained is there but is not Observation, it is "+ fhirDiagnosticReport.getContained().get(0).getResourceType().toString());
         }
 
         Observation fhirObservation = (Observation)fhirDiagnosticReport.getContained().get(0);
@@ -100,7 +107,7 @@ public class F2OLabReport {
         LaboranalytResultatCluster resultCluster = mapObservation(fhirObservation);
 
         StandortJedesEreignisPointEvent resultEvent = new StandortJedesEreignisPointEvent();
-        resultEvent.setTimeValue(OffsetDateTime.now()); // mandatory
+        resultEvent.setTimeValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
         resultEvent.setLabortestBezeichnungValue(fhirDiagnosticReport.getCode().getText());
         resultEvent.setLabortestBezeichnungValueTree("test name");
         resultEvent.setSchlussfolgerungValueTree(fhirDiagnosticReport.getConclusion());
@@ -126,7 +133,7 @@ public class F2OLabReport {
         resultEvent.setGesamtteststatusDefiningcode(openEHRStatus);
         resultEvent.setGesamtteststatusValue("test status");
 
-        List items = new ArrayList();
+        List<LaboranalytResultatCluster> items = new ArrayList<>();
         items.add(resultCluster);
         resultEvent.setLaboranalytResultat(items);
 
@@ -140,37 +147,37 @@ public class F2OLabReport {
 
         LaborergebnisObservation resultObs = new LaborergebnisObservation();
 
-        List events = new ArrayList();
+        List<StandortJedesEreignisChoice> events = new ArrayList<>();
         events.add(resultEvent);
         resultObs.setJedesEreignis(events);
 
-        List testRequestDetailsList = new ArrayList();
+        List<StandortDetailsDerTestanforderungCluster> testRequestDetailsList = new ArrayList<>();
         testRequestDetailsList.add(testRequestDetails);
         resultObs.setDetailsDerTestanforderung(testRequestDetailsList);
 
-        resultObs.setOriginValue(OffsetDateTime.now()); // mandatory
-        resultObs.setLanguage(Language.EN);
+        resultObs.setOriginValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+        resultObs.setLanguage(Language.EN); // FIXME: the lang should be retrieved from the template
         resultObs.setSubject(new PartySelf());
 
 
-        List observations = new ArrayList();
+        List<LaborergebnisObservation> observations = new ArrayList<>();
         observations.add(resultObs);
         composition.setLaborergebnis(observations);
 
 
         // ======================================================================================
         // Required fields by API
-        composition.setLanguage(Language.EN);
+        composition.setLanguage(Language.EN); // FIXME: the lang should be retrieved from the template
         composition.setLocation("test");
         composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        composition.setStartTimeValue(OffsetDateTime.now());
+        composition.setStartTimeValue(fhirDiagnosticReport.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
 
 
-// https://github.com/ehrbase/ehrbase_client_library/issues/31
-//        PartyProxy composer = new PartyIdentified();
-//        composition.setComposer(composer);
+        // FIXME: https://github.com/ehrbase/ehrbase_client_library/issues/31
+        //        PartyProxy composer = new PartyIdentified();
+        //        composition.setComposer(composer);
 
         composition.setComposer(new PartySelf());
 
@@ -178,46 +185,46 @@ public class F2OLabReport {
     }
 
 
-        /**
-         * Maps a FHIR Observation to an openEHR LaboranalytResultatCluster generated from the Laborbefund template.
-         * @param fhirObservation
-         * @return
-         */
-    static private LaboranalytResultatCluster mapObservation(Observation fhirObservation) throws Exception {
+    /**
+     * Maps a FHIR Observation to an openEHR LaboranalytResultatCluster generated from the Laborbefund template.
+     * @param fhirObservation the FHIR Observation resource received in the API.
+     * @return the cluster defined in the OPT that maps to the FHIR observation
+     */
+    private static LaboranalytResultatCluster mapObservation(Observation fhirObservation) {
 
         // ========================================================================================
         // value quantity is expected
-        Quantity fhir_value = null;
-        BigDecimal fhir_value_numeric = null;
+        Quantity fhirValue = null;
+        BigDecimal fhirValueNumeric = null;
         String fhirCodeName = null;
         DateTimeType fhirEffectiveDateTime = null;
 
         try {
-            fhir_value = fhirObservation.getValueQuantity();
-            fhir_value_numeric = fhir_value.getValue();
+            fhirValue = fhirObservation.getValueQuantity();
+            fhirValueNumeric = fhirValue.getValue();
             fhirCodeName = fhirObservation.getCode().getCoding().get(0).getDisplay();
             fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
         } catch (Exception e) {
-            System.out.println("---> "+ e.getMessage());
+            throw new UnprocessableEntityException(e.getMessage());
         }
 
-        if (fhir_value_numeric == null)
+        if (fhirValueNumeric == null)
         {
-            throw new Exception("Value is required in FHIR Observation and should be Quantity");
+            throw new UnprocessableEntityException("Value is required in FHIR Observation and should be Quantity");
         }
         if (fhirEffectiveDateTime == null)
         {
-            throw new Exception("effectiveDateTime is required in FHIR Observation");
+            throw new UnprocessableEntityException("effectiveDateTime is required in FHIR Observation");
         }
         if (fhirCodeName == null)
         {
-            throw new Exception("code is required in FHIR Observation");
+            throw new UnprocessableEntityException("code is required in FHIR Observation");
         }
 
         // mapping to openEHR
         LaboranalytResultatAnalytResultatDvquantity resultValue = new LaboranalytResultatAnalytResultatDvquantity();
-        resultValue.setAnalytResultatMagnitude(fhir_value_numeric.doubleValue());
-        resultValue.setAnalytResultatUnits(fhir_value.getUnit());
+        resultValue.setAnalytResultatMagnitude(fhirValueNumeric.doubleValue());
+        resultValue.setAnalytResultatUnits(fhirValue.getUnit());
 
         // =======================================================================================
         // rest of the structure to build the composition with the value taken from FHIR

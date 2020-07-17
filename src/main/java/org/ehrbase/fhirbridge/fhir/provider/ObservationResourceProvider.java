@@ -202,6 +202,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     result.add(observation);
                 }
 
+
                 logger.info("Results: {}", results.size());
             }
             catch (Exception e)
@@ -264,13 +265,15 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     compo = record.value1();
                     uid = record.value2();
 
-                    /*
+                    /* not working because results are not populated when using Record
                     uid = (String)record.value(0);
                     effective_time = (TemporalAccessor)record.value(1);
                     */
+
                     logger.info("Record: {}", record); // org.ehrbase.client.aql.record.RecordImp
                     logger.info("Record values {}", record.values().length); // using Record instead of Record2 gives 0
                     logger.info("Record fields {}", record.fields().length); // using Record instead of Record2 gives 0
+
 
                     // Map back compo -> fhir observation
                     observation = new Observation();
@@ -312,6 +315,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     // adds observation to the result
                     result.add(observation);
                 }
+
 
                 logger.info("Results {}", results.size());
             }
@@ -470,6 +474,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             {
                 // test map FHIR to openEHR
                 LaborbefundComposition composition = F2OLabReport.map(observation);
+
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveLab(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.OBSERVATION_LAB);
@@ -487,10 +492,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             try {
                 // test map FHIR to openEHR
                 KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
+
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTest(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
             } catch (Exception e) {
+
                 logger.error(e.getMessage());
             }
 
@@ -504,8 +511,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             {
                 // test map FHIR to openEHR
                 IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
+
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTemp(ehrUid, composition);
+
                 logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
             }
             catch (Exception e)
