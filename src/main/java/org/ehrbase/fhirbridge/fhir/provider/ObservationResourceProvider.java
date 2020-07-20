@@ -6,17 +6,11 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
-import com.ibm.icu.text.AlphabeticIndex;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
-import org.ehrbase.client.aql.record.Record;
-import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
-import org.ehrbase.client.openehrclient.CompositionEndpoint;
-import org.ehrbase.client.openehrclient.OpenEhrClientConfig;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
-import org.ehrbase.client.templateprovider.FileBasedTemplateProvider;
-import org.ehrbase.client.templateprovider.TemplateProvider;
 
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
@@ -40,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,20 +50,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     @Autowired
     public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
-        super(fhirContext);
-        this.service = service;
+        super(fhirContext, service);
     }
-
-    private final EhrbaseService service;
 
     @Search
     public List<Observation> getAllObservations(
         @OptionalParam(name="_profile") UriParam profile,
-        @RequiredParam(name=Patient.SP_IDENTIFIER)TokenParam subject_id
+        @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
     )
     {
-        logger.info("SEARCH OBS! "+ profile);
-        List<Observation> result = new ArrayList<Observation>();
+        logger.info("SEARCH ONSERVATION {} ", profile);
+        List<Observation> result = new ArrayList<>();
 
         if (profile.getValue().equals(Profile.BODY_TEMP.getUrl()))
         {
@@ -82,7 +72,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
                 Query.buildNativeQuery("SELECT c FROM EHR e CONTAINS COMPOSITION c where "
                      + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
-                     + "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                     + "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                      IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
 
             List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>>();
@@ -91,14 +81,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             Query<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> query =
                     Query.buildNativeQuery("SELECT c, c/uid/value FROM EHR e CONTAINS COMPOSITION c where "
                                     + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
-                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                             IntensivmedizinischesMonitoringKorpertemperaturComposition.class, String.class);
 
-            List<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> results = new ArrayList<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>>();
+            List<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> results = new ArrayList<>();
 
             try
             {
-                results = service.getClient().aqlEndpoint().execute(query);
+                results = this.service.getClient().aqlEndpoint().execute(query);
 
                 IntensivmedizinischesMonitoringKorpertemperaturComposition compo;
                 String uid;
@@ -124,12 +114,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                     // observations [0] . events [0] . value -> observation . value
                     event = (KorpertemperaturBeliebigesEreignisPointEvent)compo.getKorpertemperatur().get(0).getBeliebigesEreignis().get(0);
-                    observation.getValueQuantity().setValue(event.getTemperaturMagnitude().doubleValue());
+                    observation.getValueQuantity().setValue(event.getTemperaturMagnitude());
                     observation.getValueQuantity().setUnit(event.getTemperaturUnits());
 
 
                     // set patient
-                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+                    observation.getSubject().setReference("Patient/"+ subjectId.getValue());
 
 
                     // set codes that come hardcoded in the inbound resources
@@ -162,7 +152,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     result.add(observation);
                 }
 
-                logger.info("Results size: "+ results.size());
+                logger.info("Results size: {}", results.size());
             }
             catch (Exception e)
             {
@@ -178,7 +168,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 "SELECT c/uid/value as uid, eval/data[at0001]/items[at0015]/value/value as effective_time "+
                 "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
                 "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'"
+                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'"
             );
 
             List<Record> results = new ArrayList<Record>();
@@ -188,12 +178,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             "SELECT c, c/uid/value "+
                     "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
                     "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
-                    "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                    "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                     KennzeichnungErregernachweisSARSCoV2Composition.class, String.class
             );
 
-            //List<Record> results = new ArrayList<Record>();
-            List<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> results = new ArrayList<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>>();
+            //List<Record> results = new ArrayList<>();
+            List<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> results = new ArrayList<>();
 
             try
             {
@@ -218,8 +208,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     effective_time = (TemporalAccessor)record.value(1);
                     */
                     logger.debug(record.toString()); // org.ehrbase.client.aql.record.RecordImp
-                    logger.debug("Values size: "+ record.values().length); // using Record instead of Record2 gives 0
-                    logger.debug("Fields size: "+ record.fields().length); // using Record instead of Record2 gives 0
+                    logger.debug("Values size: {}", record.values().length); // using Record instead of Record2 gives 0
+                    logger.debug("Fields size: {}", record.fields().length); // using Record instead of Record2 gives 0
 
                     // Map back compo -> fhir observation
                     observation = new Observation();
@@ -243,7 +233,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
 
                     // set patient
-                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+                    observation.getSubject().setReference("Patient/"+ subjectId.getValue());
 
                     observation.setStatus(Observation.ObservationStatus.FINAL);
 
@@ -262,7 +252,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     result.add(observation);
                 }
 
-                logger.debug("Resultds size: "+ results.size());
+                logger.debug("Resultds size: {}", results.size());
             }
             catch (Exception e)
             {
@@ -274,10 +264,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             Query<Record2<LaborbefundComposition, String>> query =
                 Query.buildNativeQuery("SELECT c, c/uid/value FROM EHR e CONTAINS COMPOSITION c where "
                                     + "c/archetype_details/template_id/value = 'Laborbefund' AND "
-                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                                    + "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                             LaborbefundComposition.class, String.class);
 
-            List<Record2<LaborbefundComposition, String>> results = new ArrayList<Record2<LaborbefundComposition, String>>();
+            List<Record2<LaborbefundComposition, String>> results = new ArrayList<>();
 
             try
             {
@@ -329,7 +319,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     observation.getCode().setText("Kreatinin");
 
                     // set patient
-                    observation.getSubject().setReference("Patient/"+ subject_id.getValue());
+                    observation.getSubject().setReference("Patient/"+ subjectId.getValue());
 
                     observation.setStatus(Observation.ObservationStatus.FINAL);
 
@@ -348,7 +338,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         else
         {
-            logger.error("Not equal "+ profile.getValue() +" "+ Profile.BODY_TEMP.getUrl());
+            logger.error("Template not supported {}", profile.getValue());
         }
 
         return result;
@@ -356,86 +346,53 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createObservation(@ResourceParam Observation observation) throws Exception
+    public MethodOutcome createObservation(@ResourceParam Observation observation)
     {
         checkProfiles(observation);
 
-        // Patient/xxx => xxx
-        String subjectIdValue = null;
-        String ehr_id = null;
-        UUID ehr_uid = null;
+        // will throw exceptions and block the request if the patient doesn't have an EHR
+        UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split("/")[1]);
+
         try
         {
-            subjectIdValue = observation.getSubject().getReference().split("/")[1];
-            ehr_id = service.ehrIdBySubjectId(subjectIdValue);
-            if (ehr_id != null)
+            if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
             {
-                ehr_uid = UUID.fromString(ehr_id);
+                logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB {}", observation.getIdentifier().get(0).getValue());
+
+                // test map FHIR to openEHR
+                LaborbefundComposition composition = F2OLabReport.map(observation);
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveLab(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.OBSERVATION_LAB);
             }
-            else
+            else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST))
             {
-                logger.error("EHR for patient "+ subjectIdValue +" doesn't exists");
-                // TODO: check in HAPI FHIR how to return 404
+                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
+
+                // Map CoronavirusNachweisTest to openEHR
+
+                // test map FHIR to openEHR
+                KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveTest(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
+                
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
+
+                // Map BodyTemp to openEHR
+
+                // test map FHIR to openEHR
+                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveTemp(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
             }
         }
         catch (Exception e)
         {
-            throw new Exception("Can't get the patient ID from the resource");
-        }
-
-        if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
-        {
-            logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB "+ observation.getIdentifier().get(0).getValue());
-
-            try
-            {
-                // test map FHIR to openEHR
-                LaborbefundComposition composition = F2OLabReport.map(observation);
-                //UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveLab(ehr_uid, composition);
-                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
-            }
-            catch (Exception e)
-            {
-                //e.printStackTrace();
-                logger.error(e.getMessage());
-            }
-        }
-        else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST))
-        {
-            logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
-
-            // Map CoronavirusNachweisTest to openEHR
-            try {
-                // test map FHIR to openEHR
-                KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
-                //UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTest(ehr_uid, composition);
-                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
-            } catch (Exception e) {
-                //e.printStackTrace();
-                logger.error(e.getMessage());
-            }
-
-        }
-        else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP))
-        {
-            logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
-
-            // Map BodyTemp to openEHR
-            try
-            {
-                // test map FHIR to openEHR
-                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
-                //UUID ehr_id = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTemp(ehr_uid, composition);
-                logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.BODY_TEMP);
-            }
-            catch (Exception e)
-            {
-                //e.printStackTrace();
-                logger.error(e.getMessage());
-            }
+            throw new UnprocessableEntityException("There was a problem saving the composition", e);
         }
 
         observation.setId(new IdType(1L));

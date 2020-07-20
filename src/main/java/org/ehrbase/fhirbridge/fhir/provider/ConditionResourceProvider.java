@@ -41,11 +41,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     @Autowired
     public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service) {
-        super(fhirContext);
-        this.service = service;
+        super(fhirContext, service);
     }
-
-    private final EhrbaseService service;
 
     private Condition getConditionFromCompo(DiagnoseComposition compo, String uid)
     {
@@ -76,6 +73,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             case "at0047":
                 text = "255604002";
                 break;
+            // TODO: define what to do when the code is not mappeable
         }
 
         coding = condition.getSeverity().addCoding();
@@ -108,7 +106,6 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     {
         Condition result = new Condition();
 
-        //System.out.println(identifier.getIdPart());
         // identifier.getValue() is the Resource/theId
 
         Query<Record1<DiagnoseComposition>> query = Query.buildNativeQuery(
@@ -128,7 +125,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             String uid = identifier.getValue();
             DiagnoseComposition compo;
 
-            if (results.size() == 0)
+            if (results.isEmpty())
             {
                 throw new ResourceNotFoundException("Resource not found"); // causes 404
             }
@@ -159,12 +156,12 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Search
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subject_id
-            //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subject_id
+            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
+            //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subjectId
     )
     {
-        logger.info("SEARCH CONDITION! subject_id: " + subject_id);
-        List<Condition> result = new ArrayList<Condition>();
+        logger.info("SEARCH CONDITION! subjectId: {}", subjectId);
+        List<Condition> result = new ArrayList<>();
 
         // *************************************************************************************
         // We don't have a profile to ask for, we will try to map from a Diagnose composition
@@ -175,7 +172,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             "SELECT c, c/uid/value "+
                 "FROM EHR e CONTAINS COMPOSITION c "+
                 "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
             DiagnoseComposition.class, String.class
         );
 
@@ -213,7 +210,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
                 "SELECT eval, c/uid/value "+
                         "FROM EHR e CONTAINS COMPOSITION c CONTAINS eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
                         "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                        "e/ehr_status/subject/external_ref/id/value = '"+ subject_id.getValue() +"'",
+                        "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                 DiagnoseEvaluation.class, String.class
         );
 
@@ -240,27 +237,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @SuppressWarnings("unused")
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
 
-        // Patient/xxx => xxx
-        String subjectIdValue = null;
-        String ehr_id = null;
-        UUID ehr_uid = null;
-        try
-        {
-            subjectIdValue = condition.getSubject().getReference().split("/")[1];
-            ehr_id = service.ehrIdBySubjectId(subjectIdValue);
-            if (ehr_id != null)
-            {
-                ehr_uid = UUID.fromString(ehr_id);
-            }
-            else
-            {
-                throw new ResourceNotFoundException("EHR for patient "+ subjectIdValue +" doesn't exists");
-            }
-        }
-        catch (Exception e)
-        {
-            throw new UnprocessableEntityException("Couldn't get the EHR ID", e);
-        }
+        // will throw exceptions and block the request if the patient doesn't have an EHR
+        UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split("/")[1]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
@@ -270,8 +248,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             // test map FHIR to openEHR
             DiagnoseComposition composition = F2ODiagnose.map(condition);
             //UUID ehr_id = service.createEhr(); // <<< reflections error!
-            VersionUid versionUid = service.saveDiagnosis(ehr_uid, composition);
-            logger.info("Composition created with UID "+ versionUid.toString() +" for FHIR profile "+ Profile.OBSERVATION_LAB);
+            VersionUid versionUid = service.saveDiagnosis(ehrUid, composition);
+            logger.info("Composition created with UID {}", versionUid);
 
         } catch (Exception e) {
             e.printStackTrace();

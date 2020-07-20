@@ -29,10 +29,10 @@ public class EhrbaseService {
         return client.ehrEndpoint().createEhr();
     }
 
-    public boolean ehrExistsBySubjectId(String subject_id)
+    public boolean ehrExistsBySubjectId(String subjectId)
     {
-        Query<Record1<String>> query = Query.buildNativeQuery("SELECT e/ehr_id/value FROM EHR e WHERE e/ehr_status/subject/external_ref/id/value = '"+ subject_id +"'", String.class);
-        List<Record1<String>> results = new ArrayList<Record1<String>>();
+        Query<Record1<String>> query = Query.buildNativeQuery("SELECT e/ehr_id/value FROM EHR e WHERE e/ehr_status/subject/external_ref/id/value = '"+ subjectId +"'", String.class);
+        List<Record1<String>> results = new ArrayList<>();
         try {
             results = client.aqlEndpoint().execute(query);
         } catch (Exception e)
@@ -56,17 +56,17 @@ public class EhrbaseService {
         }
         */
 
-        return results.size() > 0;
+        return !results.isEmpty();
     }
 
     public DefaultRestClient getClient() {
         return client;
     }
 
-    public String ehrIdBySubjectId(String subject_id)
+    public String ehrIdBySubjectId(String subjectId)
     {
-        Query<Record1<String>> query = Query.buildNativeQuery("SELECT e/ehr_id/value FROM EHR e WHERE e/ehr_status/subject/external_ref/id/value = '"+ subject_id +"'", String.class);
-        List<Record1<String>> results = new ArrayList<Record1<String>>();
+        Query<Record1<String>> query = Query.buildNativeQuery("SELECT e/ehr_id/value FROM EHR e WHERE e/ehr_status/subject/external_ref/id/value = '"+ subjectId +"'", String.class);
+        List<Record1<String>> results = new ArrayList<>();
         try {
             results = client.aqlEndpoint().execute(query);
         } catch (Exception e)
@@ -74,7 +74,7 @@ public class EhrbaseService {
             e.printStackTrace();
         }
 
-        if (results.size() > 0)
+        if (!results.isEmpty())
             return results.get(0).value1();
         else
             return null;
