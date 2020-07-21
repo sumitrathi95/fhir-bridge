@@ -157,7 +157,6 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
             @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
-            //@RequiredParam(name=Condition.SP_SUBJECT+'.'+ Patient.SP_IDENTIFIER) TokenParam subjectId
     )
     {
         logger.info("SEARCH CONDITION! subjectId: {}", subjectId);
@@ -190,6 +189,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             {
                 compo = record.value1();
                 uid = record.value2();
+
+                logger.debug("compo.uid is {}", compo.getVersionUid());
 
                 condition = getConditionFromCompo(compo, uid);
 

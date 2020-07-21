@@ -378,7 +378,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
             }
             else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
-                
+
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
 
                 // Map BodyTemp to openEHR
