@@ -6,6 +6,9 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -13,9 +16,11 @@ import java.util.List;
 /**
  * FHIR 2 openEHR - SARS COV2 lab result
  */
-public class F2OSarsTestResult {
+public class FhirSarsTestResultOpenehrPathogenDetection {
 
-    private F2OSarsTestResult() {}
+    private static final Logger logger = LoggerFactory.getLogger(FhirSarsTestResultOpenehrPathogenDetection.class);
+
+    private FhirSarsTestResultOpenehrPathogenDetection() {}
 
     public static KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) {
 
@@ -84,5 +89,10 @@ public class F2OSarsTestResult {
         composition.setComposer(new PartySelf());
 
         return composition;
+    }
+    
+    public static Observation map(KennzeichnungErregernachweisSARSCoV2Composition compo)
+    {
+
     }
 }

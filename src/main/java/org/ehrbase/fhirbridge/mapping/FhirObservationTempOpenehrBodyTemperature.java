@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisChoice;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
@@ -10,24 +11,26 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Date.from;
 
 /**
  * FHIR 2 openEHR - body temperature
  */
-public class F2OTemperature {
+public class FhirObservationTempOpenehrBodyTemperature {
 
-    private static final Logger logger = LoggerFactory.getLogger(F2OTemperature.class);
+    private static final Logger logger = LoggerFactory.getLogger(FhirObservationTempOpenehrBodyTemperature.class);
 
-    private F2OTemperature() {}
+    private FhirObservationTempOpenehrBodyTemperature() {}
 
     public static IntensivmedizinischesMonitoringKorpertemperaturComposition map(Observation fhirObservation) {
 
@@ -87,5 +90,54 @@ public class F2OTemperature {
         composition.setComposer(new PartySelf());
 
         return composition;
+    }
+
+    public static Observation map(IntensivmedizinischesMonitoringKorpertemperaturComposition compo)
+    {
+        // Map back compo -> fhir observation
+        Observation observation = new Observation();
+
+        TemporalAccessor temporal;
+        KorpertemperaturBeliebigesEreignisPointEvent event;
+        Coding coding;
+
+
+        // observations [0] . origin => effective_time
+        temporal = compo.getKorpertemperatur().get(0).getOriginValue();
+        observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)temporal).toInstant()));
+
+
+        // observations [0] . events [0] . value -> observation . value
+        event = (KorpertemperaturBeliebigesEreignisPointEvent)compo.getKorpertemperatur().get(0).getBeliebigesEreignis().get(0);
+        observation.getValueQuantity().setValue(event.getTemperaturMagnitude());
+        observation.getValueQuantity().setUnit(event.getTemperaturUnits());
+
+
+        // set patient
+        //observation.getSubject().setReference("Patient/"+ subjectId.getValue());
+
+
+        // set codes that come hardcoded in the inbound resources
+        observation.getCategory().add(new CodeableConcept());
+        coding = observation.getCategory().get(0).addCoding();
+        coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
+        coding.setCode("vital-signs");
+
+        coding = observation.getCode().addCoding();
+        coding.setSystem("http://loing.org");
+        coding.setCode("8310-5");
+
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+
+        observation.getMeta().addProfile(Profile.BODY_TEMP.getUrl());
+
+        observation.setId("bodytemp");
+
+
+        // FIXME: all FHIR resources need an ID, currently we are using the compo.uid as the resource ID,
+        // this is a workaround, might not work on all cases.
+        observation.setId(compo.getVersionUid().toString());
+
+        return observation;
     }
 }

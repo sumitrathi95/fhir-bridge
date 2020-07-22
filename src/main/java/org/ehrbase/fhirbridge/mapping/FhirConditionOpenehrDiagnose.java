@@ -190,7 +190,8 @@ public class FhirConditionOpenehrDiagnose {
         text = compo.getDiagnose().getKorperstelleValueStructure();
         condition.addBodySite().addCoding().setDisplay(text);
 
-        // All FHIR resources need an ID, currently we are using the compo.uid as the resource ID
+        // FIXME: all FHIR resources need an ID, currently we are using the compo.uid as the resource ID,
+        // this is a workaround, might not work on all cases.
         condition.setId(compo.getVersionUid().toString());
 
         return condition;

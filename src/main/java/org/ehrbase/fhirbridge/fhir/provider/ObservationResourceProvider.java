@@ -6,13 +6,14 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
+import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.F2OLabReport;
 import org.ehrbase.fhirbridge.mapping.F2OSarsTestResult;
-import org.ehrbase.fhirbridge.mapping.F2OTemperature;
+import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
@@ -55,7 +56,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         @OptionalParam(name=Observation.SP_VALUE_QUANTITY) QuantityParam qty
     )
     {
-        logger.info("SEARCH ONSERVATION {} ", profile);
+        logger.info("SEARCH OBSERVATION {} ", profile);
         List<Observation> result = new ArrayList<>();
 
         if (profile.getValue().equals(Profile.BODY_TEMP.getUrl()))
@@ -75,7 +76,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             */
             // Workaround for not getting the composition uid in the result (https://github.com/ehrbase/openEHR_SDK/issues/44)
             String aql =
-                "SELECT c, c/uid/value "+
+                "SELECT c "+
                 "FROM EHR e CONTAINS COMPOSITION c CONTAINS OBSERVATION o[openEHR-EHR-OBSERVATION.body_temperature.v2] "+
                 "WHERE c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "+
                 "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
@@ -121,72 +122,24 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     aql += " AND o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude "+ operator +" "+ qty.getValue();
             }
 
-            Query<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> query =
-                Query.buildNativeQuery(aql, IntensivmedizinischesMonitoringKorpertemperaturComposition.class, String.class);
+            Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
+                Query.buildNativeQuery(aql, IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
 
-            List<Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String>> results = new ArrayList<>();
+            List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<>();
 
             try
             {
                 results = this.service.getClient().aqlEndpoint().execute(query);
 
                 IntensivmedizinischesMonitoringKorpertemperaturComposition compo;
-                String uid;
                 Observation observation;
-                TemporalAccessor temporal;
-                KorpertemperaturBeliebigesEreignisPointEvent event;
-                Coding coding;
 
                 //for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
-                for (Record2<IntensivmedizinischesMonitoringKorpertemperaturComposition, String> record: results)
+                for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
                 {
                     compo = record.value1();
-                    uid = record.value2();
 
-                    // Map back compo -> fhir observation
-                    observation = new Observation();
-
-
-                    // observations [0] . origin => effective_time
-                    temporal = compo.getKorpertemperatur().get(0).getOriginValue();
-                    observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)temporal).toInstant()));
-
-
-                    // observations [0] . events [0] . value -> observation . value
-                    event = (KorpertemperaturBeliebigesEreignisPointEvent)compo.getKorpertemperatur().get(0).getBeliebigesEreignis().get(0);
-                    observation.getValueQuantity().setValue(event.getTemperaturMagnitude());
-                    observation.getValueQuantity().setUnit(event.getTemperaturUnits());
-
-
-                    // set patient
-                    observation.getSubject().setReference("Patient/"+ subjectId.getValue());
-
-
-                    // set codes that come hardcoded in the inbound resources
-                    observation.getCategory().add(new CodeableConcept());
-                    coding = observation.getCategory().get(0).addCoding();
-                    coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
-                    coding.setCode("vital-signs");
-
-                    coding = observation.getCode().addCoding();
-                    coding.setSystem("http://loing.org");
-                    coding.setCode("8310-5");
-
-                    observation.setStatus(Observation.ObservationStatus.FINAL);
-
-                    observation.getMeta().addProfile(Profile.BODY_TEMP.getUrl());
-
-                    observation.setId("bodytemp");
-
-
-
-                    // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
-                    // and if we return FHIR resources, the IDs we return should be consistent for instance if we want to
-                    // provide a get by ID operation via the FHIR API.
-                    //observation.setId(UUID.randomUUID().toString());
-                    observation.setId(uid); // workaround
-                    //observation.setId(compo.getVersionUid().toString()); // the versionUid is null for the compo
-                    //logger.info(compo.getVersionUid()); // this is nul...
+                    observation = FhirObservationTempOpenehrBodyTemperature.map(compo);
 
                     // adds observation to the result
                     result.add(observation);
@@ -466,10 +419,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
 
-                // Map BodyTemp to openEHR
-
-                // test map FHIR to openEHR
-                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = F2OTemperature.map(observation);
+                // FHIR Observation Temp => openEHR COMPOSITION
+                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = FhirObservationTempOpenehrBodyTemperature.map(observation);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTemp(ehrUid, composition);
