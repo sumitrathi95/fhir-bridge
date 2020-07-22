@@ -3,27 +3,24 @@ package org.ehrbase.fhirbridge.fhir.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.mapping.F2ODiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
-import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
-import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
@@ -156,7 +153,9 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Search
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
+            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId,
+            @OptionalParam(name=Condition.SP_RECORDED_DATE) DateRangeParam dateRange,
+            @OptionalParam(name=Condition.SP_CODE) TokenParam code
     )
     {
         logger.info("SEARCH CONDITION! subjectId: {}", subjectId);
@@ -167,13 +166,52 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // to a general condition.
         // *************************************************************************************
 
-        Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(
+        String aql =
             "SELECT c, c/uid/value "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
-                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
-            DiagnoseComposition.class, String.class
-        );
+            "FROM EHR e CONTAINS COMPOSITION c "+
+            "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
+            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+        // filters
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+
+            if (dateRange.getUpperBound() != null)
+                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+        }
+
+        if (code != null)
+        {
+            logger.info("code {}", code.getValue());
+            String openEHRDiagnosis;
+            switch (code.getValue())
+            {
+                case "B97.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.B972.getCode();
+                break;
+                case "U07.1":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.U071.getCode();
+                break;
+                case "U07.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.U072.getCode();
+                break;
+                case "B34.2":
+                    openEHRDiagnosis = DerDiagnoseDefiningcode.B342.getCode();
+                break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + code.getValue());
+            }
+
+            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
+            //aql += " WHERE eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
+        }
+
+
+        // execute the query
+        Query<Record2<DiagnoseComposition, String>> query = Query.buildNativeQuery(aql, DiagnoseComposition.class, String.class);
 
         List<Record2<DiagnoseComposition, String>> results;
 
@@ -190,7 +228,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
                 compo = record.value1();
                 uid = record.value2();
 
-                logger.debug("compo.uid is {}", compo.getVersionUid());
+                logger.info("compo.uid is {}", compo.getVersionUid()); // TODO: now the uid is not null, we can change the queries!
 
                 condition = getConditionFromCompo(compo, uid);
 
@@ -209,7 +247,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         /*
         Query<Record2<DiagnoseEvaluation, String>> test_query = Query.buildNativeQuery(
                 "SELECT eval, c/uid/value "+
-                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.problem_diagnosis.v1] "+
                         "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
                         "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
                 DiagnoseEvaluation.class, String.class

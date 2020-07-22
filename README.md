@@ -124,6 +124,10 @@ identifier, that is the "identifier" parameter. These requests are:
  
 All those are GET requests, and the successful response should have a status code 200 OK. The response payload is a FHIR Bundle resource.
 
+For the Condition search we added a date range filter which allows to send a lower and upper boundary, just the lower, just
+the upper or none and the search will filter accordingly. That uses the 'recorded-date' parameter (check the request in Insomnia). 
+
+For the Observation search we added a date range filter using the 'date' parameter, also updated the Insomnia requests to show how that works.
 
 ### Get Resource by ID Requests (FHIR)
 
