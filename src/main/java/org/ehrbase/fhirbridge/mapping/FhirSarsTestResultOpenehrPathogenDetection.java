@@ -1,17 +1,23 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.definition.KennzeichnungErregernachweisEvaluation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Date.from;
 
 /**
  * FHIR 2 openEHR - SARS COV2 lab result
@@ -90,9 +96,45 @@ public class FhirSarsTestResultOpenehrPathogenDetection {
 
         return composition;
     }
-    
+
     public static Observation map(KennzeichnungErregernachweisSARSCoV2Composition compo)
     {
+        Observation observation = new Observation();
 
+        TemporalAccessor temporal;
+        KorpertemperaturBeliebigesEreignisPointEvent event;
+        Coding coding;
+
+        // evaluation time -> effective_time
+        temporal = compo.getKennzeichnungErregernachweis().getZeitpunktDerKennzeichnungValue();
+        observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)temporal).toInstant()));
+
+        // FIXME: cant map the code back because the compo has a boolean derived from the code in the FHIR resource
+        if (compo.getKennzeichnungErregernachweis().isErregernachweisValue())
+        {
+            // This is not right, could not the value that came initially in the FHIR observation
+            coding = observation.getCode().addCoding();
+            coding.setSystem("http://loing.org");
+            coding.setCode("94532-9");
+            coding.setDisplay("SARS coronavirus+SARS-like coronavirus+SARS coronavirus 2+MERS coronavirus RNA [Presence] in Respiratory specimen by NAA with probe detection");
+        }
+
+
+        // set patient
+        //observation.getSubject().setReference("Patient/"+ subjectId.getValue());
+
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+
+        observation.getMeta().addProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl());
+
+
+        // TODO: we are also not storing referenceRange
+
+
+        // FIXME: all FHIR resources need an ID, currently we are using the compo.uid as the resource ID,
+        // this is a workaround, might not work on all cases.
+        observation.setId(compo.getVersionUid().toString()); // workaround
+
+        return observation;
     }
 }

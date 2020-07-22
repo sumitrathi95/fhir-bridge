@@ -12,8 +12,8 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.F2OLabReport;
-import org.ehrbase.fhirbridge.mapping.F2OSarsTestResult;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
+import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
@@ -168,7 +168,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             */
 
             String aql =
-                "SELECT c, c/uid/value "+
+                "SELECT c "+
                 "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
                 "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
                 "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
@@ -183,11 +183,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
             }
 
-            Query<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> query =
-                Query.buildNativeQuery(aql, KennzeichnungErregernachweisSARSCoV2Composition.class, String.class);
+            Query<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> query =
+                Query.buildNativeQuery(aql, KennzeichnungErregernachweisSARSCoV2Composition.class);
 
             //List<Record> results = new ArrayList<Record>();
-            List<Record2<KennzeichnungErregernachweisSARSCoV2Composition, String>> results = new ArrayList<>();
+            List<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> results = new ArrayList<>();
 
             try
             {
@@ -197,15 +197,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 KennzeichnungErregernachweisSARSCoV2Composition compo;
 
                 Observation observation;
-                TemporalAccessor temporal;
-                KorpertemperaturBeliebigesEreignisPointEvent event;
-                Coding coding;
 
-                for (Record2<KennzeichnungErregernachweisSARSCoV2Composition, String> record: results)
+                for (Record1<KennzeichnungErregernachweisSARSCoV2Composition> record: results)
                 //for (Record record: results)
                 {
                     compo = record.value1();
-                    uid = record.value2();
 
                     /* not working because results are not populated when using Record
                     uid = (String)record.value(0);
@@ -217,41 +213,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                     logger.info("Record fields {}", record.fields().length); // using Record instead of Record2 gives 0
 
 
-                    // Map back compo -> fhir observation
-                    observation = new Observation();
-
-
-                    // mapping back to FHIR
-
-                    // evaluation time -> effective_time
-                    temporal = compo.getKennzeichnungErregernachweis().getZeitpunktDerKennzeichnungValue();
-                    observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)temporal).toInstant()));
-
-                    // FIXME: cant map the code back because the compo has a boolean derived from the code in the FHIR resource
-                    if (compo.getKennzeichnungErregernachweis().isErregernachweisValue())
-                    {
-                        // This is not right, could not the value that came initially in the FHIR observation
-                        coding = observation.getCode().addCoding();
-                        coding.setSystem("http://loing.org");
-                        coding.setCode("94532-9");
-                        coding.setDisplay("SARS coronavirus+SARS-like coronavirus+SARS coronavirus 2+MERS coronavirus RNA [Presence] in Respiratory specimen by NAA with probe detection");
-                    }
-
-
-                    // set patient
-                    observation.getSubject().setReference("Patient/"+ subjectId.getValue());
-
-                    observation.setStatus(Observation.ObservationStatus.FINAL);
-
-                    observation.getMeta().addProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl());
-
-
-                    // FIXME: we are also not storing referenceRange
-
-
-                    // FIXME: all FHIR resources need an ID, we are not storing specific IDs for the observations in openEHR,
-                    observation.setId(uid); // workaround
-                    //observation.setId(UUID.randomUUID().toString());
+                    // COMPOSITION => Coronavirus Lab Result Observation
+                    observation = FhirSarsTestResultOpenehrPathogenDetection.map(compo);
 
 
                     // adds observation to the result
@@ -409,7 +372,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
 
                 // test map FHIR to openEHR
-                KennzeichnungErregernachweisSARSCoV2Composition composition = F2OSarsTestResult.map(observation);
+                KennzeichnungErregernachweisSARSCoV2Composition composition = FhirSarsTestResultOpenehrPathogenDetection.map(observation);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTest(ehrUid, composition);
