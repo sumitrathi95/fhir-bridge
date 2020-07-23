@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
@@ -38,6 +39,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     }
 
     @Read()
+    @SuppressWarnings("unused")
     public Condition getConditionById(@IdParam IdType identifier)
     {
         Condition result = new Condition();
@@ -89,6 +91,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     }
 
     @Search
+    @SuppressWarnings("unused")
     public List<Condition> getAllConditions(
             @OptionalParam(name="_profile") UriParam profile,
             @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId,
@@ -174,7 +177,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            throw new InternalErrorException("There was a problem retrieving the results", e);
         }
 
 

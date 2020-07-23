@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
+import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
@@ -16,20 +17,22 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Date.from;
 import static org.hl7.fhir.r4.model.DiagnosticReport.*;
 import static org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus.*;
 
 /**
  * FHIR to openEHR - Laboratory report
  */
-public class F2OLabReport {
+public class FhirDiagnosticReportOpenehrLabResults {
 
-    private static final Logger logger = LoggerFactory.getLogger(F2OLabReport.class);
+    private static final Logger logger = LoggerFactory.getLogger(FhirDiagnosticReportOpenehrLabResults.class);
 
-    private F2OLabReport() {}
+    private FhirDiagnosticReportOpenehrLabResults() {}
 
     /**
      * this maps a single lab observation to a composition, the map(DiagnosticReport) method maps a
@@ -237,5 +240,55 @@ public class F2OLabReport {
         resultCluster.setZeitpunktErgebnisStatusValueName("Result status time");
 
         return resultCluster;
+    }
+
+    public static Observation map(LaborbefundComposition compo)
+    {
+        Observation observation = new Observation();
+
+        TemporalAccessor temporal;
+        Coding coding;
+
+        LaboranalytResultatCluster cluster = ((StandortJedesEreignisPointEvent)compo.getLaborergebnis().get(0).getJedesEreignis().get(0)).getLaboranalytResultat().get(0);
+
+        // cluster . time -> observation . effective_date
+        temporal = cluster.getZeitpunktErgebnisStatusValue();
+        observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)temporal).toInstant()));
+
+        // cluster . value -> observation . value
+        LaboranalytResultatAnalytResultatDvquantity value = ((LaboranalytResultatAnalytResultatDvquantity)cluster.getAnalytResultat());
+        observation.getValueQuantity().setValue(value.getAnalytResultatMagnitude());
+        observation.getValueQuantity().setUnit(value.getAnalytResultatUnits());
+        observation.getValueQuantity().setSystem("http://unitsofmeasure.org");
+        observation.getValueQuantity().setCode(value.getAnalytResultatUnits());
+
+        // set codes that come hardcoded in the inbound resources
+
+        // observation . category
+        observation.getCategory().add(new CodeableConcept());
+        coding = observation.getCategory().get(0).addCoding();
+        coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
+        coding.setCode("laboratory");
+        coding = observation.getCategory().get(0).addCoding();
+        coding.setSystem("http://loing.org");
+        coding.setCode("26436-6");
+
+        // observation . code
+        coding = observation.getCode().addCoding();
+        coding.setSystem("http://loing.org");
+        coding.setCode("59826-8");
+        coding.setDisplay("Creatinine [Moles/volume] in Blood");
+        observation.getCode().setText("Kreatinin");
+
+        // set patient
+        //observation.getSubject().setReference("Patient/"+ subjectId.getValue());
+
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+
+        observation.getMeta().addProfile(Profile.OBSERVATION_LAB.getUrl());
+
+        observation.setId(compo.getVersionUid().toString());
+
+        return observation;
     }
 }
