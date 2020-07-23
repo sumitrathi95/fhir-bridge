@@ -14,7 +14,6 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;

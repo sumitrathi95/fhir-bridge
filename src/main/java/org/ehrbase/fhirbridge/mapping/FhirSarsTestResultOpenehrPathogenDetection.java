@@ -11,7 +11,6 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;

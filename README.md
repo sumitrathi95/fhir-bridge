@@ -80,7 +80,8 @@ Note 3: if you need to run fhir-bridge on another port please add -e SERVER_PORT
 
 ## Testing FHIR operations
 
-There is an [Insomnia REST Client][insomnia] configuration in the root of the project, that contains requests to the FHIR interface.
+There is an [Insomnia REST Client][insomnia] configuration in the "src/test/resources/Insomnia_YYYY-MM-DD.json" file project,
+that contains requests to test the FHIR interface.
 
 From Insomnia, import the JSON file, and you will see some requests are created for you.
 
@@ -93,7 +94,7 @@ value contained in another request's response payload, it helps to set values dy
 ### Create EHR Request (EHRBASE)
 
 Before executing the FHIR requests, one EHR should be created in EHRBASE with a specific subject_id (patient id).
-This is the "FHIR-BRIDGE create EHR in EHRBASE first!", that points to "http://localhost:8080/ehrbase/rest/openehr/v1/ehr".
+This is the "POST ehr first!", that points to "http://localhost:8080/ehrbase/rest/openehr/v1/ehr".
 Change this URL accordingly, depending on where you have EHRBASE running, but maintain the payload.
 
 

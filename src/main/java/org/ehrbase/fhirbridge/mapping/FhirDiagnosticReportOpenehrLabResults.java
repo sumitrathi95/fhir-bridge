@@ -10,20 +10,15 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.*;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.*;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.*;
-
 import com.nedap.archie.rm.generic.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.util.Date.from;
-import static org.hl7.fhir.r4.model.DiagnosticReport.*;
-import static org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus.*;
 
 /**
  * FHIR to openEHR - Laboratory report
