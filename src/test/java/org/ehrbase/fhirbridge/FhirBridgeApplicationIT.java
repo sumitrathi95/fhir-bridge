@@ -5,6 +5,11 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
+import com.nedap.archie.rm.datavalues.DvText;
+import com.nedap.archie.rm.ehr.EhrStatus;
+import com.nedap.archie.rm.generic.PartySelf;
+import com.nedap.archie.rm.support.identification.HierObjectId;
+import com.nedap.archie.rm.support.identification.PartyRef;
 import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
@@ -28,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Integration Tests
@@ -247,9 +253,21 @@ public class FhirBridgeApplicationIT {
     @Test
     public void testEhrExistsDoesExist()
     {
-        // FIXME: this will only work if the ehr is created previously with a specific ehr_status, we currently removed
-        // the ehr_status from the service.createEhr()
-        Assertions.assertTrue(service.ehrExistsBySubjectId("07f602e0-579e-4fe3-95af-381728bf0d49"));
+        // Create EHR and test the EHR exists for the given patient ID
+        EhrStatus ehrStatus = new EhrStatus();
+
+        String subjectIdValue = UUID.randomUUID().toString();
+        HierObjectId subjectId = new HierObjectId(subjectIdValue);
+        ehrStatus.setSubject(new PartySelf(new PartyRef(subjectId, "demographic", "PERSON")));
+
+        ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
+        ehrStatus.setName(new DvText("test status"));
+
+        UUID ehrId = service.createEhr(ehrStatus);
+
+        Assertions.assertNotNull(ehrId);
+
+        Assertions.assertTrue(service.ehrExistsBySubjectId(subjectIdValue));
     }
 
     @Test

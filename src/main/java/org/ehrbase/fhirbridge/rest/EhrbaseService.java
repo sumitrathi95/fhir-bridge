@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.rest;
 
+import com.nedap.archie.rm.ehr.EhrStatus;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
@@ -27,6 +28,11 @@ public class EhrbaseService {
 
     public UUID createEhr() {
         return client.ehrEndpoint().createEhr();
+    }
+
+    public UUID createEhr(EhrStatus ehrStatus)
+    {
+        return client.ehrEndpoint().createEhr(ehrStatus);
     }
 
     public boolean ehrExistsBySubjectId(String subjectId)
