@@ -84,7 +84,7 @@ public class FhirBridgeApplicationIT {
         logger.info("EHR UID: {}", this.ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
-/*
+
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -298,7 +298,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-*/
+
     // FIXME: we need to use the status in the create ehr service, we are using null in the client library because the current create has an issue.
     // for now the workaround is to use the Insomnia request to create the EHR for this patient before running the tests
     @Test
@@ -347,7 +347,7 @@ public class FhirBridgeApplicationIT {
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
-/*
+
     @Test
     public void searchCoronavirusLabResults() throws IOException {
 
@@ -412,7 +412,7 @@ public class FhirBridgeApplicationIT {
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
-*/
+
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
