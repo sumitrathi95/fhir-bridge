@@ -7,8 +7,11 @@ import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.datavalues.quantity.DvQuantity;
+import com.nedap.archie.rm.datavalues.quantity.datetime.DvDateTime;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
+import org.ehrbase.client.aql.record.Record3;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
@@ -24,9 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Date.from;
 
 
 /**
@@ -48,7 +55,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         @OptionalParam(name="_profile") UriParam profile,
         @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId,
         @OptionalParam(name=Observation.SP_DATE) DateRangeParam dateRange,
-        @OptionalParam(name=Observation.SP_VALUE_QUANTITY) QuantityParam qty
+        @OptionalParam(name=Observation.SP_VALUE_QUANTITY) QuantityParam qty,
+        @OptionalParam(name="bodyTempOption") StringParam bodyTempOption
     )
     {
         logger.info("SEARCH OBSERVATION {} ", profile);
@@ -56,96 +64,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
         if (profile.getValue().equals(Profile.BODY_TEMP.getUrl()))
         {
-            // Query body temperatures
-
-            // get all compositions for the body temperature template
-            // TODO: filter by patient if the patient id parameter is used
-            /*
-            Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
-                Query.buildNativeQuery("SELECT c FROM EHR e CONTAINS COMPOSITION c where "
-                     + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
-                     + "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
-                     IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
-
-            List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>>();
-            */
-            // Workaround for not getting the composition uid in the result (https://github.com/ehrbase/openEHR_SDK/issues/44)
-            String aql =
-                "SELECT c "+
-                "FROM EHR e CONTAINS COMPOSITION c CONTAINS OBSERVATION o[openEHR-EHR-OBSERVATION.body_temperature.v2] "+
-                "WHERE c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
-
-            if (dateRange != null)
-            {
-                // with date range we can also receive just one bound
-                if (dateRange.getLowerBound() != null)
-                    aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
-
-                if (dateRange.getUpperBound() != null)
-                    aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
-            }
-
-            if (qty != null)
-            {
-                ParamPrefixEnum prefix = qty.getPrefix();
-                String operator = "";
-                if (prefix == null) operator = "=";
-                else {
-                    switch (prefix) {
-                        case EQUAL:
-                            operator = "=";
-                            break;
-                        case LESSTHAN:
-                            operator = "<";
-                            break;
-                        case GREATERTHAN:
-                            operator = ">";
-                            break;
-                        case LESSTHAN_OR_EQUALS:
-                            operator = "<=";
-                            break;
-                        case GREATERTHAN_OR_EQUALS:
-                            operator = ">=";
-                            break;
-                        default:
-                            operator = "=";
-                    }
-                }
-
-                if (!operator.isBlank())
-                    aql += " AND o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude "+ operator +" "+ qty.getValue();
-            }
-
-            Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
-                Query.buildNativeQuery(aql, IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
-
-            List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<>();
-
-            try
-            {
-                results = this.service.getClient().aqlEndpoint().execute(query);
-
-                IntensivmedizinischesMonitoringKorpertemperaturComposition compo;
-                Observation observation;
-
-                //for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
-                for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
-                {
-                    compo = record.value1();
-
-                    observation = FhirObservationTempOpenehrBodyTemperature.map(compo);
-
-                    // adds observation to the result
-                    result.add(observation);
-                }
-
-                logger.info("Results: {}", results.size());
-            }
-            catch (Exception e)
-            {
-                throw new InternalErrorException("There was a problem retrieving the results", e);
-            }
+            // testing alternative implementations
+            if (bodyTempOption == null || bodyTempOption.isEmpty())
+                result = processSearchBodyTemperature(subjectId, dateRange, qty);
+            else
+                result = processSearchBodyTemperature2(subjectId, dateRange, qty);
         }
         else if (profile.getValue().equals(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl()))
         {
@@ -288,6 +211,197 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         else
         {
             throw new InvalidRequestException(String.format("Template not supported %s", profile.getValue()));
+        }
+
+        return result;
+    }
+
+    // Alternative method, using datavalue query
+    List<Observation> processSearchBodyTemperature2(TokenParam subjectId, DateRangeParam dateRange, QuantityParam qty)
+    {
+        List<Observation> result = new ArrayList<>();
+
+        String aql = "SELECT c/uid/value, o/data[at0002]/origin, o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value "+
+            "FROM EHR e CONTAINS COMPOSITION c CONTAINS OBSERVATION o[openEHR-EHR-OBSERVATION.body_temperature.v2] "+
+            "WHERE e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+
+            if (dateRange.getUpperBound() != null)
+                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+        }
+
+        if (qty != null)
+        {
+            ParamPrefixEnum prefix = qty.getPrefix();
+            String operator = "";
+            if (prefix == null) operator = "=";
+            else {
+                switch (prefix) {
+                    case EQUAL:
+                        operator = "=";
+                        break;
+                    case LESSTHAN:
+                        operator = "<";
+                        break;
+                    case GREATERTHAN:
+                        operator = ">";
+                        break;
+                    case LESSTHAN_OR_EQUALS:
+                        operator = "<=";
+                        break;
+                    case GREATERTHAN_OR_EQUALS:
+                        operator = ">=";
+                        break;
+                    default:
+                        operator = "=";
+                }
+            }
+
+            if (!operator.isBlank())
+                aql += " AND o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude "+ operator +" "+ qty.getValue();
+        }
+
+        Query<Record3<String, DvDateTime, DvQuantity>> query =
+                Query.buildNativeQuery(aql, String.class, DvDateTime.class, DvQuantity.class);
+
+        List<Record3<String, DvDateTime, DvQuantity>> results = new ArrayList<>();
+
+        try
+        {
+            results = this.service.getClient().aqlEndpoint().execute(query);
+
+            String uid;
+            DvDateTime datetime;
+            DvQuantity quantity;
+            Observation observation = new Observation();
+
+
+            for (Record3<String, DvDateTime, DvQuantity> record: results)
+            {
+                uid = record.value1();
+                datetime = record.value2();
+                quantity = record.value3();
+
+                // TODO: doing the mappging here to test, should be moved to a mapping class
+
+                // FIXME: if there are two measurements of temperature in the same compo, this will return the same ID for two different FHIR observations.
+                observation.setId(uid);
+
+                observation.getValueQuantity().setValue(quantity.getMagnitude());
+                observation.getValueQuantity().setUnit(quantity.getUnits());
+
+                observation.getEffectiveDateTimeType().setValue(from(((OffsetDateTime)datetime.getValue()).toInstant()));
+
+                // adds observation to the result
+                result.add(observation);
+            }
+
+            logger.info("Results: {}", results.size());
+        }
+        catch (Exception e)
+        {
+            throw new InternalErrorException("There was a problem retrieving the results", e);
+        }
+
+        return result;
+    }
+
+    List<Observation> processSearchBodyTemperature(TokenParam subjectId, DateRangeParam dateRange, QuantityParam qty)
+    {
+        List<Observation> result = new ArrayList<>();
+
+        // get all compositions for the body temperature template
+        // TODO: filter by patient if the patient id parameter is used
+        /*
+        Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
+            Query.buildNativeQuery("SELECT c FROM EHR e CONTAINS COMPOSITION c where "
+                 + "c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "
+                 + "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'",
+                 IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
+
+        List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>>();
+        */
+        // Workaround for not getting the composition uid in the result (https://github.com/ehrbase/openEHR_SDK/issues/44)
+        String aql =
+            "SELECT c "+
+            "FROM EHR e CONTAINS COMPOSITION c CONTAINS OBSERVATION o[openEHR-EHR-OBSERVATION.body_temperature.v2] "+
+            "WHERE c/archetype_details/template_id/value = 'Intensivmedizinisches Monitoring Korpertemperatur' AND "+
+            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+
+            if (dateRange.getUpperBound() != null)
+                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+        }
+
+        if (qty != null)
+        {
+            ParamPrefixEnum prefix = qty.getPrefix();
+            String operator = "";
+            if (prefix == null) operator = "=";
+            else {
+                switch (prefix) {
+                    case EQUAL:
+                        operator = "=";
+                        break;
+                    case LESSTHAN:
+                        operator = "<";
+                        break;
+                    case GREATERTHAN:
+                        operator = ">";
+                        break;
+                    case LESSTHAN_OR_EQUALS:
+                        operator = "<=";
+                        break;
+                    case GREATERTHAN_OR_EQUALS:
+                        operator = ">=";
+                        break;
+                    default:
+                        operator = "=";
+                }
+            }
+
+            if (!operator.isBlank())
+                aql += " AND o/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude "+ operator +" "+ qty.getValue();
+        }
+
+        Query<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> query =
+                Query.buildNativeQuery(aql, IntensivmedizinischesMonitoringKorpertemperaturComposition.class);
+
+        List<Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition>> results = new ArrayList<>();
+
+        try
+        {
+            results = this.service.getClient().aqlEndpoint().execute(query);
+
+            IntensivmedizinischesMonitoringKorpertemperaturComposition compo;
+            Observation observation;
+
+            //for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
+            for (Record1<IntensivmedizinischesMonitoringKorpertemperaturComposition> record: results)
+            {
+                compo = record.value1();
+
+                observation = FhirObservationTempOpenehrBodyTemperature.map(compo);
+
+                // adds observation to the result
+                result.add(observation);
+            }
+
+            logger.info("Results: {}", results.size());
+        }
+        catch (Exception e)
+        {
+            throw new InternalErrorException("There was a problem retrieving the results", e);
         }
 
         return result;
