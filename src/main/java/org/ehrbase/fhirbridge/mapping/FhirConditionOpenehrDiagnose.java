@@ -1,6 +1,9 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.datavalues.DvIdentifier;
+import com.nedap.archie.rm.generic.PartyIdentified;
+import com.nedap.archie.rm.generic.PartyProxy;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
@@ -131,10 +134,13 @@ public class FhirConditionOpenehrDiagnose {
         composition.setStartTimeValue(aDate.getValueAsCalendar().toZonedDateTime());
 
         // https://github.com/ehrbase/ehrbase_client_library/issues/31
-        //        PartyProxy composer = new PartyIdentified();
-        //        composition.setComposer(composer);
+        PartyIdentified composer = new PartyIdentified();
+        DvIdentifier identifier = new DvIdentifier();
+        identifier.setId(fhirCondition.getRecorder().getReference());
+        composer.addIdentifier(identifier);
+        composition.setComposer(composer);
 
-        composition.setComposer(new PartySelf());
+        //composition.setComposer(new PartySelf());
 
         return composition;
     }

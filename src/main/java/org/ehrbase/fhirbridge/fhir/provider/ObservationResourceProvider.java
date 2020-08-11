@@ -72,141 +72,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         else if (profile.getValue().equals(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl()))
         {
-            // another approach, asking for the data points in AQL directly without retrieving the whole compo
-            // this doesnt work https://github.com/ehrbase/openEHR_SDK/issues/45
-            /*
-            Query<Record> query = Query.buildNativeQuery(
-                "SELECT c/uid/value as uid, eval/data[at0001]/items[at0015]/value/value as effective_time "+
-                "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
-                "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'"
-            );
-
-            List<Record> results = new ArrayList<Record>();
-            */
-
-            String aql =
-                "SELECT c "+
-                "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
-                "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
-
-            if (dateRange != null)
-            {
-                // with date range we can also receive just one bound
-                if (dateRange.getLowerBound() != null)
-                    aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
-
-                if (dateRange.getUpperBound() != null)
-                    aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
-            }
-
-            Query<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> query =
-                Query.buildNativeQuery(aql, KennzeichnungErregernachweisSARSCoV2Composition.class);
-
-            //List<Record> results = new ArrayList<Record>();
-            List<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> results = new ArrayList<>();
-
-            try
-            {
-                results = service.getClient().aqlEndpoint().execute(query);
-
-                String uid;
-                KennzeichnungErregernachweisSARSCoV2Composition compo;
-
-                Observation observation;
-
-                for (Record1<KennzeichnungErregernachweisSARSCoV2Composition> record: results)
-                //for (Record record: results)
-                {
-                    compo = record.value1();
-
-                    /* not working because results are not populated when using Record
-                    uid = (String)record.value(0);
-                    effective_time = (TemporalAccessor)record.value(1);
-                    */
-
-                    logger.info("Record: {}", record); // org.ehrbase.client.aql.record.RecordImp
-                    logger.info("Record values {}", record.values().length); // using Record instead of Record2 gives 0
-                    logger.info("Record fields {}", record.fields().length); // using Record instead of Record2 gives 0
-
-
-                    // COMPOSITION => Coronavirus Lab Result Observation
-                    observation = FhirSarsTestResultOpenehrPathogenDetection.map(compo);
-
-
-                    // adds observation to the result
-                    result.add(observation);
-                }
-
-                logger.info("Results {}", results.size());
-            }
-            catch (Exception e)
-            {
-                throw new InternalErrorException("There was a problem retrieving the results", e);
-            }
+            result = processCovidLabReport(subjectId, dateRange, qty);
         }
         else if (profile.getValue().equals(Profile.OBSERVATION_LAB.getUrl()))
         {
-
-            String aql =
-                "SELECT c "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
-                "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
-                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
-
-            /* getting 400 from this query, tried to get the cluster to compare with the date range param since that is the real effectiveTime of the resource, not the compo time.
-            String aql =
-                    "SELECT c, c/uid/value "+
-                            "FROM EHR e CONTAINS COMPOSITION c CONTAINS CLUSTER cluster[openEHR-EHR-CLUSTER.laboratory_test_analyte.v1] "+
-                            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
-                            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
-            */
-
-            if (dateRange != null)
-            {
-                // with date range we can also receive just one bound
-                if (dateRange.getLowerBound() != null)
-                {
-                    // this is for filtering against the effective time in the cluster but the query above doesn't work
-                    //aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= cluster/items[at0006]/value/value";
-                    aql += " AND '" + dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
-                }
-
-                if (dateRange.getUpperBound() != null)
-                {
-                    //aql += " AND cluster/items[at0006]/value/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
-                    aql += " AND c/context/start_time/value <= '" + dateRange.getUpperBound().getValueAsString() + "'";
-                }
-            }
-
-            Query<Record1<LaborbefundComposition>> query =
-                Query.buildNativeQuery(aql, LaborbefundComposition.class);
-
-            List<Record1<LaborbefundComposition>> results = new ArrayList<>();
-
-            try
-            {
-                results = service.getClient().aqlEndpoint().execute(query);
-
-                LaborbefundComposition compo;
-                Observation observation;
-
-                for (Record1<LaborbefundComposition> record: results)
-                {
-                    compo = record.value1();
-
-                    // Lab Results COMPOSITION => FHIR Observation
-                    observation = FhirDiagnosticReportOpenehrLabResults.map(compo);
-
-                    // adds observation to the result
-                    result.add(observation);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new InternalErrorException("There was a problem retrieving the results", e);
-            }
+            result = processLabResults(subjectId, dateRange, qty);
         }
         else
         {
@@ -398,6 +268,153 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
 
             logger.info("Results: {}", results.size());
+        }
+        catch (Exception e)
+        {
+            throw new InternalErrorException("There was a problem retrieving the results", e);
+        }
+
+        return result;
+    }
+
+    List<Observation> processLabResults(TokenParam subjectId, DateRangeParam dateRange, QuantityParam qty)
+    {
+        List<Observation> result = new ArrayList<>();
+
+        String aql =
+                "SELECT c "+
+                        "FROM EHR e CONTAINS COMPOSITION c "+
+                        "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
+                        "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+            /* getting 400 from this query, tried to get the cluster to compare with the date range param since that is the real effectiveTime of the resource, not the compo time.
+            String aql =
+                    "SELECT c, c/uid/value "+
+                            "FROM EHR e CONTAINS COMPOSITION c CONTAINS CLUSTER cluster[openEHR-EHR-CLUSTER.laboratory_test_analyte.v1] "+
+                            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
+                            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+            */
+
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+            {
+                // this is for filtering against the effective time in the cluster but the query above doesn't work
+                //aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= cluster/items[at0006]/value/value";
+                aql += " AND '" + dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+            }
+
+            if (dateRange.getUpperBound() != null)
+            {
+                //aql += " AND cluster/items[at0006]/value/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+                aql += " AND c/context/start_time/value <= '" + dateRange.getUpperBound().getValueAsString() + "'";
+            }
+        }
+
+        Query<Record1<LaborbefundComposition>> query =
+                Query.buildNativeQuery(aql, LaborbefundComposition.class);
+
+        List<Record1<LaborbefundComposition>> results = new ArrayList<>();
+
+        try
+        {
+            results = service.getClient().aqlEndpoint().execute(query);
+
+            LaborbefundComposition compo;
+            Observation observation;
+
+            for (Record1<LaborbefundComposition> record: results)
+            {
+                compo = record.value1();
+
+                // Lab Results COMPOSITION => FHIR Observation
+                observation = FhirDiagnosticReportOpenehrLabResults.map(compo);
+
+                // adds observation to the result
+                result.add(observation);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new InternalErrorException("There was a problem retrieving the results", e);
+        }
+
+        return result;
+    }
+
+    List<Observation> processCovidLabReport(TokenParam subjectId, DateRangeParam dateRange, QuantityParam qty)
+    {
+        List<Observation> result = new ArrayList<>();
+
+        // another approach, asking for the data points in AQL directly without retrieving the whole compo
+        // this doesnt work https://github.com/ehrbase/openEHR_SDK/issues/45
+            /*
+            Query<Record> query = Query.buildNativeQuery(
+                "SELECT c/uid/value as uid, eval/data[at0001]/items[at0015]/value/value as effective_time "+
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
+                "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
+                "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'"
+            );
+
+            List<Record> results = new ArrayList<Record>();
+            */
+
+        String aql =
+                "SELECT c "+
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] "+
+                        "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND "+
+                        "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+        if (dateRange != null)
+        {
+            // with date range we can also receive just one bound
+            if (dateRange.getLowerBound() != null)
+                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+
+            if (dateRange.getUpperBound() != null)
+                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+        }
+
+        Query<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> query =
+                Query.buildNativeQuery(aql, KennzeichnungErregernachweisSARSCoV2Composition.class);
+
+        //List<Record> results = new ArrayList<Record>();
+        List<Record1<KennzeichnungErregernachweisSARSCoV2Composition>> results = new ArrayList<>();
+
+        try
+        {
+            results = service.getClient().aqlEndpoint().execute(query);
+
+            String uid;
+            KennzeichnungErregernachweisSARSCoV2Composition compo;
+
+            Observation observation;
+
+            for (Record1<KennzeichnungErregernachweisSARSCoV2Composition> record: results)
+            //for (Record record: results)
+            {
+                compo = record.value1();
+
+                    /* not working because results are not populated when using Record
+                    uid = (String)record.value(0);
+                    effective_time = (TemporalAccessor)record.value(1);
+                    */
+
+                logger.info("Record: {}", record); // org.ehrbase.client.aql.record.RecordImp
+                logger.info("Record values {}", record.values().length); // using Record instead of Record2 gives 0
+                logger.info("Record fields {}", record.fields().length); // using Record instead of Record2 gives 0
+
+
+                // COMPOSITION => Coronavirus Lab Result Observation
+                observation = FhirSarsTestResultOpenehrPathogenDetection.map(compo);
+
+
+                // adds observation to the result
+                result.add(observation);
+            }
+
+            logger.info("Results {}", results.size());
         }
         catch (Exception e)
         {

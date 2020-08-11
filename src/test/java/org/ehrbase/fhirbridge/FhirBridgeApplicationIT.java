@@ -114,6 +114,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"", OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
+    /*
     @Test
     public void createDiagnosticReportLab() throws IOException {
         Date now = new Date();
@@ -412,7 +413,7 @@ public class FhirBridgeApplicationIT {
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
-
+*/
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
