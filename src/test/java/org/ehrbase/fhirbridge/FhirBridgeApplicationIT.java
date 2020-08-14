@@ -5,6 +5,11 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
+import com.nedap.archie.rm.datavalues.DvText;
+import com.nedap.archie.rm.ehr.EhrStatus;
+import com.nedap.archie.rm.generic.PartySelf;
+import com.nedap.archie.rm.support.identification.HierObjectId;
+import com.nedap.archie.rm.support.identification.PartyRef;
 import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
@@ -28,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Integration Tests
@@ -55,17 +61,40 @@ public class FhirBridgeApplicationIT {
     @Autowired
     private EhrbaseService service;
 
+    private UUID ehrId;
+    private String subjectIdValue;
+
     @BeforeEach
     public void setUp() {
         context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
+
+        // Create EHR for the rests of the tests to run on this
+        EhrStatus ehrStatus = new EhrStatus();
+
+        this.subjectIdValue = UUID.randomUUID().toString();
+        HierObjectId subjectId = new HierObjectId(subjectIdValue);
+        ehrStatus.setSubject(new PartySelf(new PartyRef(subjectId, "demographic", "PERSON")));
+
+        ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
+        ehrStatus.setName(new DvText("test status"));
+
+        this.ehrId = service.createEhr(ehrStatus);
+
+        logger.info("EHR UID: {}", this.ehrId);
+        logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
     @Test
     public void createDiagnoseCondition() throws IOException {
+
         Date now = new Date();
+
+        String resource = getContent("classpath:/Condition/condition-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
         MethodOutcome outcome = client.create()
-                .resource(getContent("classpath:/Condition/condition-example.json"))
+                .resource(resource)
                 .execute();
 
         Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
@@ -85,11 +114,16 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"", OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
+    /*
     @Test
     public void createDiagnosticReportLab() throws IOException {
         Date now = new Date();
+
+        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
         MethodOutcome outcome = client.create()
-                .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json"))
+                .resource(resource)
                 .execute();
 
         Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
@@ -102,8 +136,12 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createDiagnosticReportLabContainedObservation() throws IOException {
         Date now = new Date();
+
+        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
         MethodOutcome outcome = client.create()
-                .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json"))
+                .resource(resource)
                 .execute();
 
         Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
@@ -114,10 +152,15 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createDiagnosticReportUsingDefaultProfile() {
+    public void createDiagnosticReportUsingDefaultProfile() throws IOException {
+
+        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+        String finalResource = resource;
+
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                 () -> client.create()
-                        .resource(getContent("classpath:/DiagnosticReport/diagnosticreport-example.json"))
+                        .resource(finalResource)
                         .execute());
 
         OperationOutcome outcome = (OperationOutcome) exception.getOperationOutcome();
@@ -143,14 +186,18 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createBodyTemp() throws IOException {
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-bodytemp-example.json"))
+
+        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        Assertions.assertEquals(true, methodOutcome.getCreated());
-        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
-        Assertions.assertNotNull(methodOutcome.getResource());
-        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     @Test
@@ -177,27 +224,34 @@ public class FhirBridgeApplicationIT {
         }
         else // Remote terminology validation is OFF, example wont fail
         {
-            MethodOutcome methodOutcome = client.create()
-                    .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+            String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
+            resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+            MethodOutcome outcome = client.create()
+                    .resource(resource)
                     .execute();
 
-            Assertions.assertEquals(true, methodOutcome.getCreated());
-            Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
-            Assertions.assertNotNull(methodOutcome.getResource());
-            Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+            Assertions.assertEquals(true, outcome.getCreated());
+            Assertions.assertTrue(outcome.getResource() instanceof Observation);
+            Assertions.assertNotNull(outcome.getResource());
+            Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
         }
     }
 
     @Test
     public void createObservationLab() throws IOException {
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-observationlab-example.json"))
+
+        String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        Assertions.assertEquals(true, methodOutcome.getCreated());
-        Assertions.assertTrue(methodOutcome.getResource() instanceof Observation);
-        Assertions.assertNotNull(methodOutcome.getResource());
-        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     @Test
@@ -232,14 +286,18 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createQuestionnaireResponse() throws IOException {
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/QuestionnaireResponse/covapp-response.json"))
+
+        String resource = getContent("classpath:/QuestionnaireResponse/covapp-response.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        Assertions.assertEquals(true, methodOutcome.getCreated());
-        Assertions.assertTrue(methodOutcome.getResource() instanceof QuestionnaireResponse);
-        Assertions.assertNotNull(methodOutcome.getResource());
-        Assertions.assertEquals("1", methodOutcome.getResource().getMeta().getVersionId());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof QuestionnaireResponse);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     // FIXME: we need to use the status in the create ehr service, we are using null in the client library because the current create has an issue.
@@ -247,9 +305,21 @@ public class FhirBridgeApplicationIT {
     @Test
     public void testEhrExistsDoesExist()
     {
-        // FIXME: this will only work if the ehr is created previously with a specific ehr_status, we currently removed
-        // the ehr_status from the service.createEhr()
-        Assertions.assertTrue(service.ehrExistsBySubjectId("07f602e0-579e-4fe3-95af-381728bf0d49"));
+        // Create EHR and test the EHR exists for the given patient ID
+        EhrStatus ehrStatus = new EhrStatus();
+
+        String subjectIdValue = UUID.randomUUID().toString();
+        HierObjectId subjectId = new HierObjectId(subjectIdValue);
+        ehrStatus.setSubject(new PartySelf(new PartyRef(subjectId, "demographic", "PERSON")));
+
+        ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
+        ehrStatus.setName(new DvText("test status"));
+
+        UUID ehrId = service.createEhr(ehrStatus);
+
+        Assertions.assertNotNull(ehrId);
+
+        Assertions.assertTrue(service.ehrExistsBySubjectId(subjectIdValue));
     }
 
     @Test
@@ -261,16 +331,18 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchBodyTemp() throws IOException {
 
-        // Needs at least one temp, can't rely on the tess execution order
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-bodytemp-example.json"))
+        // Needs at least one temp, can't rely on the tess execution order to create a body temp in the server
+        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
                 .withProfile(Profile.BODY_TEMP.getUrl())
-                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
                 .returnBundle(Bundle.class)
                 .execute();
 
@@ -282,15 +354,17 @@ public class FhirBridgeApplicationIT {
 
         // Needs at least one lab result, can't rely on the tess execution order
         // WARNING: this will fail if terminology validation is turned on
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+        String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
                 .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
-                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
                 .returnBundle(Bundle.class)
                 .execute();
 
@@ -301,15 +375,17 @@ public class FhirBridgeApplicationIT {
     public void searchObservationLab() throws IOException {
 
         // Needs at least one observation lab, can't rely on the tess execution order
-        MethodOutcome methodOutcome = client.create()
-                .resource(getContent("classpath:/Observation/observation-observationlab-example.json"))
+        String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
                 .execute();
 
-        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
                 .forResource(Observation.class)
                 .withProfile(Profile.OBSERVATION_LAB.getUrl())
-                .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
                 .returnBundle(Bundle.class)
                 .execute();
 
@@ -320,14 +396,16 @@ public class FhirBridgeApplicationIT {
     public void searchDiagnoseCondition() throws IOException {
 
         // Needs at least one condition, can't rely on the tess execution order
+        String resource = getContent("classpath:/Condition/condition-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+
         MethodOutcome outcome = client.create()
-                .resource(getContent("classpath:/Condition/condition-example.json"))
+                .resource(resource)
                 .execute();
 
-        // FIXME: to avoid hardcoded patient ids we need to fix the client lib to allow creating EHRs with status
         Bundle bundle = client.search()
             .forResource(Condition.class)
-            .where(Patient.IDENTIFIER.exactly().identifier("07f602e0-579e-4fe3-95af-381728bf0d49"))
+            .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
             .returnBundle(Bundle.class)
             .execute();
 
@@ -335,7 +413,7 @@ public class FhirBridgeApplicationIT {
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
-
+*/
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {

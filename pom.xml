@@ -154,10 +154,17 @@
             <artifactId>thymeleaf</artifactId>
             <version>3.0.11.RELEASE</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.ehrbase</groupId>-->
+<!--            <artifactId>client-library</artifactId>-->
+<!--            <version>0.3.0</version>-->
+<!--        </dependency>-->
+        <!-- this is a local installation of the dependency -->
         <dependency>
-            <groupId>org.ehrbase</groupId>
-            <artifactId>client-library</artifactId>
-            <version>0.3.0</version>
+            <groupId>com.github.ehrbase.openEHR_SDK</groupId>
+            <artifactId>client</artifactId>
+            <version>0.3.5</version>
+            <!--<version>${ehrbase.sdk.version}</version>-->
         </dependency>
 
 <!--        <dependency>-->
@@ -261,11 +268,6 @@
                 <version>${commons-text.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>0.9.12</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
@@ -273,10 +275,10 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>jitpack.io</id>-->
+<!--            <url>https://jitpack.io</url>-->
+<!--        </repository>-->
         <repository>
             <id>oss-snapshots</id>
             <snapshots>
