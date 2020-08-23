@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fhir-bridge</groupId>
     <artifactId>fhir-bridge</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-<!--    <packaging>jar</packaging>-->
+    <!--    <packaging>jar</packaging>-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,7 +50,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>2.5.2</version>
                 <configuration>
                     <to>
                         <image>fhir-bridge</image>
@@ -154,11 +153,11 @@
             <artifactId>thymeleaf</artifactId>
             <version>3.0.11.RELEASE</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.ehrbase</groupId>-->
-<!--            <artifactId>client-library</artifactId>-->
-<!--            <version>0.3.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ehrbase</groupId>-->
+        <!--            <artifactId>client-library</artifactId>-->
+        <!--            <version>0.3.0</version>-->
+        <!--        </dependency>-->
         <!-- this is a local installation of the dependency -->
         <dependency>
             <groupId>com.github.ehrbase.openEHR_SDK</groupId>
@@ -167,14 +166,39 @@
             <!--<version>${ehrbase.sdk.version}</version>-->
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.github.ehrbase.openEHR_SDK</groupId>-->
-<!--            <artifactId>client-library</artifactId>-->
-<!--            <version>d97d209</version>&lt;!&ndash; FIXME: THIS IS A SPECIFIC COMMIT &ndash;&gt;-->
-<!--&lt;!&ndash;            <version>v0.3.4</version> This gets back the reflections errors&ndash;&gt;-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.ehrbase.openEHR_SDK</groupId>-->
+        <!--            <artifactId>client-library</artifactId>-->
+        <!--            <version>d97d209</version>&lt;!&ndash; FIXME: THIS IS A SPECIFIC COMMIT &ndash;&gt;-->
+        <!--&lt;!&ndash;            <version>v0.3.4</version> This gets back the reflections errors&ndash;&gt;-->
+        <!--        </dependency>-->
 
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.6.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.14.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.14.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -275,10 +299,10 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-<!--        <repository>-->
-<!--            <id>jitpack.io</id>-->
-<!--            <url>https://jitpack.io</url>-->
-<!--        </repository>-->
+        <!--        <repository>-->
+        <!--            <id>jitpack.io</id>-->
+        <!--            <url>https://jitpack.io</url>-->
+        <!--        </repository>-->
         <repository>
             <id>oss-snapshots</id>
             <snapshots>
