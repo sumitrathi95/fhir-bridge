@@ -213,7 +213,6 @@ executors:
     vm-ubuntu-1604:
         working_directory: ~/projects
         machine:
-            # image: ubuntu-1604:201903-01
             image: ubuntu-1604:202007-01        # what's inside:
                                                 # Ubuntu 16.04
                                                 # Docker v19.03.12
