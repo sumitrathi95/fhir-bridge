@@ -420,4 +420,17 @@ public class FhirBridgeApplicationIT {
             return IOUtils.toString(input, StandardCharsets.UTF_8);
         }
     }
+
+    @Test
+    public void createObservationBodyHeight() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-bodyheight-example.json");
+        resource = resource.replaceAll("Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})", "Patient/"+ this.subjectIdValue);
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute(); //Where does this get executed?
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
 }

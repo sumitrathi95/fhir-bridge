@@ -4,265 +4,265 @@ import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum Language implements EnumValueSet {
-  EL("el", "el", "ISO_639-1", "el"),
-
-  DE("de", "de", "ISO_639-1", "de"),
-
-  ARLY("ar-ly", "ar-ly", "ISO_639-1", "ar-ly"),
-
-  ESAR("es-ar", "es-ar", "ISO_639-1", "es-ar"),
-
-  PT("pt", "pt", "ISO_639-1", "pt"),
-
-  CYAR("cy-ar", "cy-ar", "ISO_639-1", "cy-ar"),
-
-  CS("cs", "cs", "ISO_639-1", "cs"),
-
-  VI("vi", "vi", "ISO_639-1", "vi"),
-
-  ENNZ("en-nz", "en-nz", "ISO_639-1", "en-nz"),
-
-  ESEC("es-ec", "es-ec", "ISO_639-1", "es-ec"),
-
-  ZU("zu", "zu", "ISO_639-1", "zu"),
-
-  SK("sk", "sk", "ISO_639-1", "sk"),
-
-  EU("eu", "eu", "ISO_639-1", "eu"),
-
-  FRCA("fr-ca", "fr-ca", "ISO_639-1", "fr-ca"),
-
-  FO("fo", "fo", "ISO_639-1", "fo"),
+  RU("ru", "ru", "ISO_639-1", "ru"),
 
   DA("da", "da", "ISO_639-1", "da"),
 
-  BE("be", "be", "ISO_639-1", "be"),
+  RU_MO("ru-mo", "ru-mo", "ISO_639-1", "ru-mo"),
 
-  ESHN("es-hn", "es-hn", "ISO_639-1", "es-hn"),
+  ES_MX("es-mx", "es-mx", "ISO_639-1", "es-mx"),
 
-  ENZA("en-za", "en-za", "ISO_639-1", "en-za"),
+  ES_PE("es-pe", "es-pe", "ISO_639-1", "es-pe"),
 
-  ESPY("es-py", "es-py", "ISO_639-1", "es-py"),
-
-  ESUY("es-uy", "es-uy", "ISO_639-1", "es-uy"),
-
-  RO("ro", "ro", "ISO_639-1", "ro"),
-
-  ENIE("en-ie", "en-ie", "ISO_639-1", "en-ie"),
-
-  ARMA("ar-ma", "ar-ma", "ISO_639-1", "ar-ma"),
-
-  RM("rm", "rm", "ISO_639-1", "rm"),
-
-  HE("he", "he", "ISO_639-1", "he"),
-
-  HI("hi", "hi", "ISO_639-1", "hi"),
-
-  ESDO("es-do", "es-do", "ISO_639-1", "es-do"),
-
-  AF("af", "af", "ISO_639-1", "af"),
+  AR_MA("ar-ma", "ar-ma", "ISO_639-1", "ar-ma"),
 
   SB("sb", "sb", "ISO_639-1", "sb"),
 
-  ENGB("en-gb", "en-gb", "ISO_639-1", "en-gb"),
-
-  FA("fa", "fa", "ISO_639-1", "fa"),
-
-  ET("et", "et", "ISO_639-1", "et"),
-
-  ESCR("es-cr", "es-cr", "ISO_639-1", "es-cr"),
-
-  PL("pl", "pl", "ISO_639-1", "pl"),
-
-  BG("bg", "bg", "ISO_639-1", "bg"),
-
-  UR("ur", "ur", "ISO_639-1", "ur"),
-
-  LT("lt", "lt", "ISO_639-1", "lt"),
-
-  AA("aa", "aa", "ISO_639-1", "aa"),
-
-  ARJO("ar-jo", "ar-jo", "ISO_639-1", "ar-jo"),
-
-  NB("nb", "nb", "ISO_639-1", "nb"),
-
-  ESPE("es-pe", "es-pe", "ISO_639-1", "es-pe"),
-
-  XH("xh", "xh", "ISO_639-1", "xh"),
-
-  AZ("az", "az", "ISO_639-1", "az"),
-
-  IS("is", "is", "ISO_639-1", "is"),
-
-  ESSV("es-sv", "es-sv", "ISO_639-1", "es-sv"),
-
-  ESGT("es-gt", "es-gt", "ISO_639-1", "es-gt"),
-
-  JI("ji", "ji", "ISO_639-1", "ji"),
-
-  ESPR("es-pr", "es-pr", "ISO_639-1", "es-pr"),
-
-  ESPA("es-pa", "es-pa", "ISO_639-1", "es-pa"),
-
-  CA("ca", "ca", "ISO_639-1", "ca"),
-
-  NLBE("nl-be", "nl-be", "ISO_639-1", "nl-be"),
-
-  SZ("sz", "sz", "ISO_639-1", "sz"),
-
-  ENUS("en-us", "en-us", "ISO_639-1", "en-us"),
-
-  MK("mk", "mk", "ISO_639-1", "mk"),
-
-  GD("gd", "gd", "ISO_639-1", "gd"),
-
-  ARDZ("ar-dz", "ar-dz", "ISO_639-1", "ar-dz"),
-
-  ITCH("it-ch", "it-ch", "ISO_639-1", "it-ch"),
-
-  ARYE("ar-ye", "ar-ye", "ISO_639-1", "ar-ye"),
-
-  ENJM("en-jm", "en-jm", "ISO_639-1", "en-jm"),
-
-  TN("tn", "tn", "ISO_639-1", "tn"),
-
-  FRBE("fr-be", "fr-be", "ISO_639-1", "fr-be"),
-
-  ZHCN("zh-cn", "zh-cn", "ISO_639-1", "zh-cn"),
+  ES_GT("es-gt", "es-gt", "ISO_639-1", "es-gt"),
 
   KM("km", "km", "ISO_639-1", "km"),
 
-  VE("ve", "ve", "ISO_639-1", "ve"),
+  FR_BE("fr-be", "fr-be", "ISO_639-1", "fr-be"),
 
-  PTPT("pt-pt", "pt-pt", "ISO_639-1", "pt-pt"),
+  RM("rm", "rm", "ISO_639-1", "rm"),
 
-  LV("lv", "lv", "ISO_639-1", "lv"),
-
-  SX("sx", "sx", "ISO_639-1", "sx"),
+  DE("de", "de", "ISO_639-1", "de"),
 
   ID("id", "id", "ISO_639-1", "id"),
 
-  TH("th", "th", "ISO_639-1", "th"),
-
-  UK("uk", "uk", "ISO_639-1", "uk"),
-
-  SVFI("sv-fi", "sv-fi", "ISO_639-1", "sv-fi"),
-
-  DEAT("de-at", "de-at", "ISO_639-1", "de-at"),
-
-  ENAU("en-au", "en-au", "ISO_639-1", "en-au"),
-
-  RU("ru", "ru", "ISO_639-1", "ru"),
-
-  FI("fi", "fi", "ISO_639-1", "fi"),
-
-  NN("nn", "nn", "ISO_639-1", "nn"),
-
-  ESVE("es-ve", "es-ve", "ISO_639-1", "es-ve"),
-
-  FRCH("fr-ch", "fr-ch", "ISO_639-1", "fr-ch"),
-
-  MT("mt", "mt", "ISO_639-1", "mt"),
-
-  ARLB("ar-lb", "ar-lb", "ISO_639-1", "ar-lb"),
-
-  ENTT("en-tt", "en-tt", "ISO_639-1", "en-tt"),
-
-  ARSY("ar-sy", "ar-sy", "ISO_639-1", "ar-sy"),
-
-  RUMO("ru-mo", "ru-mo", "ISO_639-1", "ru-mo"),
-
-  TR("tr", "tr", "ISO_639-1", "tr"),
-
-  ENBZ("en-bz", "en-bz", "ISO_639-1", "en-bz"),
-
-  SI("si", "si", "ISO_639-1", "si"),
-
-  ARKW("ar-kw", "ar-kw", "ISO_639-1", "ar-kw"),
-
-  AROM("ar-om", "ar-om", "ISO_639-1", "ar-om"),
-
-  ESCO("es-co", "es-co", "ISO_639-1", "es-co"),
-
-  SR("sr", "sr", "ISO_639-1", "sr"),
-
-  ZHHK("zh-hk", "zh-hk", "ISO_639-1", "zh-hk"),
-
-  HR("hr", "hr", "ISO_639-1", "hr"),
-
-  ROMO("ro-mo", "ro-mo", "ISO_639-1", "ro-mo"),
-
-  ARAE("ar-ae", "ar-ae", "ISO_639-1", "ar-ae"),
-
-  FRLU("fr-lu", "fr-lu", "ISO_639-1", "fr-lu"),
-
-  DELI("de-li", "de-li", "ISO_639-1", "de-li"),
-
-  ZH("zh", "zh", "ISO_639-1", "zh"),
-
-  ENCA("en-ca", "en-ca", "ISO_639-1", "en-ca"),
-
-  AREG("ar-eg", "ar-eg", "ISO_639-1", "ar-eg"),
-
-  ESNI("es-ni", "es-ni", "ISO_639-1", "es-ni"),
-
-  NL("nl", "nl", "ISO_639-1", "nl"),
-
-  DECH("de-ch", "de-ch", "ISO_639-1", "de-ch"),
-
-  JA("ja", "ja", "ISO_639-1", "ja"),
-
-  FR("fr", "fr", "ISO_639-1", "fr"),
-
-  ZHSG("zh-sg", "zh-sg", "ISO_639-1", "zh-sg"),
-
-  ARIQ("ar-iq", "ar-iq", "ISO_639-1", "ar-iq"),
-
-  ARSA("ar-sa", "ar-sa", "ISO_639-1", "ar-sa"),
-
-  SL("sl", "sl", "ISO_639-1", "sl"),
-
-  ARQA("ar-qa", "ar-qa", "ISO_639-1", "ar-qa"),
-
-  KO("ko", "ko", "ISO_639-1", "ko"),
-
-  ARTN("ar-tn", "ar-tn", "ISO_639-1", "ar-tn"),
-
-  ESMX("es-mx", "es-mx", "ISO_639-1", "es-mx"),
-
-  HU("hu", "hu", "ISO_639-1", "hu"),
-
-  ES("es", "es", "ISO_639-1", "es"),
-
-  CYGB("cy-gb", "cy-gb", "ISO_639-1", "cy-gb"),
-
-  KK("kk", "kk", "ISO_639-1", "kk"),
-
-  IT("it", "it", "ISO_639-1", "it"),
-
-  ZHTW("zh-tw", "zh-tw", "ISO_639-1", "zh-tw"),
+  TN("tn", "tn", "ISO_639-1", "tn"),
 
   CY("cy", "cy", "ISO_639-1", "cy"),
 
-  TS("ts", "ts", "ISO_639-1", "ts"),
+  UR("ur", "ur", "ISO_639-1", "ur"),
 
-  GDIE("gd-ie", "gd-ie", "ISO_639-1", "gd-ie"),
+  HE("he", "he", "ISO_639-1", "he"),
 
-  ARBH("ar-bh", "ar-bh", "ISO_639-1", "ar-bh"),
+  AR_TN("ar-tn", "ar-tn", "ISO_639-1", "ar-tn"),
 
-  DELU("de-lu", "de-lu", "ISO_639-1", "de-lu"),
+  FR_CH("fr-ch", "fr-ch", "ISO_639-1", "fr-ch"),
 
-  ESCL("es-cl", "es-cl", "ISO_639-1", "es-cl"),
+  IS("is", "is", "ISO_639-1", "is"),
+
+  JI("ji", "ji", "ISO_639-1", "ji"),
+
+  EN_NZ("en-nz", "en-nz", "ISO_639-1", "en-nz"),
+
+  SR("sr", "sr", "ISO_639-1", "sr"),
+
+  ES_BO("es-bo", "es-bo", "ISO_639-1", "es-bo"),
+
+  PT_BR("pt-br", "pt-br", "ISO_639-1", "pt-br"),
+
+  FR_CA("fr-ca", "fr-ca", "ISO_639-1", "fr-ca"),
+
+  AA("aa", "aa", "ISO_639-1", "aa"),
+
+  ES_CR("es-cr", "es-cr", "ISO_639-1", "es-cr"),
+
+  ZH_HK("zh-hk", "zh-hk", "ISO_639-1", "zh-hk"),
+
+  ES_UY("es-uy", "es-uy", "ISO_639-1", "es-uy"),
+
+  NB("nb", "nb", "ISO_639-1", "nb"),
+
+  AR_YE("ar-ye", "ar-ye", "ISO_639-1", "ar-ye"),
+
+  PT_PT("pt-pt", "pt-pt", "ISO_639-1", "pt-pt"),
+
+  ZH_SG("zh-sg", "zh-sg", "ISO_639-1", "zh-sg"),
+
+  AR_QA("ar-qa", "ar-qa", "ISO_639-1", "ar-qa"),
+
+  DE_LI("de-li", "de-li", "ISO_639-1", "de-li"),
+
+  EN_BZ("en-bz", "en-bz", "ISO_639-1", "en-bz"),
+
+  FO("fo", "fo", "ISO_639-1", "fo"),
+
+  AZ("az", "az", "ISO_639-1", "az"),
+
+  SX("sx", "sx", "ISO_639-1", "sx"),
+
+  KK("kk", "kk", "ISO_639-1", "kk"),
+
+  EN_GB("en-gb", "en-gb", "ISO_639-1", "en-gb"),
+
+  SK("sk", "sk", "ISO_639-1", "sk"),
+
+  MK("mk", "mk", "ISO_639-1", "mk"),
+
+  JA("ja", "ja", "ISO_639-1", "ja"),
+
+  ES_VE("es-ve", "es-ve", "ISO_639-1", "es-ve"),
+
+  EN_IE("en-ie", "en-ie", "ISO_639-1", "en-ie"),
+
+  CY_GB("cy-gb", "cy-gb", "ISO_639-1", "cy-gb"),
+
+  ZU("zu", "zu", "ISO_639-1", "zu"),
+
+  LV("lv", "lv", "ISO_639-1", "lv"),
+
+  HU("hu", "hu", "ISO_639-1", "hu"),
+
+  EU("eu", "eu", "ISO_639-1", "eu"),
+
+  ZH("zh", "zh", "ISO_639-1", "zh"),
+
+  AR_JO("ar-jo", "ar-jo", "ISO_639-1", "ar-jo"),
+
+  AR_IQ("ar-iq", "ar-iq", "ISO_639-1", "ar-iq"),
+
+  TH("th", "th", "ISO_639-1", "th"),
+
+  AF("af", "af", "ISO_639-1", "af"),
+
+  ES_EC("es-ec", "es-ec", "ISO_639-1", "es-ec"),
+
+  DE_LU("de-lu", "de-lu", "ISO_639-1", "de-lu"),
+
+  AR_KW("ar-kw", "ar-kw", "ISO_639-1", "ar-kw"),
+
+  AR_SY("ar-sy", "ar-sy", "ISO_639-1", "ar-sy"),
+
+  FR_LU("fr-lu", "fr-lu", "ISO_639-1", "fr-lu"),
+
+  ES_HN("es-hn", "es-hn", "ISO_639-1", "es-hn"),
 
   SQ("sq", "sq", "ISO_639-1", "sq"),
 
-  ESBO("es-bo", "es-bo", "ISO_639-1", "es-bo"),
+  ZH_TW("zh-tw", "zh-tw", "ISO_639-1", "zh-tw"),
+
+  ES_PA("es-pa", "es-pa", "ISO_639-1", "es-pa"),
+
+  ES_PR("es-pr", "es-pr", "ISO_639-1", "es-pr"),
+
+  AR_OM("ar-om", "ar-om", "ISO_639-1", "ar-om"),
+
+  ES_DO("es-do", "es-do", "ISO_639-1", "es-do"),
+
+  CA("ca", "ca", "ISO_639-1", "ca"),
+
+  GD("gd", "gd", "ISO_639-1", "gd"),
+
+  TR("tr", "tr", "ISO_639-1", "tr"),
+
+  EN_CA("en-ca", "en-ca", "ISO_639-1", "en-ca"),
+
+  KO("ko", "ko", "ISO_639-1", "ko"),
+
+  SV_FI("sv-fi", "sv-fi", "ISO_639-1", "sv-fi"),
+
+  RO("ro", "ro", "ISO_639-1", "ro"),
+
+  IT("it", "it", "ISO_639-1", "it"),
+
+  EN_AU("en-au", "en-au", "ISO_639-1", "en-au"),
+
+  DE_CH("de-ch", "de-ch", "ISO_639-1", "de-ch"),
+
+  AR_EG("ar-eg", "ar-eg", "ISO_639-1", "ar-eg"),
+
+  EL("el", "el", "ISO_639-1", "el"),
+
+  ES_SV("es-sv", "es-sv", "ISO_639-1", "es-sv"),
+
+  PT("pt", "pt", "ISO_639-1", "pt"),
+
+  EN_JM("en-jm", "en-jm", "ISO_639-1", "en-jm"),
 
   SV("sv", "sv", "ISO_639-1", "sv"),
 
-  PTBR("pt-br", "pt-br", "ISO_639-1", "pt-br"),
+  IT_CH("it-ch", "it-ch", "ISO_639-1", "it-ch"),
 
-  EN("en", "en", "ISO_639-1", "en");
+  AR_LB("ar-lb", "ar-lb", "ISO_639-1", "ar-lb"),
+
+  PL("pl", "pl", "ISO_639-1", "pl"),
+
+  CY_AR("cy-ar", "cy-ar", "ISO_639-1", "cy-ar"),
+
+  TS("ts", "ts", "ISO_639-1", "ts"),
+
+  ES_AR("es-ar", "es-ar", "ISO_639-1", "es-ar"),
+
+  FR("fr", "fr", "ISO_639-1", "fr"),
+
+  RO_MO("ro-mo", "ro-mo", "ISO_639-1", "ro-mo"),
+
+  FI("fi", "fi", "ISO_639-1", "fi"),
+
+  ES_PY("es-py", "es-py", "ISO_639-1", "es-py"),
+
+  MT("mt", "mt", "ISO_639-1", "mt"),
+
+  NL_BE("nl-be", "nl-be", "ISO_639-1", "nl-be"),
+
+  AR_SA("ar-sa", "ar-sa", "ISO_639-1", "ar-sa"),
+
+  EN_ZA("en-za", "en-za", "ISO_639-1", "en-za"),
+
+  ES_CL("es-cl", "es-cl", "ISO_639-1", "es-cl"),
+
+  GD_IE("gd-ie", "gd-ie", "ISO_639-1", "gd-ie"),
+
+  VE("ve", "ve", "ISO_639-1", "ve"),
+
+  NL("nl", "nl", "ISO_639-1", "nl"),
+
+  AR_LY("ar-ly", "ar-ly", "ISO_639-1", "ar-ly"),
+
+  HI("hi", "hi", "ISO_639-1", "hi"),
+
+  ZH_CN("zh-cn", "zh-cn", "ISO_639-1", "zh-cn"),
+
+  VI("vi", "vi", "ISO_639-1", "vi"),
+
+  FA("fa", "fa", "ISO_639-1", "fa"),
+
+  HR("hr", "hr", "ISO_639-1", "hr"),
+
+  ES("es", "es", "ISO_639-1", "es"),
+
+  EN_TT("en-tt", "en-tt", "ISO_639-1", "en-tt"),
+
+  LT("lt", "lt", "ISO_639-1", "lt"),
+
+  CS("cs", "cs", "ISO_639-1", "cs"),
+
+  AR_AE("ar-ae", "ar-ae", "ISO_639-1", "ar-ae"),
+
+  SL("sl", "sl", "ISO_639-1", "sl"),
+
+  NN("nn", "nn", "ISO_639-1", "nn"),
+
+  DE_AT("de-at", "de-at", "ISO_639-1", "de-at"),
+
+  ET("et", "et", "ISO_639-1", "et"),
+
+  BE("be", "be", "ISO_639-1", "be"),
+
+  ES_CO("es-co", "es-co", "ISO_639-1", "es-co"),
+
+  AR_DZ("ar-dz", "ar-dz", "ISO_639-1", "ar-dz"),
+
+  ES_NI("es-ni", "es-ni", "ISO_639-1", "es-ni"),
+
+  UK("uk", "uk", "ISO_639-1", "uk"),
+
+  EN("en", "en", "ISO_639-1", "en"),
+
+  SZ("sz", "sz", "ISO_639-1", "sz"),
+
+  BG("bg", "bg", "ISO_639-1", "bg"),
+
+  AR_BH("ar-bh", "ar-bh", "ISO_639-1", "ar-bh"),
+
+  SI("si", "si", "ISO_639-1", "si"),
+
+  EN_US("en-us", "en-us", "ISO_639-1", "en-us"),
+
+  XH("xh", "xh", "ISO_639-1", "xh");
 
   private String value;
 
