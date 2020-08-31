@@ -25,7 +25,9 @@
         <jackson.version>2.10.3</jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
+        <spring-boot-starter-test.version>2.2.6.RELEASE</spring-boot-starter-test.version>
         <woodstox.version>6.1.1</woodstox.version>
+        <ehrbase.sdk.version>v0.3.7</ehrbase.sdk.version>
     </properties>
 
     <build>
@@ -163,8 +165,8 @@
         <dependency>
             <groupId>com.github.ehrbase.openEHR_SDK</groupId>
             <artifactId>client</artifactId>
-            <version>0.3.5</version>
-            <!--<version>${ehrbase.sdk.version}</version>-->
+<!--            <version>0.3.5</version>-->
+            <version>${ehrbase.sdk.version}</version>
         </dependency>
 
 <!--        <dependency>-->
@@ -178,7 +180,8 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot.version}</version>
+            <version>${spring-boot-starter-test.version}</version>
+<!--            <version>${spring-boot.version}</version>-->
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -275,10 +278,10 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-<!--        <repository>-->
-<!--            <id>jitpack.io</id>-->
-<!--            <url>https://jitpack.io</url>-->
-<!--        </repository>-->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <repository>
             <id>oss-snapshots</id>
             <snapshots>

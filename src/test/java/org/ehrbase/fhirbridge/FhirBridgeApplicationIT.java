@@ -85,6 +85,7 @@ public class FhirBridgeApplicationIT {
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
+    /*
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -113,7 +114,6 @@ public class FhirBridgeApplicationIT {
 
         Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"", OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
-
 
     @Test
     public void createDiagnosticReportLab() throws IOException {
@@ -238,6 +238,7 @@ public class FhirBridgeApplicationIT {
         }
     }
 
+    */
     @Test
     public void createObservationLab() throws IOException {
 
@@ -254,6 +255,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
+    /*
     @Test
     public void createObservationUsingDefaultProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
@@ -414,6 +416,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
+    */
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
