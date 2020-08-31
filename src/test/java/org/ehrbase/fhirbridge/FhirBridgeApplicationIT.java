@@ -421,6 +421,7 @@ public class FhirBridgeApplicationIT {
         }
     }
 
+    /*
     @Test
     public void createObservationBodyHeight() throws IOException {
         String resource = getContent("classpath:/Observation/observation-bodyheight-example.json");
@@ -433,4 +434,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
+    */
+
 }

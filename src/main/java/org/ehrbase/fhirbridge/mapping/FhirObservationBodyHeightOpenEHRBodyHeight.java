@@ -1,7 +1,7 @@
 package org.ehrbase.fhirbridge.mapping;
 
-import org.ehrbase.fhirbridge.opt.covidbodyheightcomposition.COVIDBodyHeightComposition;
-import org.ehrbase.fhirbridge.opt.covidbodyheightcomposition.definition.KorpergroesseBeliebigesEreignisPointEvent;
+//import org.ehrbase.fhirbridge.opt.covidbodyheightcomposition.COVIDBodyHeightComposition;
+//import org.ehrbase.fhirbridge.opt.covidbodyheightcomposition.definition.KorpergroesseBeliebigesEreignisPointEvent;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Quantity;
@@ -13,7 +13,8 @@ public class FhirObservationBodyHeightOpenEHRBodyHeight {
 
     private static final Logger logger = LoggerFactory.getLogger(FhirDiagnosticReportOpenehrLabResults.class);
     private FhirObservationBodyHeightOpenEHRBodyHeight() {}
-    public static COVIDBodyHeightComposition map (Observation fhirObservation){
+    public static void /*COVIDBodyHeightComposition*/ map (Observation fhirObservation){
+        /*
         Quantity valueFHIRQuantity = fhirObservation.getValueQuantity();
         DateTimeType effectiveDateTimeType = fhirObservation.getEffectiveDateTimeType();
         logger.info(valueFHIRQuantity.toString());
@@ -24,6 +25,7 @@ public class FhirObservationBodyHeightOpenEHRBodyHeight {
         //korpergroesseBeliebigesEreignisPointEvent.setGewichtUnits("kg");
         korpergroesseBeliebigesEreignisPointEvent.setHeightMagnitude(valueFHIRQuantity.getValue().doubleValue());
         return composition;
+        */
     }
 
 }
