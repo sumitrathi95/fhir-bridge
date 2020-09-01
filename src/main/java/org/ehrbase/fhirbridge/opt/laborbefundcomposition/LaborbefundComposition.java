@@ -81,6 +81,10 @@ public class LaborbefundComposition {
   {
      this.feederAudit = feederAudit;
   }
+  public FeederAudit getFeederAudit()
+  {
+     return this.feederAudit;
+  }
 
   public VersionUid getVersionUid() {
      return this.versionUid ;

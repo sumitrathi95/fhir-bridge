@@ -130,8 +130,6 @@ public class FhirObservationTempOpenehrBodyTemperature {
 
         observation.getMeta().addProfile(Profile.BODY_TEMP.getUrl());
 
-        observation.setId("bodytemp");
-
 
         // FIXME: all FHIR resources need an ID, currently we are using the compo.uid as the resource ID,
         // this is a workaround, might not work on all cases.
