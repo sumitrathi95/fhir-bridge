@@ -31,14 +31,14 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
         try {
             // set systolic BP
             double systolicBPvalue = observation.getComponent().get(0).getValueQuantity().getValue().doubleValue();
-            String systolicBPunit = observation.getComponent().get(0).getValueQuantity().getUnit();
+            String systolicBPunit = observation.getComponent().get(0).getValueQuantity().getCode();
 
             bloodPressureObservation.setSystolischMagnitude(systolicBPvalue);
             bloodPressureObservation.setSystolischUnits(systolicBPunit);
 
             // set diastolic BP
             double diastolicBPvalue = observation.getComponent().get(1).getValueQuantity().getValue().doubleValue();
-            String diastolicBPunit = observation.getComponent().get(1).getValueQuantity().getUnit();
+            String diastolicBPunit = observation.getComponent().get(1).getValueQuantity().getCode();
 
             bloodPressureObservation.setDiastolischMagnitude(diastolicBPvalue);
             bloodPressureObservation.setDiastolischUnits(diastolicBPunit);
@@ -48,7 +48,8 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
 
         bloodPressureObservation.setSubject(new PartySelf()); // TODO: check on how to assign subject
         bloodPressureObservation.setLanguage(Language.EN); // FIXME: we need to grab the language from the template
-
+        bloodPressureObservation.setTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+        bloodPressureObservation.setOriginValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
         bloodPressureComposition.setBlutdruck(bloodPressureObservation);
 
         // ======================================================================================
@@ -59,6 +60,8 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
         bloodPressureComposition.setTerritory(Territory.DE);
         bloodPressureComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         bloodPressureComposition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+
+        bloodPressureComposition.setComposer(new PartySelf());
 
         return bloodPressureComposition;
 
