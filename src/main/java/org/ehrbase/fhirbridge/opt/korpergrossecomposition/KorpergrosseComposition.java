@@ -1,5 +1,6 @@
-package org.ehrbase.fhirbridge.opt.korpergroecomposition;
+package org.ehrbase.fhirbridge.opt.korpergrossecomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
@@ -13,7 +14,7 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.opt.korpergroecomposition.definition.LangeObservation;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.definition.GrosseLangeObservation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
@@ -22,12 +23,12 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
 @Template("Körpergröße")
-public class KorpergroEComposition {
+public class KorpergrosseComposition {
   @Id
   private VersionUid versionUid;
 
   @Path("/content[openEHR-EHR-OBSERVATION.height.v2]")
-  private LangeObservation lange;
+  private GrosseLangeObservation grosseLange;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -41,23 +42,26 @@ public class KorpergroEComposition {
   @Path("/context/health_care_facility")
   private PartyIdentified healthCareFacility;
 
+  @Path("/territory")
+  private Territory territory;
+
+  @Path("/context/start_time|value")
+  private TemporalAccessor startTimeValue;
+
   @Path("/composer")
   private PartyProxy composer;
 
   @Path("/context/setting|defining_code")
   private SettingDefiningcode settingDefiningcode;
 
-  @Path("/territory")
-  private Territory territory;
+  @Path("/feeder_audit")
+  private FeederAudit feederAudit;
 
   @Path("/context/location")
   private String location;
 
   @Path("/category|defining_code")
   private CategoryDefiningcode categoryDefiningcode;
-
-  @Path("/context/start_time|value")
-  private TemporalAccessor startTimeValue;
 
   @Path("/context/other_context[at0001]/items[at0002]")
   private List<Cluster> erweiterung;
@@ -70,12 +74,12 @@ public class KorpergroEComposition {
      this.versionUid = versionUid;
   }
 
-  public void setLange(LangeObservation lange) {
-     this.lange = lange;
+  public void setGrosseLange(GrosseLangeObservation grosseLange) {
+     this.grosseLange = grosseLange;
   }
 
-  public LangeObservation getLange() {
-     return this.lange ;
+  public GrosseLangeObservation getGrosseLange() {
+     return this.grosseLange ;
   }
 
   public void setEndTimeValue(TemporalAccessor endTimeValue) {
@@ -110,6 +114,22 @@ public class KorpergroEComposition {
      return this.healthCareFacility ;
   }
 
+  public void setTerritory(Territory territory) {
+     this.territory = territory;
+  }
+
+  public Territory getTerritory() {
+     return this.territory ;
+  }
+
+  public void setStartTimeValue(TemporalAccessor startTimeValue) {
+     this.startTimeValue = startTimeValue;
+  }
+
+  public TemporalAccessor getStartTimeValue() {
+     return this.startTimeValue ;
+  }
+
   public void setComposer(PartyProxy composer) {
      this.composer = composer;
   }
@@ -126,12 +146,12 @@ public class KorpergroEComposition {
      return this.settingDefiningcode ;
   }
 
-  public void setTerritory(Territory territory) {
-     this.territory = territory;
+  public void setFeederAudit(FeederAudit feederAudit) {
+     this.feederAudit = feederAudit;
   }
 
-  public Territory getTerritory() {
-     return this.territory ;
+  public FeederAudit getFeederAudit() {
+     return this.feederAudit ;
   }
 
   public void setLocation(String location) {
@@ -148,14 +168,6 @@ public class KorpergroEComposition {
 
   public CategoryDefiningcode getCategoryDefiningcode() {
      return this.categoryDefiningcode ;
-  }
-
-  public void setStartTimeValue(TemporalAccessor startTimeValue) {
-     this.startTimeValue = startTimeValue;
-  }
-
-  public TemporalAccessor getStartTimeValue() {
-     return this.startTimeValue ;
   }
 
   public void setErweiterung(List<Cluster> erweiterung) {

@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.opt.korpergroecomposition.definition;
+package org.ehrbase.fhirbridge.opt.korpergrossecomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartyProxy;
@@ -13,12 +13,12 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
 @Entity
 @Archetype("openEHR-EHR-OBSERVATION.height.v2")
-public class LangeObservation {
+public class GrosseLangeObservation {
   @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value|magnitude")
-  private Double langeMagnitude;
+  private Double grosseLangeMagnitude;
 
   @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value|units")
-  private String langeUnits;
+  private String grosseLangeUnits;
 
   @Path("/language")
   private Language language;
@@ -38,20 +38,20 @@ public class LangeObservation {
   @Path("/data[at0001]/origin|value")
   private TemporalAccessor originValue;
 
-  public void setLangeMagnitude(Double langeMagnitude) {
-     this.langeMagnitude = langeMagnitude;
+  public void setGrosseLangeMagnitude(Double grosseLangeMagnitude) {
+     this.grosseLangeMagnitude = grosseLangeMagnitude;
   }
 
-  public Double getLangeMagnitude() {
-     return this.langeMagnitude ;
+  public Double getGrosseLangeMagnitude() {
+     return this.grosseLangeMagnitude ;
   }
 
-  public void setLangeUnits(String langeUnits) {
-     this.langeUnits = langeUnits;
+  public void setGrosseLangeUnits(String grosseLangeUnits) {
+     this.grosseLangeUnits = grosseLangeUnits;
   }
 
-  public String getLangeUnits() {
-     return this.langeUnits ;
+  public String getGrosseLangeUnits() {
+     return this.grosseLangeUnits ;
   }
 
   public void setLanguage(Language language) {
