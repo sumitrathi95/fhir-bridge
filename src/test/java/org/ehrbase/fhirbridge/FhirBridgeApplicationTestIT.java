@@ -46,16 +46,16 @@ import java.util.UUID;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Testcontainers
-public class FhirBridgeApplicationTestIT {
+//@Testcontainers
+  public class FhirBridgeApplicationTestIT {
 
         private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationTestIT.class);
 
-        @Container
-        public static DockerComposeContainer environment = new DockerComposeContainer(
-                        new File("src/test/resources/ehrbase-compose.yml")).withExposedService("ehrdb", 5432)
-                                        .withExposedService("ehrbase", 8080)
-                                        .waitingFor("ehrbase", Wait.forListeningPort());
+       // @Container
+        //public static DockerComposeContainer environment = new DockerComposeContainer(
+       //                 new File("src/test/resources/ehrbase-compose.yml")).withExposedService("ehrdb", 5432)
+       //                                 .withExposedService("ehrbase", 8080)
+       //                                 .waitingFor("ehrbase", Wait.forListeningPort());
 
         @LocalServerPort
         private int port;
