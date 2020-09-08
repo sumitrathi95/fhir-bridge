@@ -47,7 +47,6 @@ jobs:
     build-and-test-fhirbridge:
         description: Build and test FHIR-bridge, analyze code, upload results to sonarcloud.io
         executor: docker-py3-java11-postgres
-        # executor: machine-ubuntu-2004
         steps:
             - checkout
             - install-maven
@@ -82,19 +81,6 @@ commands:
     #    Y8a.    .a8P  Y8a.    .a8P   88    `888'    88  88    `888'    88   d8'        `8b   88     `8888  88      .a8P   Y8a     a8P
     #     `"Y8888Y"'    `"Y8888Y"'    88     `8'     88  88     `8'     88  d8'          `8b  88      `888  88888888Y"'     "Y88888P"
     
-    # setup-database:
-    #     description: Setup ehrbase database
-    #     steps:
-    #         - run:
-    #             name: Setup database
-    #             # background: true
-    #             command: |
-    #                 docker run  -d --name ehrdb \
-    #                             -e POSTGRES_USER=$POSTGRES_USER \
-    #                             -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -d \
-    #                             -e DISABLE_SECURITY=true \
-    #                             -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
-
 
     git-clone-ehrbase-repo:
         steps:
@@ -137,7 +123,6 @@ commands:
             - run:
                 name: WAIT FOR EHRBASE SERVER TO BE READY
                 command: |
-                    jps
                     ls -la
                     timeout=30
                     while [ ! -f ehrbase/log ];
@@ -160,6 +145,7 @@ commands:
                             sleep 1;
                         ((timeout--))
                     done
+                    echo "REMAINING TIMEOUT: $timeout"
                     jps
             - run:
                 name: BUILD FHIR-BRIDGE
@@ -293,7 +279,6 @@ executors:
     docker-python3-java11:
         working_directory: ~/projects
         docker:
-            # - image: circleci/python@sha256:e1c98a85c5ee62ac52a2779fe5abe2677f021c8e3158e4fb2d569c7b9c6ac073
             - image: circleci/python:3.8.5-node-browsers
 
     docker-py3-java11-postgres:
@@ -304,35 +289,3 @@ executors:
               environment:
                 POSTGRES_USER: postgres
                 POSTGRES_PASSWORD: postgres
-
-    machine-ubuntu-2004:
-        description: |
-            Ubuntu 20.04 VM (machine executor)
-            - openjdk 1.8
-            - openjdk 11.0.8 (default)
-            - maven 3.6.3
-            - gradle 6.6
-            - python 2.7.17
-            - python 3.8.5
-            - pip/pip3
-            - docker 19.03.12
-            - docker-compose 1.26.2
-            - aws-cli 2.0.43
-            - google cloud sdk 307.0.0
-            - heroku 7.42.12
-            - chrome 85.0.4183
-            - chromedriver 85.0.4183
-            - firefox 80.0.0
-            - go 1.15
-            - leiningen 2.9.4
-            - node 12.18.3 (default)
-            - node 14.8.0
-            - ruby 2.7.1
-            - sbt 1.3.13
-            - yarn 1.22.4
-        working_directory: ~/projects
-        environment:
-            PIPELINE_ID: << pipeline.id >>
-            BRANCH_NAME: << pipeline.git.branch >>
-        machine:
-            image: ubuntu-2004:202008-01
