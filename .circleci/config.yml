@@ -50,7 +50,6 @@ jobs:
         # executor: machine-ubuntu-2004
         steps:
             - checkout
-            # - setup-database
             - install-maven
             - git-clone-ehrbase-repo
             - cache-out-fhirbridge-m2-dependencies
@@ -60,12 +59,12 @@ jobs:
             - build-and-test-fhirbridge
             - cache-in-ehrbase-m2-dependencies
             - cache-in-fhirbridge-m2-dependencies
-            # - collect-fhirbride-unittest-results
-            # - collect-fhirbridge-integrationtest-results
-            # - save-fhirbridge-test-results
-            # - save-jacoco-coverage-report
-            # - sonarcloud/scan:
-            #     cache_version: 1
+            - collect-fhirbride-unittest-results
+            - collect-fhirbridge-integrationtest-results
+            - save-fhirbridge-test-results
+            - save-jacoco-coverage-report
+            - sonarcloud/scan:
+                cache_version: 1
 
 
 
@@ -83,18 +82,18 @@ commands:
     #    Y8a.    .a8P  Y8a.    .a8P   88    `888'    88  88    `888'    88   d8'        `8b   88     `8888  88      .a8P   Y8a     a8P
     #     `"Y8888Y"'    `"Y8888Y"'    88     `8'     88  88     `8'     88  d8'          `8b  88      `888  88888888Y"'     "Y88888P"
     
-    setup-database:
-        description: Setup ehrbase database
-        steps:
-            - run:
-                name: Setup database
-                # background: true
-                command: |
-                    docker run  -d --name ehrdb \
-                                -e POSTGRES_USER=$POSTGRES_USER \
-                                -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -d \
-                                -e DISABLE_SECURITY=true \
-                                -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+    # setup-database:
+    #     description: Setup ehrbase database
+    #     steps:
+    #         - run:
+    #             name: Setup database
+    #             # background: true
+    #             command: |
+    #                 docker run  -d --name ehrdb \
+    #                             -e POSTGRES_USER=$POSTGRES_USER \
+    #                             -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -d \
+    #                             -e DISABLE_SECURITY=true \
+    #                             -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
 
 
     git-clone-ehrbase-repo:
@@ -138,23 +137,30 @@ commands:
             - run:
                 name: WAIT FOR EHRBASE SERVER TO BE READY
                 command: |
-                  jps
-                  ls -la
-                  timeout=30
-                  while [ ! -f ehrbase/log ];
-                  do
-                    echo "Waiting for file ehrbase/log ..."
-                    if [ "$timeout" == 0 ]; then
-                      echo "ERROR: timed out while waiting for file ehrbase/log"
-                      exit 1
-                    fi
-                    sleep 1
-                    ((timeout--))
-                  done
-                  if ! tail -f ehrbase/log | timeout 30s grep -m 1 "Started EhrBase in"; then
-                    echo "WARNING: Did not see a startup message even after waiting 30s" >&2
-                  fi
-                  jps
+                    jps
+                    ls -la
+                    timeout=30
+                    while [ ! -f ehrbase/log ];
+                        do
+                            echo "Waiting for file ehrbase/log ..."
+                            if [ "$timeout" == 0 ]; then
+                                echo "ERROR: timed out while waiting for file ehrbase/log"
+                                exit 1
+                            fi
+                            sleep 1
+                        ((timeout--))
+                    done
+                    while ! (cat ehrbase/log | grep -m 1 "Started EhrBase in");
+                        do
+                            echo "waiting for EHRbase to be ready ...";
+                            if [ "$timeout" == 0 ]; then
+                                echo "WARNING: Did not see a startup message even after waiting 30s"
+                                exit 1
+                            fi
+                            sleep 1;
+                        ((timeout--))
+                    done
+                    jps
             - run:
                 name: BUILD FHIR-BRIDGE
                 command: |
