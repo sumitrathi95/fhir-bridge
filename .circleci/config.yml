@@ -50,7 +50,7 @@ jobs:
         # executor: machine-ubuntu-2004
         steps:
             - checkout
-            - setup-database
+            # - setup-database
             - install-maven
             - git-clone-ehrbase-repo
             - cache-out-fhirbridge-m2-dependencies
