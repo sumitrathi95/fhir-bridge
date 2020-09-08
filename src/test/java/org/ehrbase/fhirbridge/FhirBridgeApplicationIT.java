@@ -17,15 +17,9 @@ import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-// import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +28,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -46,16 +39,9 @@ import java.util.UUID;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Testcontainers
-public class FhirBridgeApplicationTestIT {
+public class FhirBridgeApplicationIT {
 
-        private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationTestIT.class);
-
-        @Container
-        public static DockerComposeContainer environment = new DockerComposeContainer(
-                        new File("src/test/resources/ehrbase-compose.yml")).withExposedService("ehrdb", 5432)
-                                        .withExposedService("ehrbase", 8080)
-                                        .waitingFor("ehrbase", Wait.forListeningPort());
+        private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
 
         @LocalServerPort
         private int port;
