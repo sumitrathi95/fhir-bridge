@@ -49,17 +49,13 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
             bloodPressure.setDiastolischMagnitude(diastolicBPValue);
             bloodPressure.setDiastolischUnits(diastolicBPUnit);
 
-            // set strukturierte Stelle der Messung
-            List<Cluster> strukturierteStellederMessung = new ArrayList<>();
-            // TODO: Fill with values? How to extract such values from List<Coding>
-            bloodPressure.setStrukturierteStelleDerMessung(strukturierteStellederMessung);
 
         } catch (Exception e) {
             throw new UnprocessableEntityException(e.getMessage());
         }
 
-        bloodPressure.setSubject(new PartySelf()); // TODO: check on how to assign subject
-        bloodPressure.setLanguage(Language.EN); // FIXME: we need to grab the language from the template
+        bloodPressure.setSubject(new PartySelf());
+        bloodPressure.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
 
         bloodPressure.setTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
         bloodPressure.setOriginValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
@@ -69,9 +65,9 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
 
         // ======================================================================================
         // Required fields by API
-        bloodPressureComposition.setLanguage(Language.EN); // FIXME: we need to grab the language from the template
-        bloodPressureComposition.setLocation("test");
-        bloodPressureComposition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
+        bloodPressureComposition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        bloodPressureComposition.setLocation("test"); // FIXME: Location abfangen?
+        bloodPressureComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
         bloodPressureComposition.setTerritory(Territory.DE);
         bloodPressureComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
 
