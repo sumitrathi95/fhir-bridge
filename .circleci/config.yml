@@ -59,7 +59,7 @@ jobs:
             - build-and-test-fhirbridge
             - cache-in-ehrbase-m2-dependencies
             - cache-in-fhirbridge-m2-dependencies
-            - collect-fhirbride-unittest-results
+            # - collect-fhirbride-unittest-results
             - collect-fhirbridge-integrationtest-results
             - save-fhirbridge-test-results
             - save-jacoco-coverage-report
