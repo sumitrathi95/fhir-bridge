@@ -2,9 +2,6 @@
 
 ## Project setup
 
-### Prerequisites
-Docker installed.
-
 ### Build
 ```
 mvn clean install
