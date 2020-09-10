@@ -414,7 +414,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
-
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {

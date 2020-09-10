@@ -7,6 +7,7 @@ import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.archetyped.FeederAuditDetails;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
 import com.nedap.archie.rm.datavalues.encapsulated.DvParsable;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
@@ -44,21 +45,8 @@ public class FhirDiagnosticReportOpenehrLabResults {
 
         LaborbefundComposition composition = new LaborbefundComposition();
 
-        //test
-        FeederAuditDetails fad = new FeederAuditDetails();
-        fad.setSystemId("FHIR-bridge");
-        FeederAudit fa = new FeederAudit();
-        fa.setOriginatingSystemAudit(fad);
-
-        FhirContext ctx = FhirContext.forR4();
-        IParser parser = ctx.newJsonParser();
-        String originalContent = parser.encodeResourceToString(fhirObservation);
-
-        DvParsable originalContentEnc = new DvParsable();
-        originalContentEnc.setValue(originalContent);
-        originalContentEnc.setFormalism("application/json");
-        fa.setOriginalContent(originalContentEnc);
-
+        // test
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
         composition.setFeederAudit(fa);
         // /test
 
