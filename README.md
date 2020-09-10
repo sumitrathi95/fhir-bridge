@@ -32,12 +32,12 @@ mvn verify
 
 ## FHIR to openEHR Mappings
 
-| FHIR Resource    | FHIR Profile                 | openEHR OPT         |
-| ---------------- | ---------------------------- | ------------------- |
-| DiagnosticReport | [DiagnosticReportLab][1]     | [Laborbefund][ckm1] |
+| FHIR Resource    | FHIR Profile                 | openEHR OPT                                                 |
+| ---------------- | ---------------------------- | ----------------------------------------------------------- |
+| DiagnosticReport | [DiagnosticReportLab][1]     | [Laborbefund][ckm1]                                         |
 | Observation      | [bodytemp][2]                | [Intensivmedizinisches Monitoring Korpertemperatur][ckm2] * |
-| Observation      | [CoronavirusNachweisTest][3] | [Kennzeichnung Erregernachweis SARS-CoV-2][ckm3] |
-| Condition        | -                            | [Diagnose][ckm4] |
+| Observation      | [CoronavirusNachweisTest][3] | [Kennzeichnung Erregernachweis SARS-CoV-2][ckm3]            |
+| Condition        | -                            | [Diagnose][ckm4]                                            |
 
 [1]: https://github.com/ehrbase/fhir-bridge/blob/master/src/main/resources/profiles/DiagnosticReportLab.xml
 [2]: https://github.com/ehrbase/fhir-bridge/blob/master/src/main/resources/profiles/bodytemp.xml
