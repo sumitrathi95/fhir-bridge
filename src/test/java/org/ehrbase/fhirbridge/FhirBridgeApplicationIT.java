@@ -103,7 +103,8 @@ public class FhirBridgeApplicationIT {
                 Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
         }
 
-        @Test
+        /*
+                @Test
         public void createConditionUsingInvalidProfile() {
                 UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
                         () -> client.create().resource(getContent(
@@ -113,6 +114,7 @@ public class FhirBridgeApplicationIT {
                 Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"",
                         OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
         }
+*/
 
         @Test
         public void createDiagnosticReportLab() throws IOException {
@@ -276,6 +278,7 @@ public class FhirBridgeApplicationIT {
                         OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
         }
 
+        /*
         @Test
         public void createObservationUsingUnsupportedProfile() {
                 UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
@@ -291,7 +294,7 @@ public class FhirBridgeApplicationIT {
                                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                         OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
         }
-
+*/
         @Test
         public void createQuestionnaireResponse() throws IOException {
 
