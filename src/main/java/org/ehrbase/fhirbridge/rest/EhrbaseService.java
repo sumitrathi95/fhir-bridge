@@ -10,6 +10,7 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -116,4 +117,12 @@ public class EhrbaseService {
 
         return composition.getVersionUid();
     }
+
+    public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
 }
