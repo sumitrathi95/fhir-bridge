@@ -4,31 +4,31 @@ import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum SettingDefiningcode implements EnumValueSet {
+  COMPLEMENTARY_HEALTH_CARE("complementary health care", "complementary health care", "openehr", "235"),
+
   HOME("home", "home", "openehr", "225"),
 
-  PRIMARYALLIEDHEALTHCARE("primary allied health care", "primary allied health care", "openehr", "230"),
+  SECONDARY_NURSING_CARE("secondary nursing care", "secondary nursing care", "openehr", "233"),
 
-  OTHERCARE("other care", "other care", "openehr", "238"),
+  DENTAL_CARE("dental care", "dental care", "openehr", "236"),
 
-  MIDWIFERYCARE("midwifery care", "midwifery care", "openehr", "231"),
+  OTHER_CARE("other care", "other care", "openehr", "238"),
 
-  SECONDARYNURSINGCARE("secondary nursing care", "secondary nursing care", "openehr", "233"),
+  NURSING_HOME_CARE("nursing home care", "nursing home care", "openehr", "237"),
 
-  COMPLEMENTARYHEALTHCARE("complementary health care", "complementary health care", "openehr", "235"),
+  SECONDARY_ALLIED_HEALTH_CARE("secondary allied health care", "secondary allied health care", "openehr", "234"),
 
-  DENTALCARE("dental care", "dental care", "openehr", "236"),
+  EMERGENCY_CARE("emergency care", "emergency care", "openehr", "227"),
 
-  NURSINGHOMECARE("nursing home care", "nursing home care", "openehr", "237"),
+  PRIMARY_NURSING_CARE("primary nursing care", "primary nursing care", "openehr", "229"),
 
-  PRIMARYNURSINGCARE("primary nursing care", "primary nursing care", "openehr", "229"),
+  PRIMARY_MEDICAL_CARE("primary medical care", "primary medical care", "openehr", "228"),
 
-  PRIMARYMEDICALCARE("primary medical care", "primary medical care", "openehr", "228"),
+  PRIMARY_ALLIED_HEALTH_CARE("primary allied health care", "primary allied health care", "openehr", "230"),
 
-  EMERGENCYCARE("emergency care", "emergency care", "openehr", "227"),
+  SECONDARY_MEDICAL_CARE("secondary medical care", "secondary medical care", "openehr", "232"),
 
-  SECONDARYMEDICALCARE("secondary medical care", "secondary medical care", "openehr", "232"),
-
-  SECONDARYALLIEDHEALTHCARE("secondary allied health care", "secondary allied health care", "openehr", "234");
+  MIDWIFERY_CARE("midwifery care", "midwifery care", "openehr", "231");
 
   private String value;
 

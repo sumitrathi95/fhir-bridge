@@ -203,6 +203,8 @@ public class FhirBridgeApplicationIT {
                 Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
         }
 
+
+
         @Test
         public void createCoronavirusLabResults() throws IOException {
 

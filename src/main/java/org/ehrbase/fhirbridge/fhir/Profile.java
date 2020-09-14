@@ -19,7 +19,9 @@ public enum Profile {
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
-    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation);
+    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
+
+    BODY_HEIGHT("http://hl7.org/fhir/StructureDefinition/bodyheight", ResourceType.Observation);
 
     private final String url;
 
