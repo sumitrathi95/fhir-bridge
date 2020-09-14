@@ -34,11 +34,11 @@
     "text": "Body height"
   },
   "subject": {
-    "reference": "Patient/example"
+    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49"
   },
   "effectiveDateTime": "1999-07-02",
   "valueQuantity": {
-    "value": 66.899999999999991,
+    "value": 66.89,
     "unit": "in",
     "system": "http://unitsofmeasure.org",
     "code": "[in_i]"

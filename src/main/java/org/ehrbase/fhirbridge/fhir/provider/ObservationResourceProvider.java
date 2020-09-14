@@ -482,7 +482,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveBodyHeight(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_HEIGHT);
             }
         }
         catch (Exception e)
