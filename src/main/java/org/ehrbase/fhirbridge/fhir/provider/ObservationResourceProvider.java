@@ -16,11 +16,13 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
+import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -459,6 +461,21 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTest(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
+            }
+
+            else if (ProfileUtils.hasProfile(observation, Profile.SOFA_SCORE))
+            {
+                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION SOFA SCORE");
+
+                // Map SOFA Score to openEHR
+
+
+                // test map FHIR to openEHR
+                SOFAComposition composition = FhirObservationSofaScoreOpenehrSofa.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveSOFAScore(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SOFA_SCORE);
             }
             else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
