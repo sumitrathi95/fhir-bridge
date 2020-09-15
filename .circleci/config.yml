@@ -10,7 +10,7 @@ version: 2.1
 #    - builds FHIR-bridge code
 #    - runs (Java) integration tests
 #    - creates code coverage report w/ Jacoco
-#    - performes sonarcoud.io code analysis
+#    - performes sonarcloud.io code analysis
 
 
 workflows:
