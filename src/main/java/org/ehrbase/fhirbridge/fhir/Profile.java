@@ -16,6 +16,8 @@ public enum Profile {
     // Observation Profiles
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
+    
+    FIO2("http://hl7.org/fhir/StructureDefinition/fiO2", ResourceType.Observation),
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
