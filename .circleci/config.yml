@@ -3,12 +3,14 @@ version: 2.1
 # OVERVIEW - What this CI pipeline does:
 #
 # 1. So far this pipeline consists of one workflow only, which
-#    - compiles FHIR-bridge code
-#    - starts ehrbase & postgresql containers via testcontainers's
-#      Docker Compose Module during Maven's verify phase (`mvn clean verify`)
+#    - clones ehrbase repo
+#    - builds ehrbase server from develop branch
+#    - starts ehrbase server (postgresql db is included in used docker executor,
+#                             see executors section at the buttom)
+#    - builds FHIR-bridge code
 #    - runs (Java) integration tests
 #    - creates code coverage report w/ Jacoco
-#    - performes sonarcoud.io code analysis
+#    - performes sonarcloud.io code analysis
 
 
 workflows:
@@ -44,11 +46,17 @@ jobs:
     
     build-and-test-fhirbridge:
         description: Build and test FHIR-bridge, analyze code, upload results to sonarcloud.io
-        executor: vm-ubuntu-1604
+        executor: docker-py3-java11-postgres
         steps:
             - checkout
+            - install-maven
+            - git-clone-ehrbase-repo
             - cache-out-fhirbridge-m2-dependencies
-            - mvn-clean-verify
+            - cache-out-ehrbase-m2-dependencies
+            - build-ehrbase
+            - start-ehrbase-server
+            - build-and-test-fhirbridge
+            - cache-in-ehrbase-m2-dependencies
             - cache-in-fhirbridge-m2-dependencies
             # - collect-fhirbride-unittest-results
             - collect-fhirbridge-integrationtest-results
@@ -73,39 +81,109 @@ commands:
     #    Y8a.    .a8P  Y8a.    .a8P   88    `888'    88  88    `888'    88   d8'        `8b   88     `8888  88      .a8P   Y8a     a8P
     #     `"Y8888Y"'    `"Y8888Y"'    88     `8'     88  88     `8'     88  d8'          `8b  88      `888  88888888Y"'     "Y88888P"
     
-    
-    mvn-clean-verify:
-        description: | 
-            Executes `mvn clean verify`
-            testcontainers(.org) dependency ensures that ehrbase server
-            and postgresql db are started before integration tests a run.
+
+    git-clone-ehrbase-repo:
         steps:
-            - openjdk-install/openjdk:
-                version: 11
-            - install-maven
             - run:
+                name: CLONE EHRBASE REPO
+                command: |
+                    git clone git@github.com:ehrbase/ehrbase.git
+                    ls -la
+
+
+    build-ehrbase:
+        steps:
+            - run:
+                name: BUILD EHRBASE SERVER
                 command: |
                     ls -la
-                    mvn --version
-                    java --version
-                    mvn clean verify
+                    cd ehrbase
+                    mvn package -Dmaven.javadoc.skip=true -Dmaven.test.skip
+
+
+    start-ehrbase-server:
+        steps:
+            - run:
+                name: START EHRBASE SERVER
+                background: true
+                command: |
+                    ls -la
+                    cd ehrbase
+                    EHRbase_VERSION=$(mvn -q -Dexec.executable="echo" \
+                                             -Dexec.args='${project.version}' \
+                                             --non-recursive exec:exec)
+                    echo ${EHRbase_VERSION}
+                    java -jar "application/target/application-0.13.0.jar" > log
+
+
+    build-and-test-fhirbridge:
+        description: | 
+            Executes `mvn clean verify`
+        steps:
+            - run:
+                name: WAIT FOR EHRBASE SERVER TO BE READY
+                command: |
+                    ls -la
+                    timeout=30
+                    while [ ! -f ehrbase/log ];
+                        do
+                            echo "Waiting for file ehrbase/log ..."
+                            if [ "$timeout" == 0 ]; then
+                                echo "ERROR: timed out while waiting for file ehrbase/log"
+                                exit 1
+                            fi
+                            sleep 1
+                        ((timeout--))
+                    done
+                    while ! (cat ehrbase/log | grep -m 1 "Started EhrBase in");
+                        do
+                            echo "waiting for EHRbase to be ready ...";
+                            if [ "$timeout" == 0 ]; then
+                                echo "WARNING: Did not see a startup message even after waiting 30s"
+                                exit 1
+                            fi
+                            sleep 1;
+                        ((timeout--))
+                    done
+                    echo "REMAINING TIMEOUT: $timeout"
+                    jps
+            - run:
+                name: BUILD FHIR-BRIDGE
+                command: |
+                    ls -la
+                    mvn clean verify -Dmaven.javadoc.skip=true
 
 
     cache-out-fhirbridge-m2-dependencies:
         steps:
-          - run:
-              name: Generate Cache Checksum for FHIR-bridge Dependencies
-              command: find . -name 'pom.xml' | sort | xargs cat > /tmp/fhirbridge_maven_cache_seed
-          - restore_cache:
-              key: fhirbridge-
+            - run:
+                name: Generate Cache Checksum for FHIR-bridge Dependencies
+                command: find . -name 'pom.xml' | sort | xargs cat > /tmp/fhirbridge_maven_cache_seed
+            - restore_cache:
+                key: fhirbridge-
 
 
     cache-in-fhirbridge-m2-dependencies:
         steps:
-          - save_cache:
-              key: fhirbridge-{{ checksum "/tmp/fhirbridge_maven_cache_seed" }}
-              paths:
-              - ~/.m2
+            - save_cache:
+                key: fhirbridge-{{ checksum "/tmp/fhirbridge_maven_cache_seed" }}
+                paths:
+                - ~/.m2
+    
+    cache-out-ehrbase-m2-dependencies:
+        steps:
+            - run:
+                name: Generate Cache Checksum for EHRbase Dependencies
+                command: find ~/projects/ehrbase -name 'pom.xml' | sort | xargs cat > /tmp/ehrbase_maven_cache_seed
+            - restore_cache:
+                key: EHRbase-v1-
+    
+    cache-in-ehrbase-m2-dependencies:
+        steps:
+            - save_cache:
+                key: EHRbase-v1-{{ checksum "/tmp/ehrbase_maven_cache_seed" }}
+                paths:
+                    - ~/.m2
 
 
     # collect-fhirbridge-unittest-results:
@@ -179,6 +257,8 @@ commands:
             - run: 
                 name: Install Maven tool
                 command: |
+                    sudo killall -9 apt-get || true
+                    sudo apt -y update
                     [ -f /usr/bin/mvn ] && echo "Maven is already installed." || sudo apt install maven -y
 
 
@@ -199,21 +279,13 @@ executors:
     docker-python3-java11:
         working_directory: ~/projects
         docker:
-            - image: circleci/python@sha256:e1c98a85c5ee62ac52a2779fe5abe2677f021c8e3158e4fb2d569c7b9c6ac073
+            - image: circleci/python:3.8.5-node-browsers
 
     docker-py3-java11-postgres:
         working_directory: ~/projects
         docker:
-            - image: circleci/python@sha256:e1c98a85c5ee62ac52a2779fe5abe2677f021c8e3158e4fb2d569c7b9c6ac073
+            - image: circleci/python:3.8.5-node-browsers
             - image: ehrbaseorg/ehrbase-postgres:10
               environment:
                 POSTGRES_USER: postgres
                 POSTGRES_PASSWORD: postgres
-
-    vm-ubuntu-1604:
-        working_directory: ~/projects
-        machine:
-            image: ubuntu-1604:202007-01        # what's inside:
-                                                # Ubuntu 16.04
-                                                # Docker v19.03.12
-                                                # Docker Compose v1.26.1
