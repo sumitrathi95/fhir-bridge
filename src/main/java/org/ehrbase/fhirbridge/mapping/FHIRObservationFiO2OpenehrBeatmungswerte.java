@@ -50,7 +50,7 @@ public class FHIRObservationFiO2OpenehrBeatmungswerte {
 		//obligatory stuff block
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
         composition.setLocation("test"); //FIXME: sensible value
-        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARYMEDICALCARE); 
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(effectiveDateTime);
