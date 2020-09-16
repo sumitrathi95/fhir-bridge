@@ -16,12 +16,12 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 public class FHIRObservationHeartRateOpenehrHeartRate {
 	private FHIRObservationHeartRateOpenehrHeartRate() {}
-	
+
 	public static HerzfrequenzComposition map(Observation fhirObservation) {
 		//create composition and observation objects
 		HerzfrequenzComposition composition = new HerzfrequenzComposition();
 		HerzfrequenzObservation observation = new HerzfrequenzObservation();
-		
+
 		//map values of interest from FHIR observation
 		ZonedDateTime effectiveDateTime = null;
 		try {
@@ -34,19 +34,19 @@ public class FHIRObservationHeartRateOpenehrHeartRate {
 			observation.setSubject(new PartySelf());
 		} catch (Exception e) {
             throw new UnprocessableEntityException(e.getMessage());
-        }	
-		
+        }
+
 		composition.setHerzfrequenz(observation);
 
         // Required fields by API
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
         composition.setLocation("test"); //FIXME: sensible value
-        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARYMEDICALCARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(effectiveDateTime);
 		composition.setComposer(new PartySelf()); //FIXME: sensible value
-			
+
 		return composition;
 	}
 }
