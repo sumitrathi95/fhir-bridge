@@ -116,12 +116,12 @@ public class EhrbaseService {
     public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
         // TODO invoke post processing
 
-    	try {
-    		client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-    	}
-    	catch (Exception e)
+        try {
+            client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        }
+        catch (Exception e)
         {
-    		e.printStackTrace();
+            e.printStackTrace();
             throw new UnprocessableEntityException("There was a Error in saveHeartRate", e);
         }
 
