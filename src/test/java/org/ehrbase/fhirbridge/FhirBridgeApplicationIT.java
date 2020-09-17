@@ -28,6 +28,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -91,8 +92,8 @@ public class FhirBridgeApplicationIT {
 
         String resource = getContent("classpath:/Condition/condition-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -106,12 +107,12 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createConditionUsingInvalidProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                        () -> client.create().resource(getContent(
-                                        "classpath:/Condition/condition-invalid-profile-example.json"))
-                                        .execute());
+                () -> client.create().resource(getContent(
+                        "classpath:/Condition/condition-invalid-profile-example.json"))
+                        .execute());
 
         Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"",
-                        OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -119,10 +120,10 @@ public class FhirBridgeApplicationIT {
         Date now = new Date();
 
         String resource = getContent(
-                        "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
+                "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -138,10 +139,10 @@ public class FhirBridgeApplicationIT {
         Date now = new Date();
 
         String resource = getContent(
-                        "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json");
+                "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -157,34 +158,34 @@ public class FhirBridgeApplicationIT {
 
         String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
         String finalResource = resource;
 
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                        () -> client.create().resource(finalResource).execute());
+                () -> client.create().resource(finalResource).execute());
 
         OperationOutcome outcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, outcome.getIssue().size());
         Assertions.assertEquals(
-                        "Default profile is not supported for DiagnosticReport. One of the following profiles is expected: "
-                                        + "[https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
-                        OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+                "Default profile is not supported for DiagnosticReport. One of the following profiles is expected: "
+                        + "[https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
     public void createDiagnosticReportUsingUnsupportedProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                        () -> client.create().resource(getContent(
-                                        "classpath:/DiagnosticReport/diagnosticreport-hla-genetics-results-example.json"))
-                                        .execute());
+                () -> client.create().resource(getContent(
+                        "classpath:/DiagnosticReport/diagnosticreport-hla-genetics-results-example.json"))
+                        .execute());
 
         OperationOutcome outcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, outcome.getIssue().size());
         Assertions.assertEquals(
-                        "Profile http://hl7.org/fhir/StructureDefinition/hlaresult is not supported for DiagnosticReport. "
-                                        + "One of the following profiles is expected: [https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
-                        OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+                "Profile http://hl7.org/fhir/StructureDefinition/hlaresult is not supported for DiagnosticReport. "
+                        + "One of the following profiles is expected: [https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -192,8 +193,8 @@ public class FhirBridgeApplicationIT {
 
         String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -201,21 +202,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
-    }
-    
-    @Test
-    public void createHeartRate() throws IOException {
-            String resource = getContent("classpath:/Observation/observation-example-heart-rate.json");
-            resource = resource.replaceAll(
-                            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                            "Patient/" + this.subjectIdValue);
-
-            MethodOutcome outcome = client.create().resource(resource).execute();
-
-            Assertions.assertEquals(true, outcome.getCreated());
-            Assertions.assertTrue(outcome.getResource() instanceof Observation);
-            Assertions.assertNotNull(outcome.getResource());
-            Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     @Test
@@ -228,15 +214,15 @@ public class FhirBridgeApplicationIT {
         if (config.getFhirProperties().getValidation().getTerminology().getMode() == TerminologyMode.EMBEDDED) {
 
             UnprocessableEntityException exception = Assertions.assertThrows(
-                            UnprocessableEntityException.class,
-                            () -> client.create().resource(getContent(
-                                            "classpath:/Observation/observation-coronavirusnachweistest-example.json"))
-                                            .execute());
+                    UnprocessableEntityException.class,
+                    () -> client.create().resource(getContent(
+                            "classpath:/Observation/observation-coronavirusnachweistest-example.json"))
+                            .execute());
 
             OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
 
             logger.info("------------------------------- "
-                            + operationOutcome.getIssue().get(0).getDiagnostics());
+                    + operationOutcome.getIssue().get(0).getDiagnostics());
 
             Assertions.assertEquals(4, operationOutcome.getIssue().size());
             OperationOutcome.OperationOutcomeIssueComponent issue = operationOutcome.getIssue().get(3);
@@ -245,10 +231,10 @@ public class FhirBridgeApplicationIT {
         } else // Remote terminology validation is OFF, example wont fail
         {
             String resource = getContent(
-                            "classpath:/Observation/observation-coronavirusnachweistest-example.json");
+                    "classpath:/Observation/observation-coronavirusnachweistest-example.json");
             resource = resource.replaceAll(
-                            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                            "Patient/" + this.subjectIdValue);
+                    "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                    "Patient/" + this.subjectIdValue);
 
             MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -264,8 +250,8 @@ public class FhirBridgeApplicationIT {
 
         String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -278,35 +264,37 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createObservationUsingDefaultProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                        () -> client.create()
-                                        .resource(getContent("classpath:/Observation/observation-example.json"))
-                                        .execute());
+                () -> client.create()
+                        .resource(getContent("classpath:/Observation/observation-example.json"))
+                        .execute());
 
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                        "Default profile is not supported for Observation. One of the following profiles is expected: "
-                                        + "[http://hl7.org/fhir/StructureDefinition/bodytemp, http://hl7.org/fhir/StructureDefinition/heartrate, "
-                                        + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                                        + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
-                        OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+                "Default profile is not supported for Observation. One of the following profiles is expected: "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
+                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
     public void createObservationUsingUnsupportedProfile() {
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
-                        () -> client.create().resource(getContent(
-                                        "classpath:/Observation/observation-vitalsigns-example.json"))
-                                        .execute());
+                () -> client.create().resource(getContent(
+                        "classpath:/Observation/observation-vitalsigns-example.json"))
+                        .execute());
 
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                        "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
-                                        + "[http://hl7.org/fhir/StructureDefinition/bodytemp, http://hl7.org/fhir/StructureDefinition/heartrate, "
-                                        + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                                        + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
-                        OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
+                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -314,8 +302,8 @@ public class FhirBridgeApplicationIT {
 
         String resource = getContent("classpath:/QuestionnaireResponse/covapp-response.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -356,18 +344,18 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchBodyTemp() throws IOException {
 
-        // Needs at least one temp, can't rely on the tess execution order to create a
+        // Needs at least one temp, can't rely on the test execution order to create a
         // body temp in the server
         String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
-                        .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                        .returnBundle(Bundle.class).execute();
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
@@ -375,19 +363,19 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchCoronavirusLabResults() throws IOException {
 
-        // Needs at least one lab result, can't rely on the tess execution order
+        // Needs at least one lab result, can't rely on the test execution order
         // WARNING: this will fail if terminology validation is turned on
         String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Observation.class)
-                        .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
-                        .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                        .returnBundle(Bundle.class).execute();
+                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
@@ -395,18 +383,18 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchObservationLab() throws IOException {
 
-        // Needs at least one observation lab, can't rely on the tess execution order
+        // Needs at least one observation lab, can't rely on the test execution order
         String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
         resource = resource.replaceAll(
-                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "Patient/" + this.subjectIdValue);
+                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Observation.class)
-                        .withProfile(Profile.OBSERVATION_LAB.getUrl())
-                        .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                        .returnBundle(Bundle.class).execute();
+                .withProfile(Profile.OBSERVATION_LAB.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
 
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
@@ -429,6 +417,39 @@ public class FhirBridgeApplicationIT {
         logger.info("CONDITIONS: " + bundle.getTotal());
 
         Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void createHeartRate() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-example-heart-rate.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createBloodPressure() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
+
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     private String getContent(String location) throws IOException {

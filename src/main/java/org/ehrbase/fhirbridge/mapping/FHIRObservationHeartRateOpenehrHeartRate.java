@@ -41,7 +41,7 @@ public class FHIRObservationHeartRateOpenehrHeartRate {
         // Required fields by API
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
         composition.setLocation("test"); //FIXME: sensible value
-        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARYMEDICALCARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(effectiveDateTime);
