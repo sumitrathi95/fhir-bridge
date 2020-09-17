@@ -15,9 +15,11 @@ import org.ehrbase.client.aql.record.Record3;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
@@ -470,6 +472,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTemp(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                HerzfrequenzComposition composition = FHIRObservationHeartRateOpenehrHeartRate.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveHeartRate(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
             }
         }
         catch (Exception e)
