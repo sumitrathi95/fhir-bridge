@@ -15,11 +15,13 @@ import org.ehrbase.client.aql.record.Record3;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
@@ -474,6 +476,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveTemp(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.FIO2)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION FIO2");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                BeatmungswerteComposition composition = FHIRObservationFiO2OpenehrBeatmungswerte.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveFIO2(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.FIO2);
             }
             else if (ProfileUtils.hasProfile(observation, Profile.BLOOD_PRESSURE)) {
 

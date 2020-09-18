@@ -9,6 +9,7 @@ import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
+import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
@@ -102,22 +103,25 @@ public class EhrbaseService {
     public VersionUid saveDiagnosis(UUID ehrId, DiagnoseComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
     public VersionUid saveTemp(UUID ehrId, IntensivmedizinischesMonitoringKorpertemperaturComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
     
-    public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
-        // TODO invoke post processing
+    public VersionUid saveFIO2(UUID ehrId, BeatmungswerteComposition composition) {
 
-        try {
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
+
+        try
+        {
             client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         }
         catch (Exception e)
@@ -130,19 +134,14 @@ public class EhrbaseService {
     }
 
     public VersionUid saveTest(UUID ehrId, KennzeichnungErregernachweisSARSCoV2Composition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
-
-
     }
+
     public VersionUid saveBloodPressure(UUID ehrId, BlutdruckComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 }

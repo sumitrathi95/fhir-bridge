@@ -85,6 +85,7 @@ public class FhirBridgeApplicationIT {
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
+    
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -272,7 +273,8 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Default profile is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
@@ -290,7 +292,8 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
@@ -445,6 +448,22 @@ public class FhirBridgeApplicationIT {
         MethodOutcome outcome = client.create()
                 .resource(resource)
                 .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createFIO2() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-example-fiO2.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
 
         Assertions.assertEquals(true, outcome.getCreated());
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
