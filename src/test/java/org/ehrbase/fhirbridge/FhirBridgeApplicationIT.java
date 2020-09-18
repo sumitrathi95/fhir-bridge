@@ -85,6 +85,7 @@ public class FhirBridgeApplicationIT {
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
+    
     @Test
     public void createDiagnoseCondition() throws IOException {
 

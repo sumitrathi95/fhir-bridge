@@ -44,7 +44,7 @@ public class FHIRObservationFiO2OpenehrBeatmungswerte {
             observation.setEingeatmeterSauerstoff(eingeatmeterSauerstoff);
             composition.setBeobachtungenAmBeatmungsgerat(observation);
         } catch (Exception e) {
-            throw new UnprocessableEntityException(e.getMessage());    
+            throw new UnprocessableEntityException(e.getMessage());
         }
         
         //obligatory stuff block
