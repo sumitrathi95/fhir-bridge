@@ -1,3 +1,7 @@
+ehrbase:
+  address: localhost
+  port: 8080
+  path: /ehrbase/rest/openehr/v1/
 fhir-bridge:
   fhir:
     narrative-generation: false
@@ -6,7 +10,7 @@ fhir-bridge:
       terminology:
         mode: off
         #remote:
-          #server-url: https://r4.ontoserver.csiro.au/fhir/
+        #server-url: https://r4.ontoserver.csiro.au/fhir/
 logging:
   level:
     ca.uhn.fhir: info
@@ -16,7 +20,7 @@ server:
   servlet:
     context-path: /fhir-bridge
   port: 8888
-ehrbase:
-  address: localhost
-  port: 8080
-  path: /ehrbase/rest/openehr/v1/
+spring:
+  jpa:
+    properties:
+      hibernate.search.model_mapping: ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory

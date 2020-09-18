@@ -1,6 +1,8 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.model.DaoMethodOutcome;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.*;
@@ -25,7 +27,6 @@ import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -44,9 +45,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
 
-    @Autowired
-    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Observation> observationDao;
+
+    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Observation> observationDao) {
         super(fhirContext, service);
+        this.observationDao = observationDao;
     }
 
     @Search
@@ -430,56 +433,54 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     {
         checkProfiles(observation);
 
-        // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split("/")[1]);
+        DaoMethodOutcome outcome = observationDao.create(observation);
 
-        try
-        {
-            if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
-            {
-                logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB {}", observation.getIdentifier().get(0).getValue());
-
-                // test map FHIR to openEHR
-                LaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(observation);
-
-                //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveLab(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.OBSERVATION_LAB);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST))
-            {
-                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
-
-                // Map CoronavirusNachweisTest to openEHR
-
-
-                // test map FHIR to openEHR
-                KennzeichnungErregernachweisSARSCoV2Composition composition = FhirSarsTestResultOpenehrPathogenDetection.map(observation);
-
-                //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTest(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
-
-                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
-
-                // FHIR Observation Temp => openEHR COMPOSITION
-                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = FhirObservationTempOpenehrBodyTemperature.map(observation);
-
-                //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveTemp(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
-            }
-        }
-        catch (Exception e)
-        {
-            throw new UnprocessableEntityException("There was a problem saving the composition", e);
-        }
-
-        observation.setId(new IdType(1L));
-        observation.getMeta().setVersionId("1");
-        observation.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
+//        // will throw exceptions and block the request if the patient doesn't have an EHR
+//        UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split("/")[1]);
+//
+//        try
+//        {
+//            if (ProfileUtils.hasProfile(observation, Profile.OBSERVATION_LAB))
+//            {
+//                logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB {}", observation.getIdentifier().get(0).getValue());
+//
+//                // test map FHIR to openEHR
+//                LaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(observation);
+//
+//                //UUID ehrId = service.createEhr(); // <<< reflections error!
+//                VersionUid versionUid = service.saveLab(ehrUid, composition);
+//                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.OBSERVATION_LAB);
+//            }
+//            else if (ProfileUtils.hasProfile(observation, Profile.CORONARIRUS_NACHWEIS_TEST))
+//            {
+//                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION COVID");
+//
+//                // Map CoronavirusNachweisTest to openEHR
+//
+//
+//                // test map FHIR to openEHR
+//                KennzeichnungErregernachweisSARSCoV2Composition composition = FhirSarsTestResultOpenehrPathogenDetection.map(observation);
+//
+//                //UUID ehrId = service.createEhr(); // <<< reflections error!
+//                VersionUid versionUid = service.saveTest(ehrUid, composition);
+//                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
+//            }
+//            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
+//
+//                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
+//
+//                // FHIR Observation Temp => openEHR COMPOSITION
+//                IntensivmedizinischesMonitoringKorpertemperaturComposition composition = FhirObservationTempOpenehrBodyTemperature.map(observation);
+//
+//                //UUID ehrId = service.createEhr(); // <<< reflections error!
+//                VersionUid versionUid = service.saveTemp(ehrUid, composition);
+//                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            throw new UnprocessableEntityException("There was a problem saving the composition", e);
+//        }
 
         return new MethodOutcome()
                 .setCreated(true)
