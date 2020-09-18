@@ -272,7 +272,9 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Default profile is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp,"
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
@@ -290,7 +292,9 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
@@ -438,6 +442,24 @@ public class FhirBridgeApplicationIT {
     public void createBloodPressure() throws IOException {
 
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
+
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createSofaScore() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
 
         // Change patients id to test patient id
         resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
