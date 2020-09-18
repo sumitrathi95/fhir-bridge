@@ -77,7 +77,7 @@ public class FhirObservationTempOpenehrBodyTemperature {
         // Required fields by API
         composition.setLanguage(Language.EN); // FIXME: we need to grab the language from the template
         composition.setLocation("test");
-        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());

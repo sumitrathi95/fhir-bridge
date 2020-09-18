@@ -3,7 +3,7 @@
   "id": "satO2-fiO2",
   "meta": {
     "profile": [
-      "http://hl7.org/fhir/StructureDefinition/fiO2"
+      "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2"
     ]
   },
   "text": {
