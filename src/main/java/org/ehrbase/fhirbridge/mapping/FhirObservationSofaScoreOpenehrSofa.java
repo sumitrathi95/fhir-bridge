@@ -84,112 +84,110 @@ public class FhirObservationSofaScoreOpenehrSofa {
             new DvCodedText("at0039", new CodePhrase("local")));
 
 
-
-    private FhirObservationSofaScoreOpenehrSofa() {
-    }
+    private FhirObservationSofaScoreOpenehrSofa() {}
 
     public static SOFAComposition map(Observation fhirObservation) {
 
-
-        SOFAComposition composition = new SOFAComposition();
+        SOFAComposition sofaScoreComposition = new SOFAComposition();
 
         SOFAScoreObservation sofaScore = new SOFAScoreObservation();
 
         DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
 
-
         try {
 
-        String sofaScoreCode = fhirObservation.getCode().getCoding().get(0).getCode();
-
-        String atemtaetigkeitCode = fhirObservation.getComponent().get(0).getValueCodeableConcept().
-                getCoding().get(0).getCode();
+            String atemtaetigkeitCode = fhirObservation.getComponent().get(0).getValueCodeableConcept().
+                    getCoding().get(0).getCode();
 
 
-        if (atemtaetigkeitCode.equals("resp1")) {
-            sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_1);
-        } else if (atemtaetigkeitCode.equals("resp2")) {
-            sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_2);
-        } else if (atemtaetigkeitCode.equals("resp3")) {
-            sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_3);
-        } else if (atemtaetigkeitCode.equals("resp4")) {
-            sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_4);
-        }
+            if (atemtaetigkeitCode.equals("resp1")) {
+                sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_1);
+            } else if (atemtaetigkeitCode.equals("resp2")) {
+                sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_2);
+            } else if (atemtaetigkeitCode.equals("resp3")) {
+                sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_3);
+            } else if (atemtaetigkeitCode.equals("resp4")) {
+                sofaScore.setAtemtatigkeit(ATEMFREQUENZ_SCORE_4);
+            }
 
 
-        String nervensystemCode = fhirObservation.getComponent().get(1)
-                .getValueCodeableConcept().getCoding().get(0).getCode();
+            String nervensystemCode = fhirObservation.getComponent().get(1)
+                    .getValueCodeableConcept().getCoding().get(0).getCode();
 
-        if (nervensystemCode.equals("ns1")) {
-            sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_1);
-        } else if (nervensystemCode.equals("ns2")) {
-            sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_2);
-        } else if (nervensystemCode.equals("ns3")) {
-            sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_3);
-        } else if (nervensystemCode.equals("ns4")) {
-            sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_4);
-        }
-
-
-        String herzKreislaufSystemCode = fhirObservation.getComponent().get(2).getValueCodeableConcept().
-                getCoding().get(0).getCode();
-
-        if (herzKreislaufSystemCode.equals("cvs1")) {
-            sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_1);
-        } else if (nervensystemCode.equals("cvs2")) {
-            sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_2);
-        } else if (nervensystemCode.equals("cvs3")) {
-            sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_3);
-        } else if (nervensystemCode.equals("cvs4")) {
-            sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_4);
-        }
+            if (nervensystemCode.equals("ns1")) {
+                sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_1);
+            } else if (nervensystemCode.equals("ns2")) {
+                sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_2);
+            } else if (nervensystemCode.equals("ns3")) {
+                sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_3);
+            } else if (nervensystemCode.equals("ns4")) {
+                sofaScore.setZentralesNervensystem(NERVENSYSTEM_SCORE_4);
+            }
 
 
-        String leberfunktionsCode = fhirObservation.getComponent().get(3).getValueCodeableConcept().
-                getCoding().get(0).getCode();
+            String herzKreislaufSystemCode = fhirObservation.getComponent().get(2).getValueCodeableConcept().
+                    getCoding().get(0).getCode();
 
-        if (leberfunktionsCode.equals("liv1")) {
-            sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_1);
-        } else if (leberfunktionsCode.equals("liv2")) {
-            sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_2);
-        } else if (leberfunktionsCode.equals("liv3")) {
-            sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_3);
-        } else if (leberfunktionsCode.equals("liv4")) {
-            sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_4);
-        }
-
-        String blutgerinnungsCode = fhirObservation.getComponent().get(4).getValueCodeableConcept().
-                getCoding().get(0).getCode();
-
-        if (blutgerinnungsCode.equals("coa1")) {
-            sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_1);
-        } else if (blutgerinnungsCode.equals("coa2")) {
-            sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_2);
-        } else if (blutgerinnungsCode.equals("coa3")) {
-            sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_3);
-        } else if (blutgerinnungsCode.equals("coa4")) {
-            sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_4);
-        }
+            if (herzKreislaufSystemCode.equals("cvs1")) {
+                sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_1);
+            } else if (nervensystemCode.equals("cvs2")) {
+                sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_2);
+            } else if (nervensystemCode.equals("cvs3")) {
+                sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_3);
+            } else if (nervensystemCode.equals("cvs4")) {
+                sofaScore.setHerzKreislaufSystem(HERZKREISLAUFSYSTEM_SCORE_4);
+            }
 
 
-        String nierenfunktionsCode = fhirObservation.getComponent().get(5).getValueCodeableConcept().
-                getCoding().get(0).getCode();
+            String leberfunktionsCode = fhirObservation.getComponent().get(3).getValueCodeableConcept().
+                    getCoding().get(0).getCode();
 
-        if (nierenfunktionsCode.equals("kid1")) {
-            sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_1);
-        } else if (nierenfunktionsCode.equals("kid2")) {
-            sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_2);
-        } else if (nierenfunktionsCode.equals("kid3")) {
-            sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_3);
-        } else if (nierenfunktionsCode.equals("kid4")) {
-            sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_4);
-        }
+            if (leberfunktionsCode.equals("liv1")) {
+                sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_1);
+            } else if (leberfunktionsCode.equals("liv2")) {
+                sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_2);
+            } else if (leberfunktionsCode.equals("liv3")) {
+                sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_3);
+            } else if (leberfunktionsCode.equals("liv4")) {
+                sofaScore.setLeberfunktion(LEBERFUNKTIONS_SCORE_4);
+            }
+
+            String blutgerinnungsCode = fhirObservation.getComponent().get(4).getValueCodeableConcept().
+                    getCoding().get(0).getCode();
+
+            if (blutgerinnungsCode.equals("coa1")) {
+                sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_1);
+            } else if (blutgerinnungsCode.equals("coa2")) {
+                sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_2);
+            } else if (blutgerinnungsCode.equals("coa3")) {
+                sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_3);
+            } else if (blutgerinnungsCode.equals("coa4")) {
+                sofaScore.setBlutgerinnung(BLUTGERINNUNGS_SCORE_4);
+            }
+
+
+            String nierenfunktionsCode = fhirObservation.getComponent().get(5).getValueCodeableConcept().
+                    getCoding().get(0).getCode();
+
+            if (nierenfunktionsCode.equals("kid1")) {
+                sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_1);
+            } else if (nierenfunktionsCode.equals("kid2")) {
+                sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_2);
+            } else if (nierenfunktionsCode.equals("kid3")) {
+                sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_3);
+            } else if (nierenfunktionsCode.equals("kid4")) {
+                sofaScore.setNierenfunktion(NIERENFUNKTIONS_SCORE_4);
+            }
+
+
+            String sofaScoreCode = fhirObservation.getCode().getCoding().get(0).getCode();
+            Long sofaScoreCodeLong = Long.parseLong(sofaScoreCode);
+
+            sofaScore.setSofaScoreMagnitude(sofaScoreCodeLong);
 
         } catch (Exception e) {
             throw new UnprocessableEntityException(e.getMessage());
         }
-
-
 
 
         sofaScore.setSubject(new PartySelf());
@@ -199,32 +197,21 @@ public class FhirObservationSofaScoreOpenehrSofa {
         sofaScore.setOriginValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
 
 
-        composition.setSofaScore(sofaScore);
+        sofaScoreComposition.setSofaScore(sofaScore);
 
         // ======================================================================================
         // Required fields by API
-        composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
-        composition.setLocation("test"); // FIXME: Location abfangen?
-        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
-        composition.setTerritory(Territory.DE);
-        composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        sofaScoreComposition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        sofaScoreComposition.setLocation("test"); // FIXME: Location abfangen?
+        sofaScoreComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        sofaScoreComposition.setTerritory(Territory.DE);
+        sofaScoreComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
 
-        composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+        sofaScoreComposition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
 
-        composition.setComposer(new PartySelf());
+        sofaScoreComposition.setComposer(new PartySelf());
 
-
-
-        ///????
-
-        Long sofaScoreCodeLong = Long.parseLong(sofaScoreCode);
-
-        sofaScore.setSofaScoreMagnitude(sofaScoreCodeLong);
-// warum nicht sofaScoreComposition wie bei bloodPressures
-        composition.setSofaScore(sofaScore);
-
-        return composition;
-
+        return sofaScoreComposition;
     }
 
 }
