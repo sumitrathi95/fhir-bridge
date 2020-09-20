@@ -15,17 +15,13 @@ import org.ehrbase.client.aql.record.Record3;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
-import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
-import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
-import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
-import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.mapping.*;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
@@ -496,6 +492,15 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 VersionUid versionUid = service.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.FRAILTY_SCORE)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BLOOD_PRESSURE");
+
+                KlinischeFrailtySkalaComposition composition = FhirObservationFrailtyScoreOpenehrFrailtyScore.map(observation);
+
+                VersionUid versionUid = service.saveFrailtyScore(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.FRAILTY_SCORE);
             }
             else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
 
