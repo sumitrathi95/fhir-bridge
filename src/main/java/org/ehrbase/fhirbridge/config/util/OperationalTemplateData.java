@@ -10,7 +10,10 @@ public enum OperationalTemplateData {
     CORONA_TEST("", "Kennzeichnung Erregernachweis SARS-CoV-2.opt", "Kennzeichnung Erregernachweis SARS-CoV-2"),
     CORONA_LAB("", "Laborbefund.opt", "Laborbefund"),
 
-    PROCEDURE("", "Prozedur.opt", "Prozedur");
+    PROCEDURE("", "Prozedur.opt", "Prozedur"),
+    FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
+    CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
+    HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
 
     private final String filename;
     private final String templateId;
