@@ -1673,7 +1673,7 @@
       <type>
         <code value="uri" />
       </type>
-      <patternUri value="http://snomed.info/sct" />
+      <fixedUri value="http://snomed.info/sct" />
       <condition value="ele-1" />
       <constraint>
         <key value="ele-1" />
@@ -2405,7 +2405,7 @@
       <type>
         <code value="uri" />
       </type>
-      <patternUri value="http://fhir.de/CodeSystem/dimdi/ops" />
+      <fixedUri value="http://fhir.de/CodeSystem/dimdi/ops" />
       <condition value="ele-1" />
       <constraint>
         <key value="ele-1" />
@@ -2803,7 +2803,7 @@
       <type>
         <code value="uri" />
       </type>
-      <patternUri value="http://snomed.info/sct" />
+      <fixedUri value="http://snomed.info/sct" />
       <condition value="ele-1" />
       <constraint>
         <key value="ele-1" />
