@@ -6,6 +6,7 @@ import com.nedap.archie.rm.datatypes.CodePhrase;
 import com.nedap.archie.rm.datavalues.DvCodedText;
 import com.nedap.archie.rm.datavalues.quantity.DvOrdinal;
 import com.nedap.archie.rm.generic.PartySelf;
+import com.nedap.archie.rm.support.identification.TerminologyId;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
@@ -21,67 +22,81 @@ public class FhirObservationSofaScoreOpenehrSofa {
     private static final Logger logger = LoggerFactory.getLogger(FhirObservationSofaScoreOpenehrSofa.class);
 
     private static DvOrdinal ATEMFREQUENZ_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0016", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0016")));
 
     private static DvOrdinal ATEMFREQUENZ_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0017", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0017")));
 
     private static DvOrdinal ATEMFREQUENZ_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0018", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0018")));
 
     private static DvOrdinal ATEMFREQUENZ_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0019", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0019")));
+
 
     private static DvOrdinal NERVENSYSTEM_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0020", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0020")));
 
     private static DvOrdinal NERVENSYSTEM_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0021", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0021")));
+
     private static DvOrdinal NERVENSYSTEM_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0022", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0022")));
+
     private static DvOrdinal NERVENSYSTEM_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0023", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0023")));
+
 
     private static DvOrdinal HERZKREISLAUFSYSTEM_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0024", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0024")));
 
     private static DvOrdinal HERZKREISLAUFSYSTEM_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0025", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0025")));
+
     private static DvOrdinal HERZKREISLAUFSYSTEM_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0026", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0026")));
+
     private static DvOrdinal HERZKREISLAUFSYSTEM_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0027", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0027")));
 
 
     private static DvOrdinal LEBERFUNKTIONS_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0028", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0028")));
 
     private static DvOrdinal LEBERFUNKTIONS_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0029", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0029")));
+
     private static DvOrdinal LEBERFUNKTIONS_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0030", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0030")));
+
     private static DvOrdinal LEBERFUNKTIONS_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0031", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0031")));
+
 
     private static DvOrdinal BLUTGERINNUNGS_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0032", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0032")));
 
     private static DvOrdinal BLUTGERINNUNGS_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0033", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0033")));
+
     private static DvOrdinal BLUTGERINNUNGS_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0034", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0034")));
+
     private static DvOrdinal BLUTGERINNUNGS_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0035", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0035")));
+
 
     private static DvOrdinal NIERENFUNKTIONS_SCORE_1 = new DvOrdinal(1L,
-            new DvCodedText("at0036", new CodePhrase("local")));
+            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0036")));
 
     private static DvOrdinal NIERENFUNKTIONS_SCORE_2 = new DvOrdinal(2L,
-            new DvCodedText("at0037", new CodePhrase("local")));
+            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0037")));
+
     private static DvOrdinal NIERENFUNKTIONS_SCORE_3 = new DvOrdinal(3L,
-            new DvCodedText("at0038", new CodePhrase("local")));
+            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0038")));
+
     private static DvOrdinal NIERENFUNKTIONS_SCORE_4 = new DvOrdinal(4L,
-            new DvCodedText("at0039", new CodePhrase("local")));
+            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0039")));
 
 
     private FhirObservationSofaScoreOpenehrSofa() {}
