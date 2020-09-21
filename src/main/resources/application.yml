@@ -21,6 +21,9 @@ server:
     context-path: /fhir-bridge
   port: 8888
 spring:
+  batch:
+    job:
+      enabled: false
   jpa:
     properties:
       hibernate.search.model_mapping: ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory

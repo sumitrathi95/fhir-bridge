@@ -7,6 +7,10 @@ import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.JpaTransactionManager;
+
+import javax.persistence.EntityManagerFactory;
 
 @Configuration
 @EntityScan(basePackages = {
@@ -34,5 +38,13 @@ public class JpaServerConfiguration extends BaseJavaConfigR4 {
     @Bean
     public PartitionSettings partitionSettings() {
         return new PartitionSettings();
+    }
+
+    @Primary
+    @Bean
+    public JpaTransactionManager hapiTransactionManager(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
     }
 }
