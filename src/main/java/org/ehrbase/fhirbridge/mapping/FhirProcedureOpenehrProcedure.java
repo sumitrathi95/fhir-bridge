@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * FHIR 2 openEHR - Procedure
@@ -30,11 +31,19 @@ public class FhirProcedureOpenehrProcedure {
 
         DateTimeType performed = fhirProcedure.getPerformedDateTimeType();
 
-        CodeableConcept bodySiteCodes = fhirProcedure.getBodySite().get(0); // could be empty
         Coding bodySite = null;
-        if (bodySiteCodes != null) bodySite = bodySiteCodes.getCoding().get(0);
+        List<CodeableConcept> bodySites = fhirProcedure.getBodySite();
+        if (bodySites.size() > 0)
+        {
+            CodeableConcept bodySiteCodes = bodySites.get(0); // could be empty
+            if (bodySiteCodes != null) bodySite = bodySiteCodes.getCoding().get(0);
+        }
 
-        Annotation note = fhirProcedure.getNote().get(0); // could be empty
+
+        Annotation note = null;
+        List<Annotation> notes = fhirProcedure.getNote();
+        if (notes.size() > 0)
+           note = fhirProcedure.getNote().get(0); // could be empty
 
 
 
@@ -74,7 +83,7 @@ public class FhirProcedureOpenehrProcedure {
         // https://github.com/ehrbase/ehrbase_client_library/issues/31
         PartyIdentified composer = new PartyIdentified();
         DvIdentifier identifier = new DvIdentifier();
-        identifier.setId(fhirProcedure.getRecorder().getReference());
+        identifier.setId(fhirProcedure.getRecorder().getReference()); // TODO: if there is no recorder, try with the performer
         composer.addIdentifier(identifier);
         composition.setComposer(composer);
 

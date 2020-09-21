@@ -195,6 +195,8 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
             logger.info("Composition created with UID {}", versionUid);
 
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             throw new UnprocessableEntityException("There was an issue processing your request", e);
         }
 

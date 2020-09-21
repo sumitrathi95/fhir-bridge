@@ -85,6 +85,7 @@ public class FhirBridgeApplicationIT {
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
+    /*
     
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -470,6 +471,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
+    */
 
     @Test
     public void createProcedure() throws IOException {
