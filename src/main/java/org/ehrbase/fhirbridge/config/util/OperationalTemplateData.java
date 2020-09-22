@@ -13,6 +13,7 @@ public enum OperationalTemplateData {
     PROCEDURE("", "Prozedur.opt", "Prozedur"),
     FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
+    PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
 
     private final String filename;
