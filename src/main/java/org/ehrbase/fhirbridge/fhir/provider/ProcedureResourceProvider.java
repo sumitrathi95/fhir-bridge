@@ -188,10 +188,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
             ProzedurComposition composition = FhirProcedureOpenehrProcedure.map(procedure);
             VersionUid versionUid = service.saveProcedure(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
-
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
             throw new UnprocessableEntityException("There was an issue processing your request", e);
         }
 
