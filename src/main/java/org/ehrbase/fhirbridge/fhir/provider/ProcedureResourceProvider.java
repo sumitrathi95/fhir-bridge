@@ -1,26 +1,21 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import org.ehrbase.client.aql.query.Query;
-import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.mapping.FhirProcedureOpenehrProcedure;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 import java.util.UUID;
 
