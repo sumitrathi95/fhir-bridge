@@ -52,7 +52,7 @@ public class OpenEhrController {
         body.setLanguage(Language.DE);
         body.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         body.setStartTimeValue(OffsetDateTime.now());
-        body.setSettingDefiningcode(SettingDefiningcode.NURSINGHOMECARE);
+        body.setSettingDefiningcode(SettingDefiningcode.NURSING_HOME_CARE);
         body.setTerritory(Territory.DE);
 
         LaboranalytResultatAnalytResultatDvquantity result_value = new LaboranalytResultatAnalytResultatDvquantity();
