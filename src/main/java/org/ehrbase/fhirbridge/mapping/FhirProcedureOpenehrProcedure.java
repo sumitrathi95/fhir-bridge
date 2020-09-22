@@ -45,17 +45,23 @@ public class FhirProcedureOpenehrProcedure {
         Annotation note = null;
         List<Annotation> notes = fhirProcedure.getNote();
         if (notes.size() > 0)
-           note = fhirProcedure.getNote().get(0); // could be empty
-
-
-
+        {
+            note = fhirProcedure.getNote().get(0); // could be empty
+        }
+        
+        
         ProzedurAction action = new ProzedurAction();
-
+        
         action.setTimeValue(performed.getValueAsCalendar().toZonedDateTime());
-
+        
         action.setNameDerProzedurValue(code.getDisplay());
+        
 
-        action.setFreitextbeschreibungValue(note.getText());
+        if (note != null)
+        {
+            action.setFreitextbeschreibungValue(note.getText());
+        }
+
 
         // anatomical location
         if (bodySite != null)
