@@ -84,8 +84,6 @@ public class FhirBridgeApplicationIT {
         logger.info("EHR UID: {}", this.ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
-
-    /*
     
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -113,7 +111,7 @@ public class FhirBridgeApplicationIT {
                         "classpath:/Condition/condition-invalid-profile-example.json"))
                         .execute());
 
-        Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"",
+        Assertions.assertEquals("Specified profile type was 'Observation', but found type 'Condition'",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -471,7 +469,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-    */
 
     @Test
     public void createProcedure() throws IOException {
