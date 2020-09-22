@@ -1,14 +1,12 @@
-package org.ehrbase.fhirbridge.opt.shareddefinition;
+package org.ehrbase.fhirbridge.opt.prozedurcomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  PERSISTENT("persistent", "persistent", "openehr", "431"),
+public enum LateralitatDefiningcode implements EnumValueSet {
+  LINKS("Links", "Die linke Körperseite.", "local", "at0003"),
 
-  EVENT("event", "event", "openehr", "433"),
-
-  EPISODIC("episodic", "episodic", "openehr", "435");
+  RECHTS("Rechts", "Die rechte Körperseite.", "local", "at0004");
 
   private String value;
 
@@ -18,7 +16,7 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  LateralitatDefiningcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;
