@@ -442,7 +442,6 @@ public class FhirBridgeApplicationIT {
     public void createBloodPressure() throws IOException {
 
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
-
         // Change patients id to test patient id
         resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
 
