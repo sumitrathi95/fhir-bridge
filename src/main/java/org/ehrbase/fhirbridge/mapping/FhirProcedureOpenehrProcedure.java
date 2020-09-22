@@ -7,11 +7,13 @@ import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.DetailsZurKorperstelleCluster;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.ProzedurAction;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
+import com.nedap.archie.rm.generic.PartySelf;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
 /**
  * FHIR 2 openEHR - Procedure
@@ -66,6 +68,18 @@ public class FhirProcedureOpenehrProcedure {
             action.setDetailsZurKorperstelle(new ArrayList<>());
             action.getDetailsZurKorperstelle().add(anatomicalLocationCluster);
         }
+
+
+        // mandatory ism_transition
+        action.setProzedurBeendetDefiningcode(org.ehrbase.fhirbridge.opt.shareddefinition.ProzedurBeendetDefiningcode.COMPLETED);
+        action.setProzedurBeendetDefiningcodeCareflowStep(org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.ProzedurBeendetDefiningcode.PROZEDUR_BEENDET);
+
+        // mandatory subject
+        action.setSubject(new PartySelf());
+
+        // mandatory langauge
+        action.setLanguage(Language.DE);
+
 
         composition.setProzedur(action);
 
