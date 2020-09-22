@@ -16,6 +16,9 @@ public enum Profile {
     // Observation Profiles
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
+
+    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
+
     BLOOD_PRESSURE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure", ResourceType.Observation),
 
     HEART_RATE("http://hl7.org/fhir/StructureDefinition/heartrate", ResourceType.Observation),
@@ -25,6 +28,7 @@ public enum Profile {
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation);
+
 
     private final String url;
 
