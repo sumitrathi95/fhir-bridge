@@ -1,5 +1,7 @@
-package org.ehrbase.fhirbridge.mapping;
+package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
+import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
+import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -11,25 +13,31 @@ import org.slf4j.LoggerFactory;
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
     private static final Logger logger = LoggerFactory.getLogger(FhirConditionOpenehrDiagnose.class);
+   // private final Observation fhirObservation;
 
     private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
     }
+//
+//    public FHIRObservationBloodGasOpenehrBlutgasAnalyse(Observation fhirObservation) {
+//           this.fhirObservation = fhirObservation;
+//    }
 
+    //TODO what is the input type ? Bundle ?
     public BefundDerBlutgasanalyseComposition map(Observation fhirObservation) {
         BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition = new BefundDerBlutgasanalyseComposition();
-
         DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
 
         befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(fhirObservation));
         befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(fhirObservation));
 
-        befundDerBlutgasanalyseComposition.setLaborergebnis(FhirDiagnosticReportOpenehrLabResults.map(fhirObservation.));
-
+        LaborergebnisBefundMapper fhirObservationOpenehrLaborergebnisBefund = new LaborergebnisBefundMapper(fhirObservation);
+        befundDerBlutgasanalyseComposition.setLaborergebnis(fhirObservationOpenehrLaborergebnisBefund.map());
 
         return befundDerBlutgasanalyseComposition;
 
     }
 
+    //TODO match codes not strings
     private StatusDefiningcode mapStatus(Observation fhirObservation){
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":
@@ -55,6 +63,8 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         }
         return categories.toString();
     }
+
+
 
 
 }
