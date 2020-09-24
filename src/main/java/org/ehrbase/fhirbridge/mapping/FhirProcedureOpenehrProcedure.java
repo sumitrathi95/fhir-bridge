@@ -92,7 +92,7 @@ public class FhirProcedureOpenehrProcedure {
 
         // ======================================================================================
         // Required fields by API
-        composition.setLanguage(Language.EN);
+        composition.setLanguage(Language.DE);
         composition.setLocation("test");
         composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
         composition.setTerritory(Territory.DE);

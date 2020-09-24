@@ -19,6 +19,7 @@ import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
+import org.ehrbase.fhirbridge.mapping.FhirObservationPregnancyStatusOpenehrPregnancyStatus;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
@@ -27,6 +28,7 @@ import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzCompositio
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -466,7 +468,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveTest(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
+            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP))
+            {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
 
@@ -477,7 +480,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveTemp(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.FIO2)) {
+            else if (ProfileUtils.hasProfile(observation, Profile.FIO2))
+            {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION FIO2");
 
@@ -488,7 +492,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveFIO2(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.FIO2);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.BLOOD_PRESSURE)) {
+            else if (ProfileUtils.hasProfile(observation, Profile.BLOOD_PRESSURE))
+            {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BLOOD_PRESSURE");
 
@@ -497,16 +502,21 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE))
+            {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
-                // FHIR Observation Temp => openEHR COMPOSITION
+                // FHIR Observation Heart Rate => openEHR COMPOSITION
                 HerzfrequenzComposition composition = FHIRObservationHeartRateOpenehrHeartRate.map(observation);
 
-                //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = service.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.PREGNANCY_STATUS))
+            {
+                SchwangerschaftsstatusComposition composition = FhirObservationPregnancyStatusOpenehrPregnancyStatus.map(observation);
+                VersionUid versionUid = service.savePregnancyStatus(ehrUid, composition);
             }
         }
         catch (Exception e)
