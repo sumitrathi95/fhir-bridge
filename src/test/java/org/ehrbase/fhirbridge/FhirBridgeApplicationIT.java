@@ -276,6 +276,7 @@ public class FhirBridgeApplicationIT {
                 + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
@@ -295,6 +296,7 @@ public class FhirBridgeApplicationIT {
                 + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
                 + "http://hl7.org/fhir/StructureDefinition/heartrate, "
                 + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, "
                 + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
