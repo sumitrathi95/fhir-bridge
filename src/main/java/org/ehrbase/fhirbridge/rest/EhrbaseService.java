@@ -113,7 +113,7 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-    public VersionUid saveFrailtyScore(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
+    public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();

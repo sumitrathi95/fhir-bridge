@@ -493,14 +493,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.FRAILTY_SCORE)) {
+            else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BLOOD_PRESSURE");
 
-                KlinischeFrailtySkalaComposition composition = FhirObservationFrailtyScoreOpenehrFrailtyScore.map(observation);
+                KlinischeFrailtySkalaComposition composition = FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale.map(observation);
 
-                VersionUid versionUid = service.saveFrailtyScore(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.FRAILTY_SCORE);
+                VersionUid versionUid = service.saveClinicalFrailtyScale(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CLINICAL_FRAILTY_SCALE);
             }
             else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
 

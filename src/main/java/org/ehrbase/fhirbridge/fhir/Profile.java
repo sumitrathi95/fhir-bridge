@@ -21,7 +21,7 @@ public enum Profile {
     //-->https://www.netzwerk-universitaetsmedizin.de/fhir/CodeSystem/frailty-score
     // xml FrailtyScore: https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score
     //-->https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score
-    FRAILTY_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
+    CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 
     FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
     

@@ -206,7 +206,7 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createFrailtyScore() throws IOException {
+    public void createClinicalFrailtyScale() throws IOException {
 
         String resource = getContent("classpath:/Observation/observation-???.json");
         resource = resource.replaceAll(
