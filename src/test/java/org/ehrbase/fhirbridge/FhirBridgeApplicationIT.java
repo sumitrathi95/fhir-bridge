@@ -85,7 +85,6 @@ public class FhirBridgeApplicationIT {
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
 
-
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -486,6 +485,24 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(true, outcome.getCreated());
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createProcedure() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
