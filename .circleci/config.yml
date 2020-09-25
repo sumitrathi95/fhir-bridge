@@ -151,7 +151,7 @@ commands:
                 name: BUILD FHIR-BRIDGE
                 command: |
                     ls -la
-                    mvn clean verify -Dmaven.javadoc.skip=true
+                    mvn clean verify -Dmaven.javadoc.skip=true -Dspring.profiles.active=ci
 
 
     cache-out-fhirbridge-m2-dependencies:
