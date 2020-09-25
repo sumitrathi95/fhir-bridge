@@ -289,3 +289,8 @@ executors:
               environment:
                 POSTGRES_USER: postgres
                 POSTGRES_PASSWORD: postgres
+            - image: postgres
+                name: postgres_fhir
+                environment:
+                  POSTGRES_USER: fhir_bridge
+                  POSTGRES_PASSWORD: fhir_bridge
