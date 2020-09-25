@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   ehrbase:
     image: ehrbaseorg/ehrbase:latest
@@ -16,7 +15,6 @@ services:
       AUTH_PASSWORD: SuperSecretPassword
       SYSTEM_NAME: local.ehrbase.org
     restart: on-failure
-
   ehrdb:
     image: ehrbaseorg/ehrbase-postgres:latest
     ports:
@@ -28,9 +26,8 @@ services:
       POSTGRES_PASSWORD: postgres
       EHRBASE_USER: ehrbase
       EHRBASE_PASSWORD: ehrbase
-
   fhirdb:
-    image: postgres
+    image: postgres:11.5-alpine
     ports:
       - 9999:5432
     environment:

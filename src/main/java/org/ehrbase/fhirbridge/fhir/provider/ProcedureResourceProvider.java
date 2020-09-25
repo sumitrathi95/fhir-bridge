@@ -178,10 +178,10 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
     @SuppressWarnings("unused")
     public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
 
-        // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split("/")[1]);
-
         procedureDao.create(procedure);
+
+        // will throw exceptions and block the request if the patient doesn't have an EHR
+        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split(":")[2]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter

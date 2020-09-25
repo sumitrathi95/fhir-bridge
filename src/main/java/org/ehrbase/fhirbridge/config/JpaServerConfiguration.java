@@ -23,7 +23,7 @@ public class JpaServerConfiguration extends BaseJavaConfigR4 {
     public DaoConfig daoConfig() {
         DaoConfig config = new DaoConfig();
         config.setAllowExternalReferences(true);
-        config.getTreatReferencesAsLogical().add("Patient/*");
+        config.getTreatReferencesAsLogical().add("urn:uuid:*");
         return config;
     }
 
@@ -31,7 +31,7 @@ public class JpaServerConfiguration extends BaseJavaConfigR4 {
     public ModelConfig modelConfig() {
         ModelConfig config = new ModelConfig();
         config.setAllowExternalReferences(true);
-        config.getTreatReferencesAsLogical().add("Patient/*");
+        config.getTreatReferencesAsLogical().add("urn:uuid:*");
         return config;
     }
 
