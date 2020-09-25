@@ -1,15 +1,22 @@
 package org.ehrbase.fhirbridge.rest;
 
 import com.nedap.archie.rm.ehr.EhrStatus;
+
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
+import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
+import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
+import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -97,23 +104,54 @@ public class EhrbaseService {
     public VersionUid saveDiagnosis(UUID ehrId, DiagnoseComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
     public VersionUid saveTemp(UUID ehrId, IntensivmedizinischesMonitoringKorpertemperaturComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+    
+    public VersionUid saveFIO2(UUID ehrId, BeatmungswerteComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
+
+        try
+        {
+            client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new UnprocessableEntityException("There was a Error in saveHeartRate", e);
+        }
 
         return composition.getVersionUid();
     }
 
     public VersionUid saveTest(UUID ehrId, KennzeichnungErregernachweisSARSCoV2Composition composition) {
-        // TODO invoke post processing
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveBloodPressure(UUID ehrId, BlutdruckComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
 
         return composition.getVersionUid();
     }
+
 }
+

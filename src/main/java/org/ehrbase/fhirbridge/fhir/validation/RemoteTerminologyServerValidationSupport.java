@@ -10,7 +10,12 @@ import ca.uhn.fhir.util.ParametersUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,7 +47,8 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
 
     @Cacheable(cacheNames = "validateCodeInValueSet", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSet.url")
     @Override
-    public CodeValidationResult validateCodeInValueSet(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions, String theCodeSystem, String theCode, String theDisplay, @Nonnull IBaseResource theValueSet) {
+    public CodeValidationResult validateCodeInValueSet(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions,
+                                                       String theCodeSystem, String theCode, String theDisplay, @Nonnull IBaseResource theValueSet) {
 
         String valueSetUrl = ((ValueSet) theValueSet).getUrl();
         if (!theOptions.isInferSystem()) {
@@ -120,7 +126,8 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
 
     @Cacheable(cacheNames = "validateCode", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSetUrl")
     @Override
-    public CodeValidationResult validateCode(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions, String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
+    public CodeValidationResult validateCode(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions,
+                                             String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
         if (StringUtils.isEmpty(theValueSetUrl)) {
             try {
                 logger.debug("Perform '/CodeSystem/$lookup' operation: system={}, code={}", theCodeSystem, theCode);
