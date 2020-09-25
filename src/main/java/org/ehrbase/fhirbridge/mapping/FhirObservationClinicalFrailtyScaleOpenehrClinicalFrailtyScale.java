@@ -65,9 +65,14 @@ public class FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale {
 
             String beurteilung = fhirObservation.getComponent().get(0).getValueCodeableConcept().getCoding().get(0).getCode();
 
+            // convert as int and compare int
+            // make interval class to insert fhir-Code and get DV_ORDINAL
+
+            // https://simplifier.net/forschungsnetzcovid-19/frailty-score hier gibt es die codes
             switch (beurteilung) {
-                case "beu1":
+                case "1":
                     observation.setBeurteilung(ClinFrailty_Beurteilung_1_SEHR_FIT);
+                    observation.set
                     break;
                 case "beu2":
                     observation.setBeurteilung(ClinFrailty_Beurteilung_2_DURCHSCHNITTLICH_AKTIV);
@@ -97,6 +102,7 @@ public class FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale {
                     logger.debug("Cannot match beurteilung\""+beurteilung+"\"");
                     break;
             }
+
 
 
             //observation.setMesswertMagnitude(fhirValueNumeric.doubleValue());
