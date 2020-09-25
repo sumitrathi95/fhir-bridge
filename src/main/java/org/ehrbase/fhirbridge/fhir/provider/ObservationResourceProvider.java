@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.*;
@@ -50,9 +51,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
 
-    @Autowired
-    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Observation> observationDao;
+
+    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Observation> observationDao) {
         super(fhirContext, service);
+        this.observationDao = observationDao;
     }
 
     @Search

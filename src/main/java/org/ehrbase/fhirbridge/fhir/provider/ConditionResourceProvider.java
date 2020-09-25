@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -33,9 +34,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ConditionResourceProvider.class);
 
-    @Autowired
-    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Condition> conditionDao;
+
+    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Condition> conditionDao) {
         super(fhirContext, service);
+        this.conditionDao = conditionDao;
     }
 
     @Read()
@@ -218,6 +221,9 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split("/")[1]);
+
+        conditionDao.create(condition);
+
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
