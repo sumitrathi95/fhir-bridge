@@ -1,14 +1,10 @@
-package org.ehrbase.fhirbridge.opt.shareddefinition;
+package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  EVENT("event", "event", "openehr", "433"),
-
-  EPISODIC("episodic", "episodic", "openehr", "435"),
-
-  PERSISTENT("persistent", "persistent", "openehr", "431");
+public enum DiagnoseDefiningcode implements EnumValueSet {
+  DIAGNOSE("Problem/Diagnose", "Das Problem oder die Diagnose, auf die sich die Ausschlussaussage bezieht. Zum Beispiel: \"Diabetes\", \"COPD\" oder \"Asthma\".", "local", "at0004");
 
   private String value;
 
@@ -18,7 +14,7 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  DiagnoseDefiningcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;

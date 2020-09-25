@@ -12,9 +12,13 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
+import org.ehrbase.fhirbridge.mapping.FhirConditionSymptomPresentOpenehrSymptom;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
+import org.ehrbase.fhirbridge.opt.symptomcomposition.SymptomComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -224,15 +228,27 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // *************************************************************************************
 
         try {
-            // FHIR Condition => COMPOSITION
-            DiagnoseComposition composition = FhirConditionOpenehrDiagnose.map(condition);
+             if (ProfileUtils.hasProfile(condition, Profile.SYMPTOM_PRESENT)) {
 
-            //UUID ehr_id = service.createEhr(); // <<< reflections error!
-            VersionUid versionUid = service.saveDiagnosis(ehrUid, composition);
-            logger.info("Composition created with UID {}", versionUid);
+                logger.info(">>>>>>>>>>>>>>>>>> CONDITION SYMPTOM PRESENT");
+
+                // FHIR Observation Symptoms => openEHR COMPOSITION
+                SymptomComposition composition = FhirConditionSymptomPresentOpenehrSymptom.map(condition);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveSymptom(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM_PRESENT);
+            } else {
+                 // FHIR Condition => COMPOSITION
+                 DiagnoseComposition composition = FhirConditionOpenehrDiagnose.map(condition);
+
+                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
+                 VersionUid versionUid = service.saveDiagnosis(ehrUid, composition);
+                 logger.info("Composition created with UID {}", versionUid);
+             }
 
         } catch (Exception e) {
-            throw new UnprocessableEntityException("There was an issue processing your request", e);
+            throw new UnprocessableEntityException("There was an issue processing your request. " + e.getMessage(), e);
         }
 
         condition.setId(new IdType(1L));

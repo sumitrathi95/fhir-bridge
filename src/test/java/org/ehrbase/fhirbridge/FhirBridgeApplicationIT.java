@@ -471,6 +471,24 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
+    public void createSymptom() throws IOException {
+
+        String resource = getContent("classpath:/Condition/condition-lung-disease-present.json");
+
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
     public void createProcedure() throws IOException {
         Date now = new Date();
 
