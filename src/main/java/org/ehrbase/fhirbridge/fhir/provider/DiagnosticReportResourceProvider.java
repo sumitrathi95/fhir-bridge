@@ -47,7 +47,7 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
         logger.info(">>>>>>>>>>>>>>>>>> PATIENT {}", diagnosticReport.getSubject().getReference()); // Patient/XXXX
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(diagnosticReport.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(diagnosticReport.getSubject().getReference().split(":")[2]);
 
 
         if (ProfileUtils.hasProfile(diagnosticReport, Profile.DIAGNOSTIC_REPORT_LAB)) {

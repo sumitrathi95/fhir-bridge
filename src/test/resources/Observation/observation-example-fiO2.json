@@ -39,7 +39,7 @@
     ]
   },
   "subject": {
-    "reference": "Patient/0281ba71-3334-4ed5-aa5b-4886bbc23607"
+    "reference": "urn:uuid:0281ba71-3334-4ed5-aa5b-4886bbc23607"
   },
   "effectiveDateTime": "2014-12-05T09:30:10+01:00",
   "valueQuantity": {

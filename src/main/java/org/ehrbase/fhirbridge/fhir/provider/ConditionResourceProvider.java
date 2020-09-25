@@ -218,12 +218,10 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
-
-        // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split("/")[1]);
-
         conditionDao.create(condition);
 
+        // will throw exceptions and block the request if the patient doesn't have an EHR
+        UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split(":")[2]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
