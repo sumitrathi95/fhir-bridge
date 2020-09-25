@@ -4,6 +4,7 @@
 target
 
 *-local.yml
+lucene
 
 # VSCode editor settings
 .vscode
