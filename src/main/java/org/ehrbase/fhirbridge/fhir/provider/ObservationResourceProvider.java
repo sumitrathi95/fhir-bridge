@@ -504,7 +504,6 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
             else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE))
             {
-
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
                 // FHIR Observation Heart Rate => openEHR COMPOSITION
@@ -521,7 +520,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         catch (Exception e)
         {
-            throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
+            /* check the trace for exceptions
+            for (java.lang.StackTraceElement ste: e.getStackTrace())
+            {
+                System.out.println(ste.getFileName() +" "+ ste.getLineNumber() +" "+ ste.isNativeMethod());
+            }
+            */
+
+            throw new UnprocessableEntityException("There was a problem saving the composition: " + e.getMessage(), e);
         }
 
         observation.setId(new IdType(1L));

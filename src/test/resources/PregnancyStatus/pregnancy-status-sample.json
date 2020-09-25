@@ -35,7 +35,7 @@
     "text": "Pregnancy status"
   },
   "subject": {
-    "reference": "Patient/example"
+    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49"
   },
   "effectiveDateTime": "2012-09-17",
   "valueCodeableConcept": {
@@ -47,5 +47,10 @@
       }
     ],
     "text": "Not pregnant"
-  }
+  },
+  "performer": [
+    {
+      "reference": "Practitioner/example"
+    }
+  ]
 }

@@ -490,6 +490,24 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
+    @Test
+    public void createPregnancyStatus() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/PregnancyStatus/pregnancy-status-sample.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
