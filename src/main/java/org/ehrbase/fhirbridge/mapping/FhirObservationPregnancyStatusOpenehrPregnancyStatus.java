@@ -47,6 +47,8 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
         // TODO: map other context status
         // Can't map because of https://github.com/ehrbase/openEHR_SDK/issues/84
 
+        composition.setSchwangerschaftsstatus(mapObservation(fhirObservation));
+
 
         // ======================================================================================
         // Required fields by API
