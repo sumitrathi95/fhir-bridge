@@ -75,7 +75,7 @@ public class FhirDiagnosticReportOpenehrLabResults {
         // Required fields by API
         composition.setLanguage(Language.EN);
         composition.setLocation("test");
-        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(OffsetDateTime.now());
@@ -179,7 +179,7 @@ public class FhirDiagnosticReportOpenehrLabResults {
         // Required fields by API
         composition.setLanguage(Language.EN); // FIXME: the lang should be retrieved from the template
         composition.setLocation("test");
-        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCYCARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(fhirDiagnosticReport.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());

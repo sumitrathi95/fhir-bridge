@@ -28,6 +28,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -83,7 +84,7 @@ public class FhirBridgeApplicationIT {
         logger.info("EHR UID: {}", this.ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
-
+    
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -110,7 +111,7 @@ public class FhirBridgeApplicationIT {
                         "classpath:/Condition/condition-invalid-profile-example.json"))
                         .execute());
 
-        Assertions.assertEquals("Specified profile type was \"Observation\", but found type \"Condition\"",
+        Assertions.assertEquals("Specified profile type was 'Observation', but found type 'Condition'",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -271,8 +272,11 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Default profile is not supported for Observation. One of the following profiles is expected: "
-                        + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                        + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
+                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -287,8 +291,11 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
                 "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
-                        + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                        + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
+                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
+                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
+                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
+                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -339,7 +346,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchBodyTemp() throws IOException {
 
-        // Needs at least one temp, can't rely on the tess execution order to create a
+        // Needs at least one temp, can't rely on the test execution order to create a
         // body temp in the server
         String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
         resource = resource.replaceAll(
@@ -358,7 +365,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchCoronavirusLabResults() throws IOException {
 
-        // Needs at least one lab result, can't rely on the tess execution order
+        // Needs at least one lab result, can't rely on the test execution order
         // WARNING: this will fail if terminology validation is turned on
         String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
         resource = resource.replaceAll(
@@ -378,7 +385,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void searchObservationLab() throws IOException {
 
-        // Needs at least one observation lab, can't rely on the tess execution order
+        // Needs at least one observation lab, can't rely on the test execution order
         String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
         resource = resource.replaceAll(
                 "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
@@ -400,18 +407,85 @@ public class FhirBridgeApplicationIT {
         // Needs at least one condition, can't rely on the tess execution order
         String resource = getContent("classpath:/Condition/condition-example.json");
         resource = resource.replaceAll(
-                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "Patient/" + this.subjectIdValue);
+                        "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+                        "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Condition.class)
-                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                .returnBundle(Bundle.class).execute();
+                        .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                        .returnBundle(Bundle.class).execute();
 
         logger.info("CONDITIONS: " + bundle.getTotal());
 
         Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void createHeartRate() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-example-heart-rate.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createBloodPressure() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
+
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createFIO2() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-example-fiO2.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createProcedure() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     private String getContent(String location) throws IOException {
