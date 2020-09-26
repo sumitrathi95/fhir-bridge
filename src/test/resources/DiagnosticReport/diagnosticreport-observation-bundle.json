@@ -2,7 +2,8 @@
   "resourceType": "Bundle",
   "id": "bundle-transaction",
   "meta": {
-    "lastUpdated": "2014-08-18T01:43:30Z"
+    "lastUpdated": "2014-08-18T01:43:30Z",
+    "source": "http://www.highmed.org"
   },
   "type": "transaction",
   "entry": [
@@ -13,7 +14,8 @@
         "meta": {
           "profile": [
             "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab"
-          ]
+          ],
+          "source": "http://www.highmed.org"
         },
         "identifier": [
           {
@@ -88,7 +90,8 @@
         "meta": {
           "profile": [
             "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab"
-          ]
+          ],
+          "source": "http://www.highmed.org"
         },
         "identifier": [
           {
