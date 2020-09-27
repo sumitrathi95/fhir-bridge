@@ -44,13 +44,6 @@
   "subject": {
     "reference": "Patient/example"
   },
-  "onsetDateTime": {
-    "extension": [
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-        "valueCode": "not-applicable"
-      }
-    ]
-  },
+  "onsetDateTime":"2020-06-16",
   "recordedDate": "2020-06-16"
 }

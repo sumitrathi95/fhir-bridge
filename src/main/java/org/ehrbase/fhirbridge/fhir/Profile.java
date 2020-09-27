@@ -25,6 +25,7 @@ public enum Profile {
 
     SYMPTOM_PRESENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-present", ResourceType.Condition),
 
+    SYMPTOM_ABSENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-absent", ResourceType.Condition),
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
