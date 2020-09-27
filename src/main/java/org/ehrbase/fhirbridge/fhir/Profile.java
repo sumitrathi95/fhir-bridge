@@ -23,7 +23,7 @@ public enum Profile {
     
     HEART_RATE("http://hl7.org/fhir/StructureDefinition/heartrate", ResourceType.Observation),
 
-    SYMPTOM_PRESENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/chronic-lung-diseases-present", ResourceType.Condition),
+    SYMPTOM_PRESENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-present", ResourceType.Condition),
 
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
