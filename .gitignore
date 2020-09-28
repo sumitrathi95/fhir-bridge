@@ -11,4 +11,5 @@ lucene
 .classpath
 .factorypath
 .project
+.settings
 org.eclipse*

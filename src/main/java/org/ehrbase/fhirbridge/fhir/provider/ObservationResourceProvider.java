@@ -527,6 +527,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
