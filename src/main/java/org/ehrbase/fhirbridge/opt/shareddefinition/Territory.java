@@ -181,7 +181,7 @@ public enum Territory implements EnumValueSet {
   MQ("MQ", "MQ", "ISO_3166-1", "MQ"),
 
   TT("TT", "TT", "ISO_3166-1", "TT"),
-
+  
   SY("SY", "SY", "ISO_3166-1", "SY"),
 
   KE("KE", "KE", "ISO_3166-1", "KE"),

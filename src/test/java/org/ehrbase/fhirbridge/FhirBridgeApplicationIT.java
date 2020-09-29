@@ -66,7 +66,7 @@ public class FhirBridgeApplicationIT {
 
     @BeforeEach
     public void setUp() {
-        context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
 
         // Create EHR for the rests of the tests to run on this
@@ -84,7 +84,7 @@ public class FhirBridgeApplicationIT {
         logger.info("EHR UID: {}", this.ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
     }
-    
+
     @Test
     public void createDiagnoseCondition() throws IOException {
 
@@ -267,16 +267,17 @@ public class FhirBridgeApplicationIT {
                 () -> client.create()
                         .resource(getContent("classpath:/Observation/observation-example.json"))
                         .execute());
-
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                "Default profile is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
-                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
-                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
-                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                "Default profile is not supported for Observation. One of the following profiles is expected: " +
+                        "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
+                        "http://hl7.org/fhir/StructureDefinition/heartrate, " +
+                        "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -290,12 +291,15 @@ public class FhirBridgeApplicationIT {
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected: "
-                + "[http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, "
-                + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
-                + "http://hl7.org/fhir/StructureDefinition/heartrate, "
-                + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-                + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab]",
+                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
+                        "One of the following profiles is expected: " +
+                        "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
+                        "http://hl7.org/fhir/StructureDefinition/heartrate," +
+                        " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -413,8 +417,8 @@ public class FhirBridgeApplicationIT {
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Condition.class)
-                        .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                        .returnBundle(Bundle.class).execute();
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
 
         logger.info("CONDITIONS: " + bundle.getTotal());
 
@@ -440,6 +444,23 @@ public class FhirBridgeApplicationIT {
     public void createBloodPressure() throws IOException {
 
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createSofaScore() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
 
         // Change patients id to test patient id
         resource = resource.replaceAll("urn:uuid:example", "urn:uuid:" + this.subjectIdValue);
