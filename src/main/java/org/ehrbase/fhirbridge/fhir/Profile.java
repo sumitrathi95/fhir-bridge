@@ -25,8 +25,9 @@ public enum Profile {
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
-    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation);
-    
+    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
+
+    BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle); //TODO should be threated as observation ?
 
     private final String url;
 

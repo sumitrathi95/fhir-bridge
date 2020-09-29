@@ -24,7 +24,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
 @Template("Befund der Blutgasanalyse")
-public class BefundDerBlutgasanalyseComposition {
+public class BefundDerBlutgasanalyseComposition extends Composition {
   @Id
   private VersionUid versionUid;
 

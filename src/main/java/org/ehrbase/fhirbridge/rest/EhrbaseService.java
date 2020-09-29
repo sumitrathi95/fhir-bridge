@@ -6,9 +6,9 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
-import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
+import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.Composition;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
@@ -18,7 +18,6 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -92,6 +91,8 @@ public class EhrbaseService {
             return null;
     }
 
+    //TODO introduce Composition class as mother class so all save duplicates can be shortend to save(Composition composition)
+
     public VersionUid saveLab(UUID ehrId, LaborbefundComposition composition) {
         // TODO invoke post processing
 
@@ -107,7 +108,6 @@ public class EhrbaseService {
     }
 
     public VersionUid saveTemp(UUID ehrId, IntensivmedizinischesMonitoringKorpertemperaturComposition composition) {
-
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
@@ -134,13 +134,17 @@ public class EhrbaseService {
     }
 
     public VersionUid saveTest(UUID ehrId, KennzeichnungErregernachweisSARSCoV2Composition composition) {
-
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
 
     public VersionUid saveBloodPressure(UUID ehrId, BlutdruckComposition composition) {
 
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid save(UUID ehrId, Composition composition) {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }

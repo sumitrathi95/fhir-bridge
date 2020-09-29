@@ -17,6 +17,10 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
     private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
     }
+
+    public static BefundDerBlutgasanalyseComposition map(Observation bloodGasPanel, Observation pO, Observation pH, Observation pCO2, Observation oxygenSaturation) {
+        return null;
+    }
 //
 //    public FHIRObservationBloodGasOpenehrBlutgasAnalyse(Observation fhirObservation) {
 //           this.fhirObservation = fhirObservation;
