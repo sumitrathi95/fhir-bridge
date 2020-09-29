@@ -15,7 +15,12 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +49,8 @@ public class FhirBridgeApplicationIT {
 
     private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
 
+    private static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
+
     @LocalServerPort
     private int port;
 
@@ -62,7 +69,10 @@ public class FhirBridgeApplicationIT {
     private EhrbaseService service;
 
     private UUID ehrId;
+
     private String subjectIdValue;
+
+    private String patientReference;
 
     @BeforeEach
     public void setUp() {
@@ -83,20 +93,18 @@ public class FhirBridgeApplicationIT {
 
         logger.info("EHR UID: {}", this.ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
+
+        this.patientReference = "urn:uuid:" + subjectIdValue;
     }
 
     @Test
     public void createDiagnoseCondition() throws IOException {
-
         Date now = new Date();
 
         String resource = getContent("classpath:/Condition/condition-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
-
         Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
         Assertions.assertEquals(true, outcome.getCreated());
         Assertions.assertNotNull(outcome.getResource());
@@ -119,11 +127,8 @@ public class FhirBridgeApplicationIT {
     public void createDiagnosticReportLab() throws IOException {
         Date now = new Date();
 
-        String resource = getContent(
-                "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -138,11 +143,8 @@ public class FhirBridgeApplicationIT {
     public void createDiagnosticReportLabContainedObservation() throws IOException {
         Date now = new Date();
 
-        String resource = getContent(
-                "classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example-contained_obs.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -157,9 +159,7 @@ public class FhirBridgeApplicationIT {
     public void createDiagnosticReportUsingDefaultProfile() throws IOException {
 
         String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.subjectIdValue);
         String finalResource = resource;
 
         UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
@@ -190,11 +190,8 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createBodyTemp() throws IOException {
-
         String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -230,11 +227,8 @@ public class FhirBridgeApplicationIT {
             Assertions.assertEquals("Observation.code.coding[0]", issue.getLocation().get(0).toString());
         } else // Remote terminology validation is OFF, example wont fail
         {
-            String resource = getContent(
-                    "classpath:/Observation/observation-coronavirusnachweistest-example.json");
-            resource = resource.replaceAll(
-                    "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                    "urn:uuid:" + this.subjectIdValue);
+            String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
+            resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
             MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -249,9 +243,7 @@ public class FhirBridgeApplicationIT {
     public void createObservationLab() throws IOException {
 
         String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -305,11 +297,8 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createQuestionnaireResponse() throws IOException {
-
         String resource = getContent("classpath:/QuestionnaireResponse/covapp-response.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -353,11 +342,9 @@ public class FhirBridgeApplicationIT {
         // Needs at least one temp, can't rely on the test execution order to create a
         // body temp in the server
         String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
-        MethodOutcome outcome = client.create().resource(resource).execute();
+        client.create().resource(resource).execute();
 
         Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
                 .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
@@ -372,9 +359,7 @@ public class FhirBridgeApplicationIT {
         // Needs at least one lab result, can't rely on the test execution order
         // WARNING: this will fail if terminology validation is turned on
         String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -388,12 +373,9 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void searchObservationLab() throws IOException {
-
         // Needs at least one observation lab, can't rely on the test execution order
         String resource = getContent("classpath:/Observation/observation-observationlab-example.json");
-        resource = resource.replaceAll(
-                "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -407,12 +389,9 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void searchDiagnoseCondition() throws IOException {
-
         // Needs at least one condition, can't rely on the tess execution order
         String resource = getContent("classpath:/Condition/condition-example.json");
-        resource = resource.replaceAll(
-                        "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                        "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -428,9 +407,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createHeartRate() throws IOException {
         String resource = getContent("classpath:/Observation/observation-example-heart-rate.json");
-        resource = resource.replaceAll(
-            "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-            "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -442,10 +419,8 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createBloodPressure() throws IOException {
-
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
-        // Change patients id to test patient id
-        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create()
                 .resource(resource)
@@ -459,11 +434,8 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createSofaScore() throws IOException {
-
         String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
-
-        // Change patients id to test patient id
-        resource = resource.replaceAll("urn:uuid:example", "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create()
                 .resource(resource)
@@ -477,11 +449,8 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createFIO2() throws IOException {
-
         String resource = getContent("classpath:/Observation/observation-example-fiO2.json");
-        resource = resource.replaceAll(
-            "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-            "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -496,9 +465,7 @@ public class FhirBridgeApplicationIT {
         Date now = new Date();
 
         String resource = getContent("classpath:/Procedure/Procedure-example.json");
-        resource = resource.replaceAll(
-            "urn:uuid:([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-            "urn:uuid:" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 

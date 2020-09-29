@@ -27,7 +27,7 @@
 		"text": "Sepsis-related organ failure assessment score"
 	},
 	"subject": {
-		"reference": "Patient/example"
+		"reference": "urn:uuid:07f602e0-579e-4fe3-95af-381728bf0d49"
 	},
 	"effectiveDateTime": "2020-09-16",
 	"component": [
