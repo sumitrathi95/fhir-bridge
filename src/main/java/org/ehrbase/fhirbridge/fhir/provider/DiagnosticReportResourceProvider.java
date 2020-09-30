@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -15,7 +16,6 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -28,28 +28,26 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(DiagnosticReportResourceProvider.class);
 
-    @Autowired
-    public DiagnosticReportResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<DiagnosticReport> diagnosticReportDao;
+
+    public DiagnosticReportResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<DiagnosticReport> diagnosticReportDao) {
         super(fhirContext, service);
+        this.diagnosticReportDao = diagnosticReportDao;
     }
 
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
-
         checkProfiles(diagnosticReport);
+
+        diagnosticReportDao.create(diagnosticReport);
 
         logger.info(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT {}", diagnosticReport.getIdentifier().get(0).getValue());
         logger.info(">>>>>>>>>>>>>>>>>> CONTAINED {}", diagnosticReport.getContained().size());
         logger.info(">>>>>>>>>>>>>>>>>> PATIENT {}", diagnosticReport.getSubject().getReference()); // Patient/XXXX
-        /*
-        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getType()); // null
-        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getIdentifier().getValue()); // null
-        System.out.println(">>>>>>>>>>>>>>>>>> PATIENT " + diagnosticReport.getSubject().getDisplay()); // null
-        */
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(diagnosticReport.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(diagnosticReport.getSubject().getReference().split(":")[2]);
 
 
         if (ProfileUtils.hasProfile(diagnosticReport, Profile.DIAGNOSTIC_REPORT_LAB)) {

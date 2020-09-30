@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -14,7 +15,6 @@ import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -27,9 +27,11 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ProcedureResourceProvider.class);
 
-    @Autowired
-    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Procedure> procedureDao;
+
+    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Procedure> procedureDao) {
         super(fhirContext, service);
+        this.procedureDao = procedureDao;
     }
 
     /*
@@ -176,8 +178,10 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
     @SuppressWarnings("unused")
     public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
 
+        procedureDao.create(procedure);
+
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split(":")[2]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter

@@ -1,9 +1,19 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.param.*;
+import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.param.ParamPrefixEnum;
+import ca.uhn.fhir.rest.param.QuantityParam;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
@@ -30,10 +40,12 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -52,9 +64,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
 
-    @Autowired
-    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Observation> observationDao;
+
+    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Observation> observationDao) {
         super(fhirContext, service);
+        this.observationDao = observationDao;
     }
 
     @Search
@@ -438,8 +452,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     {
         checkProfiles(observation);
 
+        observationDao.create(observation);
+
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split(":")[2]);
 
         try
         {

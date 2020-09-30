@@ -1,7 +1,14 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -16,11 +23,14 @@ import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,9 +43,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ConditionResourceProvider.class);
 
-    @Autowired
-    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service) {
+    private final IFhirResourceDao<Condition> conditionDao;
+
+    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Condition> conditionDao) {
         super(fhirContext, service);
+        this.conditionDao = conditionDao;
     }
 
     @Read()
@@ -215,9 +227,10 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
+        conditionDao.create(condition);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split(":")[2]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
