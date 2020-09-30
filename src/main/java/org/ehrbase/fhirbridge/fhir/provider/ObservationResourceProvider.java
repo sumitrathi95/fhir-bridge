@@ -20,6 +20,7 @@ import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
 import org.ehrbase.fhirbridge.mapping.FhirObservationPregnancyStatusOpenehrPregnancyStatus;
+import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
@@ -29,20 +30,19 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
+import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Date.from;
-
 
 /**
  * Resource provider for Observation
@@ -290,10 +290,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         List<Observation> result = new ArrayList<>();
 
         String aql =
-                "SELECT c "+
-                        "FROM EHR e CONTAINS COMPOSITION c "+
-                        "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
-                        "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+            "SELECT c "+
+            "FROM EHR e CONTAINS COMPOSITION c "+
+            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
+            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
 
             /* getting 400 from this query, tried to get the cluster to compare with the date range param since that is the real effectiveTime of the resource, not the compo time.
             String aql =
@@ -468,8 +468,21 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = service.saveTest(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CORONARIRUS_NACHWEIS_TEST);
             }
-            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP))
+            else if (ProfileUtils.hasProfile(observation, Profile.SOFA_SCORE))
             {
+                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION SOFA SCORE");
+
+                // Map SOFA Score to openEHR
+
+
+                // test map FHIR to openEHR
+                SOFAComposition composition = FhirObservationSofaScoreOpenehrSofa.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = service.saveSOFAScore(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SOFA_SCORE);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
 
@@ -520,13 +533,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         }
         catch (Exception e)
         {
-            /* check the trace for exceptions
-            for (java.lang.StackTraceElement ste: e.getStackTrace())
-            {
-                System.out.println(ste.getFileName() +" "+ ste.getLineNumber() +" "+ ste.isNativeMethod());
-            }
-            */
-
+            e.printStackTrace();
             throw new UnprocessableEntityException("There was a problem saving the composition: " + e.getMessage(), e);
         }
 
