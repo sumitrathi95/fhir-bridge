@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition;
 
 import com.nedap.archie.rm.archetyped.FeederAudit;
+import com.nedap.archie.rm.composition.Composition;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
@@ -24,7 +25,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
 @Template("Befund der Blutgasanalyse")
-public class BefundDerBlutgasanalyseComposition extends Composition{
+public class BefundDerBlutgasanalyseComposition{
   @Id
   private VersionUid versionUid;
 

@@ -14,9 +14,8 @@ abstract class LaboratoryTestAnalyteMapper {
         this.fhirObservation = fhirObservation;
     }
 
-    //TODO duplicate
-    //TODO in archtype these fields are in englisch, meanwhile on the top level they are german
-    // here also a String is required instead of StatusCode
+    //TODO a String is required instead of StatusCode
+    //TODO dupliacte
     protected String mapErgebnisStatus() {
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":

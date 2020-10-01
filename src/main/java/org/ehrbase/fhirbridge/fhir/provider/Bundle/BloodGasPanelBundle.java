@@ -8,8 +8,6 @@ import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.FHIRObservationBloodGasOpen
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 
-import java.util.ArrayList;
-
 public class BloodGasPanelBundle extends SupportedBundle {
     private final String bloodGasUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel";
     private final String pHUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pH";
@@ -29,13 +27,10 @@ public class BloodGasPanelBundle extends SupportedBundle {
     }
 
     @Override
-    public ArrayList<MappedComposition> processBundle() {
+    public MappedComposition processBundle() {
         SupportedBundle.logger.info(">>>>>>>>>>>>>>>>>> BLOOD GAS PANEL");
         String ehrUid = getEhrUID();
-        return new ArrayList<>() {{
-            add(new MappedComposition(FHIRObservationBloodGasOpenehrBlutgasAnalyse.map(bloodGasPanel, oxygenPartialPressure, pH, carbonDioxidePartialPressure, oxygenSaturation), ehrUid));
-        }};
-
+        return new MappedComposition(FHIRObservationBloodGasOpenehrBlutgasAnalyse.map(bloodGasPanel, oxygenPartialPressure, pH, carbonDioxidePartialPressure, oxygenSaturation), ehrUid);
     }
 
     @Override

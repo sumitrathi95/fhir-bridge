@@ -13,10 +13,10 @@ public class KohlendioxidpartialdruckMapper extends LaboratoryTestAnalyteMapper 
 
     public KohlendioxidpartialdruckCluster map() {
         KohlendioxidpartialdruckCluster kohlendioxidpartialdruckCluster = new KohlendioxidpartialdruckCluster();
-        kohlendioxidpartialdruckCluster.setErgebnisStatusValue(mapErgebnisStatus());
-        kohlendioxidpartialdruckCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
-        kohlendioxidpartialdruckCluster.setAnalytResultatUnits("mmHg");
-        kohlendioxidpartialdruckCluster.setErgebnisStatusValue(mapValue());
+       // kohlendioxidpartialdruckCluster.setErgebnisStatusValue(mapErgebnisStatus());
+      //  kohlendioxidpartialdruckCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
+     //   kohlendioxidpartialdruckCluster.setAnalytResultatUnits("mmHg");
+    //    kohlendioxidpartialdruckCluster.setErgebnisStatusValue(mapValue());
         return kohlendioxidpartialdruckCluster;
     }
 

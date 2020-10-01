@@ -7,10 +7,8 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 
-
-public abstract class SupportedBundle {
+public abstract class SupportedBundle extends Bundle{
    protected final Bundle bundle;
    protected final static Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
 
@@ -18,7 +16,9 @@ public abstract class SupportedBundle {
       this.bundle = bundle;
    }
 
-   public abstract ArrayList<MappedComposition> processBundle();
+  // public abstract ArrayList<MappedComposition> processBundle();
+
+   public abstract MappedComposition processBundle();
 
    public abstract void createdLog(VersionUid versionUid);
 }

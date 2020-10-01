@@ -1,10 +1,15 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
+import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.PhWertMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffsaettigungMapper;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
+import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
@@ -29,17 +34,23 @@ class LaborergebnisBefundMapper {
         LaborergebnisObservation laborergebnisObservation = new LaborergebnisObservation();
         laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanel));
 
-        KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
-        laborergebnisObservation.setKohlendioxidpartialdruck(kohlendioxidpartialdruckMapper.map());
+        laborergebnisObservation.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        laborergebnisObservation.setOriginValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime()); // mandatory
+        laborergebnisObservation.setTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+        laborergebnisObservation.setLanguage(Language.DE);// FIXME: we need to grab the language from the template
+        laborergebnisObservation.setSubject(new PartySelf());
 
-        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
-        laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
-
-        PhWertMapper phWertMapper = new PhWertMapper(pH);
-        laborergebnisObservation.setPhWert(phWertMapper.map());
-
-        SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation);
-        laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
+     //   KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
+          laborergebnisObservation.setKohlendioxidpartialdruck(new KohlendioxidpartialdruckCluster());
+//
+//        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
+//        laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
+//
+//        PhWertMapper phWertMapper = new PhWertMapper(pH);
+//        laborergebnisObservation.setPhWert(phWertMapper.map());
+//
+//        SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation);
+//        laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
 
         return laborergebnisObservation;
     }

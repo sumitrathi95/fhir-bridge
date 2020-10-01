@@ -127,7 +127,7 @@ public class LaborergebnisObservation {
   }
 
   public void setKohlendioxidpartialdruck(
-      KohlendioxidpartialdruckCluster kohlendioxidpartialdruck) {
+     KohlendioxidpartialdruckCluster kohlendioxidpartialdruck) {
      this.kohlendioxidpartialdruck = kohlendioxidpartialdruck;
   }
 
