@@ -3,18 +3,12 @@ package org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum UntersuchterAnalytDefiningcode implements EnumValueSet {
-  PH_OF_SERUM_OR_PLASMA("pH of Serum or Plasma", null, "LOINC", "2753-2"),
+public enum UntersuchterAnalytDefiningcode2 implements EnumValueSet {
+  OXYGEN_PARTIAL_PRESSURE_IN_ARTERIAL_BLOOD("Oxygen [Partial pressure] in Arterial blood", null, "LOINC", "2703-7"),
 
-  PH_OF_CAPILLARY_BLOOD("pH of Capillary blood", null, "LOINC", "2745-8"),
+  OXYGEN_PARTIAL_PRESSURE_IN_BLOOD("Oxygen [Partial pressure] in Blood", null, "LOINC", "11556-8"),
 
-  PH_OF_BLOOD("pH of Blood", null, "LOINC", "11558-4"),
-
-  PH_OF_VENOUS_BLOOD("pH of Venous blood", null, "LOINC", "2746-6"),
-
-  PH_OF_MIXED_VENOUS_BLOOD("pH of Mixed venous blood", null, "LOINC", "19213-8"),
-
-  PH_OF_ARTERIAL_BLOOD("pH of Arterial blood", null, "LOINC", "2744-1");
+  OXYGEN_PARTIAL_PRESSURE_IN_CAPILLARY_BLOOD("Oxygen [Partial pressure] in Capillary blood", null, "LOINC", "2704-5");
 
   private String value;
 
@@ -24,7 +18,7 @@ public enum UntersuchterAnalytDefiningcode implements EnumValueSet {
 
   private String code;
 
-  UntersuchterAnalytDefiningcode(String value, String description, String terminologyId,
+  UntersuchterAnalytDefiningcode2(String value, String description, String terminologyId,
       String code) {
     this.value = value;
     this.description = description;

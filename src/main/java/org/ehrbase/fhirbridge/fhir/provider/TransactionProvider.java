@@ -2,16 +2,14 @@ package org.ehrbase.fhirbridge.fhir.provider;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.Transaction;
 import ca.uhn.fhir.rest.annotation.TransactionParam;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.MappedComposition;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.SupportedBundle;
-import org.ehrbase.fhirbridge.fhir.provider.Bundle.UnspecificBundle;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.Composition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
@@ -47,7 +45,7 @@ public class TransactionProvider extends AbstractResourceProvider {
         saveCompositions(compositions, supportedBundle);
     }
 
-    protected  void saveCompositions(ArrayList<MappedComposition> compositions, SupportedBundle supportedBundle){
+    protected void saveCompositions(ArrayList<MappedComposition> compositions, SupportedBundle supportedBundle){
         for (MappedComposition mappedComposition: compositions) {
             UUID ehrUid = getEhrUidForSubjectId(mappedComposition.getSubjectId());
             VersionUid versionUid = service.save(ehrUid, mappedComposition.getComposition());
@@ -56,25 +54,23 @@ public class TransactionProvider extends AbstractResourceProvider {
     }
 
     private SupportedBundle getBundleType(Bundle bundle){
-        SupportedBundle supportedBundle = new UnspecificBundle(bundle);
+        //FIXME try to avoid using null
+        SupportedBundle supportedBundle;
         for (Bundle.BundleEntryComponent bundleEntryComponent:bundle.getEntry()) {
             String profileUrl = bundleEntryComponent.getResource().getMeta().getProfile().get(0).getValueAsString();
             supportedBundle = determineBundleType(profileUrl, bundle);
-            if(!supportedBundle.getClass().equals(UnspecificBundle.class)){
+            if(supportedBundle != null){
                 return supportedBundle;
             }
         }
-        return supportedBundle;
+        throw new UnprocessableEntityException("The Bundle provided is not supported. Supported is currently only a Bundle containing the profiles for Blood Gas Panel"); //TODO define this in a more generic way!
     }
 
     private SupportedBundle determineBundleType(String profileUrl, Bundle bundle) {
-        logger.info("Bundle.id={}", profileUrl);
-        logger.info("Bundle.id={}", Profile.BLOOD_GAS.getUrl());
-
         if(profileUrl.equals(Profile.BLOOD_GAS.getUrl())){
             return new BloodGasPanelBundle(bundle);
         }else{
-            return new UnspecificBundle(bundle);
+            return null;
         }
     }
 

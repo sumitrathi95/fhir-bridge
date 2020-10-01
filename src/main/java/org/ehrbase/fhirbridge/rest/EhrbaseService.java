@@ -148,5 +148,7 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
+
 }
 

@@ -14,7 +14,7 @@ public class KohlendioxidpartialdruckClusterContainment extends Containment {
 
   public SelectAqlField<String> ERGEBNIS_STATUS_VALUE = new AqlFieldImp<String>(KohlendioxidpartialdruckCluster.class, "/items[at0005]/value|value", "ergebnisStatusValue", String.class, this);
 
-  public SelectAqlField<UntersuchterAnalytDefiningcode> UNTERSUCHTER_ANALYT_DEFININGCODE = new AqlFieldImp<UntersuchterAnalytDefiningcode>(KohlendioxidpartialdruckCluster.class, "/items[at0024]/value|defining_code", "untersuchterAnalytDefiningcode", UntersuchterAnalytDefiningcode.class, this);
+  public SelectAqlField<UntersuchterAnalytDefiningcode3> UNTERSUCHTER_ANALYT_DEFININGCODE = new AqlFieldImp<UntersuchterAnalytDefiningcode3>(KohlendioxidpartialdruckCluster.class, "/items[at0024]/value|defining_code", "untersuchterAnalytDefiningcode", UntersuchterAnalytDefiningcode3.class, this);
 
   public SelectAqlField<Double> ANALYT_RESULTAT_MAGNITUDE = new AqlFieldImp<Double>(KohlendioxidpartialdruckCluster.class, "/items[at0001]/value|magnitude", "analytResultatMagnitude", Double.class, this);
 

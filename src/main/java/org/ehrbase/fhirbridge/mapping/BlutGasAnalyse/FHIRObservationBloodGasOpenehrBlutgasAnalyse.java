@@ -1,9 +1,14 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
+import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
@@ -12,37 +17,34 @@ import org.slf4j.LoggerFactory;
 
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
-    private static final Logger logger = LoggerFactory.getLogger(FhirConditionOpenehrDiagnose.class);
-   // private final Observation fhirObservation;
-
     private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
     }
 
-    public static BefundDerBlutgasanalyseComposition map(Observation bloodGasPanel, Observation pO, Observation pH, Observation pCO2, Observation oxygenSaturation) {
-        return null;
-    }
-//
-//    public FHIRObservationBloodGasOpenehrBlutgasAnalyse(Observation fhirObservation) {
-//           this.fhirObservation = fhirObservation;
-//    }
-
-    //TODO what is the input type ? Bundle ?
-    public BefundDerBlutgasanalyseComposition map(Observation fhirObservation) {
+    public static BefundDerBlutgasanalyseComposition map(Observation bloodGasPanel, Observation oxygenPartialPressure,
+                                                         Observation pH, Observation carbonDioxidePartialPressure, Observation oxygenSaturation) {
         BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition = new BefundDerBlutgasanalyseComposition();
-        DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
 
-        befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(fhirObservation));
-        befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(fhirObservation));
+        befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(bloodGasPanel));
+        befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(bloodGasPanel));
 
-        LaborergebnisBefundMapper fhirObservationOpenehrLaborergebnisBefund = new LaborergebnisBefundMapper(fhirObservation);
+        LaborergebnisBefundMapper fhirObservationOpenehrLaborergebnisBefund = new LaborergebnisBefundMapper(bloodGasPanel, oxygenPartialPressure, pH, carbonDioxidePartialPressure, oxygenSaturation);
         befundDerBlutgasanalyseComposition.setLaborergebnis(fhirObservationOpenehrLaborergebnisBefund.map());
 
-        return befundDerBlutgasanalyseComposition;
+        //Mandatory Stuff
+        befundDerBlutgasanalyseComposition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        befundDerBlutgasanalyseComposition.setLocation("test"); //FIXME: sensible value
+        befundDerBlutgasanalyseComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        befundDerBlutgasanalyseComposition.setTerritory(Territory.DE);
+        befundDerBlutgasanalyseComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        befundDerBlutgasanalyseComposition.setStartTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
 
+        befundDerBlutgasanalyseComposition.setComposer(new PartySelf()); //FIXME: sensible value
+
+        return befundDerBlutgasanalyseComposition;
     }
 
     //TODO match codes not strings
-    private StatusDefiningcode mapStatus(Observation fhirObservation){
+    private static StatusDefiningcode mapStatus(Observation fhirObservation) {
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":
                 return StatusDefiningcode.REGISTRIERT;
@@ -59,16 +61,14 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
     }
 
     //TODO can be a list of CodeableConcepts, but openEHR field is just a string for now i appended all
-    private String mapKategorie(Observation fhirObservation){
+    private static String mapKategorie(Observation fhirObservation) {
         StringBuilder categories = new StringBuilder();
         for (CodeableConcept codeableConcept : fhirObservation.getCategory()
-             ) {
+        ) {
             categories.append(codeableConcept.getText());
         }
         return categories.toString();
     }
-
-
 
 
 }

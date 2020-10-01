@@ -1,6 +1,7 @@
 package org.ehrbase.fhirbridge.fhir.provider.Bundle;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.FHIRObservationBloodGasOpenehrBlutgasAnalyse;
@@ -12,14 +13,14 @@ import java.util.ArrayList;
 public class BloodGasPanelBundle extends SupportedBundle {
     private final String bloodGasUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel";
     private final String pHUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pH";
-    private final String pCO2Url = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/carbon-dioxide-partial-pressure";
-    private final String pO2Url = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/oxygen-partial-pressure";
+    private final String carbonDioxidePartialPressureUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/carbon-dioxide-partial-pressure";
+    private final String oxygenPartialPressureUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/oxygen-partial-pressure";
     private final String oxygenSaturationUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/oxygen-saturation";
 
     private Observation bloodGasPanel;
     private Observation pH;
-    private Observation pCO2;
-    private Observation pO2;
+    private Observation carbonDioxidePartialPressure;
+    private Observation oxygenPartialPressure;
     private Observation oxygenSaturation;
 
     public BloodGasPanelBundle(Bundle bundle) {
@@ -29,10 +30,10 @@ public class BloodGasPanelBundle extends SupportedBundle {
 
     @Override
     public ArrayList<MappedComposition> processBundle() {
-        SupportedBundle.logger.info(">>>>>>>>>>>>>>>>>> BLOOD GAS PANEL {}", bundle.getIdentifier().getValue());
+        SupportedBundle.logger.info(">>>>>>>>>>>>>>>>>> BLOOD GAS PANEL");
         String ehrUid = getEhrUID();
         return new ArrayList<>() {{
-            add(new MappedComposition(FHIRObservationBloodGasOpenehrBlutgasAnalyse.map(bloodGasPanel, pO2, pH, pCO2, oxygenSaturation), ehrUid));
+            add(new MappedComposition(FHIRObservationBloodGasOpenehrBlutgasAnalyse.map(bloodGasPanel, oxygenPartialPressure, pH, carbonDioxidePartialPressure, oxygenSaturation), ehrUid));
         }};
 
     }
@@ -52,22 +53,25 @@ public class BloodGasPanelBundle extends SupportedBundle {
                 case pHUrl:
                     this.pH = (Observation) entry.getResource();
                     break;
-                case pCO2Url:
-                    this.pCO2 = (Observation) entry.getResource();
+                case carbonDioxidePartialPressureUrl:
+                    this.carbonDioxidePartialPressure = (Observation) entry.getResource();
                     break;
-                case pO2Url:
-                    this.pO2 = (Observation) entry.getResource();
+                case oxygenPartialPressureUrl:
+                    this.oxygenPartialPressure = (Observation) entry.getResource();
                     break;
                 case oxygenSaturationUrl:
                     this.oxygenSaturation = (Observation) entry.getResource();
                     break;
+                default:
+                    //TODO make this more generic one method for every Bundle
+                    throw new UnprocessableEntityException("Blood gas panel bundle needs to contain only the profiles for the blood gas panel. Please delete profile " + profileUrl + " from the Bundle.");
             }
         }
         checkIfAllObservationsSet();
     }
 
     private void checkIfAllObservationsSet() {
-        if (bloodGasPanel == null || pO2 == null || pCO2 == null || pH == null || oxygenSaturation == null)
+        if (bloodGasPanel == null || oxygenPartialPressure == null || carbonDioxidePartialPressure == null || pH == null || oxygenSaturation == null)
             throw new NullPointerException("Bundle does not contain all necessary profiles for Blood Gas Panel, please check that all profiles are present");
     }
 

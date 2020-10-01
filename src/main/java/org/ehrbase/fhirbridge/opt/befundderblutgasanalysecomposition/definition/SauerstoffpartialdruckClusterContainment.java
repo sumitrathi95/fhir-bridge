@@ -14,7 +14,7 @@ public class SauerstoffpartialdruckClusterContainment extends Containment {
 
   public SelectAqlField<String> ERGEBNIS_STATUS_VALUE = new AqlFieldImp<String>(SauerstoffpartialdruckCluster.class, "/items[at0005]/value|value", "ergebnisStatusValue", String.class, this);
 
-  public SelectAqlField<UntersuchterAnalytDefiningcode> UNTERSUCHTER_ANALYT_DEFININGCODE = new AqlFieldImp<UntersuchterAnalytDefiningcode>(SauerstoffpartialdruckCluster.class, "/items[at0024]/value|defining_code", "untersuchterAnalytDefiningcode", UntersuchterAnalytDefiningcode.class, this);
+  public SelectAqlField<UntersuchterAnalytDefiningcode2> UNTERSUCHTER_ANALYT_DEFININGCODE = new AqlFieldImp<UntersuchterAnalytDefiningcode2>(SauerstoffpartialdruckCluster.class, "/items[at0024]/value|defining_code", "untersuchterAnalytDefiningcode", UntersuchterAnalytDefiningcode2.class, this);
 
   public SelectAqlField<Double> ANALYT_RESULTAT_MAGNITUDE = new AqlFieldImp<Double>(SauerstoffpartialdruckCluster.class, "/items[at0001]/value|magnitude", "analytResultatMagnitude", Double.class, this);
 

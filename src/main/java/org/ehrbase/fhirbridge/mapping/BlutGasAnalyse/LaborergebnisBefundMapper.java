@@ -5,42 +5,45 @@ import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.Ph
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffsaettigungMapper;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
 class LaborergebnisBefundMapper {
 
+    private final Observation oxygenPartialPressure;
+    private final Observation pH;
+    private final Observation carbonDioxidePartialPressure;
+    private final Observation oxygenSaturation;
+    private final Observation bloodGasPanel;
 
-    private final Observation fhirObservation;
-
-    public LaborergebnisBefundMapper(Observation fhirObservation) {
-        this.fhirObservation = fhirObservation;
+    public LaborergebnisBefundMapper(Observation bloodGasPanel, Observation oxygenPartialPressure, Observation pH, Observation carbonDioxidePartialPressure, Observation oxygenSaturation) {
+        this.oxygenPartialPressure = oxygenPartialPressure;
+        this.pH = pH;
+        this.carbonDioxidePartialPressure = carbonDioxidePartialPressure;
+        this.oxygenSaturation = oxygenSaturation;
+        this.bloodGasPanel = bloodGasPanel;
     }
 
     public LaborergebnisObservation map() {
 
         LaborergebnisObservation laborergebnisObservation = new LaborergebnisObservation();
-        laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(fhirObservation));
+        laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanel));
 
-        fhirObservation.getHasMember().get(0).getReference(); //TODO how to call for internal resources/profiles since this is a reference
-
-        KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(fhirObservation);
+        KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
         laborergebnisObservation.setKohlendioxidpartialdruck(kohlendioxidpartialdruckMapper.map());
 
-        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(fhirObservation);
+        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
         laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
 
-        PhWertMapper phWertMapper = new PhWertMapper(fhirObservation);
+        PhWertMapper phWertMapper = new PhWertMapper(pH);
         laborergebnisObservation.setPhWert(phWertMapper.map());
 
-        SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(fhirObservation);
+        SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation);
         laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
 
         return laborergebnisObservation;
     }
 
-    //Terminology server ?
     private LabortestBezeichnungDefiningcode mapLabortestBezeichnung(Observation fhirObservation){
         LabortestBezeichnungDefiningcode gasPanelBlood = LabortestBezeichnungDefiningcode.GAS_PANEL_BLOOD;
         LabortestBezeichnungDefiningcode gasPanelArterial = LabortestBezeichnungDefiningcode.GAS_PANEL_ARTERIAL_BLOOD;

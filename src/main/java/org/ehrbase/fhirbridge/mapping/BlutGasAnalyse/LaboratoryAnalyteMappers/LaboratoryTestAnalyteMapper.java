@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers;
 
+import org.ehrbase.client.classgenerator.EnumValueSet;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.KohlendioxidpartialdruckCluster;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.SauerstoffpartialdruckCluster;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
@@ -37,7 +38,7 @@ abstract class LaboratoryTestAnalyteMapper {
         //return fhirObservation.getValue().getValueQuantity().getValue();
         return fhirObservation.getValueQuantity().getValue().toString();
     }
-    abstract UntersuchterAnalytDefiningcode mapUntersuchterAnalyt();
+    abstract EnumValueSet mapUntersuchterAnalyt();
 
     //TODO introduce CLUSTER and Composition as classes in opt for return types
 

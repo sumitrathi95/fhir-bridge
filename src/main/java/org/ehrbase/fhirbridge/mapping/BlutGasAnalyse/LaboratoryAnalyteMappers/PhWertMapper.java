@@ -24,12 +24,12 @@ public class PhWertMapper extends LaboratoryTestAnalyteMapper{
 
     @Override
     UntersuchterAnalytDefiningcode mapUntersuchterAnalyt() {
-        UntersuchterAnalytDefiningcode phSerumOrPlasma = UntersuchterAnalytDefiningcode.PH_SERUM_OR_PLASMA;
-        UntersuchterAnalytDefiningcode phVenousBlood= UntersuchterAnalytDefiningcode.PH_VENOUS_BLOOD;
-        UntersuchterAnalytDefiningcode phCapillaryBlood = UntersuchterAnalytDefiningcode.PH_CAPILLARY_BLOOD;
-        UntersuchterAnalytDefiningcode phArterialBlood = UntersuchterAnalytDefiningcode.PH_ARTERIAL_BLOOD;
-        UntersuchterAnalytDefiningcode phMixedVenousBlood = UntersuchterAnalytDefiningcode.PH_MIXED_VENOUS_BLOOD;
-        UntersuchterAnalytDefiningcode phBlood = UntersuchterAnalytDefiningcode.PH_BLOOD;
+        UntersuchterAnalytDefiningcode phSerumOrPlasma = UntersuchterAnalytDefiningcode.PH_OF_SERUM_OR_PLASMA;
+        UntersuchterAnalytDefiningcode phVenousBlood= UntersuchterAnalytDefiningcode.PH_OF_VENOUS_BLOOD;
+        UntersuchterAnalytDefiningcode phCapillaryBlood = UntersuchterAnalytDefiningcode.PH_OF_CAPILLARY_BLOOD;
+        UntersuchterAnalytDefiningcode phArterialBlood = UntersuchterAnalytDefiningcode.PH_OF_ARTERIAL_BLOOD;
+        UntersuchterAnalytDefiningcode phMixedVenousBlood = UntersuchterAnalytDefiningcode.PH_OF_MIXED_VENOUS_BLOOD;
+        UntersuchterAnalytDefiningcode phBlood = UntersuchterAnalytDefiningcode.PH_OF_BLOOD;
 
         for (Coding coding : fhirObservation.getCode().getCoding()) {
             String code = coding.getCode();

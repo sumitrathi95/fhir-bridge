@@ -1,9 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers;
 
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.PhWertCluster;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.SauerstoffpartialdruckCluster;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.SauerstoffsattigungCluster;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode;
+import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
@@ -23,9 +20,9 @@ public class SauerstoffsaettigungMapper extends LaboratoryTestAnalyteMapper{
     }
 
     @Override
-    UntersuchterAnalytDefiningcode mapUntersuchterAnalyt() {
-        UntersuchterAnalytDefiningcode oxygenSaturationInBlood = UntersuchterAnalytDefiningcode.OXYGEN_SATURATION_IN_BLOOD;
-        UntersuchterAnalytDefiningcode oxygenSaturationInArterialBlood= UntersuchterAnalytDefiningcode.OXYGEN_SATURATION_IN_ARTERIAL_BLOOD;
+    UntersuchterAnalytDefiningcode4 mapUntersuchterAnalyt() {
+        UntersuchterAnalytDefiningcode4 oxygenSaturationInBlood = UntersuchterAnalytDefiningcode4.OXYGEN_SATURATION_IN_BLOOD;
+        UntersuchterAnalytDefiningcode4 oxygenSaturationInArterialBlood= UntersuchterAnalytDefiningcode4.OXYGEN_SATURATION_IN_ARTERIAL_BLOOD;
 
         for (Coding coding : fhirObservation.getCode().getCoding()) {
             String code = coding.getCode();

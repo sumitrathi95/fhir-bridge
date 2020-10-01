@@ -15,7 +15,7 @@ public class SauerstoffpartialdruckCluster {
   private String ergebnisStatusValue;
 
   @Path("/items[at0024]/value|defining_code")
-  private UntersuchterAnalytDefiningcode untersuchterAnalytDefiningcode;
+  private UntersuchterAnalytDefiningcode2 untersuchterAnalytDefiningcode;
 
   @Path("/items[at0001]/value|magnitude")
   private Double analytResultatMagnitude;
@@ -35,11 +35,11 @@ public class SauerstoffpartialdruckCluster {
   }
 
   public void setUntersuchterAnalytDefiningcode(
-      UntersuchterAnalytDefiningcode untersuchterAnalytDefiningcode) {
+      UntersuchterAnalytDefiningcode2 untersuchterAnalytDefiningcode) {
      this.untersuchterAnalytDefiningcode = untersuchterAnalytDefiningcode;
   }
 
-  public UntersuchterAnalytDefiningcode getUntersuchterAnalytDefiningcode() {
+  public UntersuchterAnalytDefiningcode2 getUntersuchterAnalytDefiningcode() {
      return this.untersuchterAnalytDefiningcode ;
   }
 

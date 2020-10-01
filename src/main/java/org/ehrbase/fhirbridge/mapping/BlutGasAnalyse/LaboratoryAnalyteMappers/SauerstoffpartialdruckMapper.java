@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.SauerstoffpartialdruckCluster;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode;
+import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode2;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
@@ -20,10 +21,10 @@ public class SauerstoffpartialdruckMapper extends LaboratoryTestAnalyteMapper{
     }
 
     @Override
-    protected UntersuchterAnalytDefiningcode mapUntersuchterAnalyt() {
-        UntersuchterAnalytDefiningcode oxygenBlood = UntersuchterAnalytDefiningcode.OXYGEN_IN_BLOOD;
-        UntersuchterAnalytDefiningcode oxygenArterial= UntersuchterAnalytDefiningcode.OXYGEN_IN_ARTERIAL_BLOOD;
-        UntersuchterAnalytDefiningcode oxygenCapillary = UntersuchterAnalytDefiningcode.OXYGEN_IN_CAPILLARY_BLOOD;
+    protected UntersuchterAnalytDefiningcode2 mapUntersuchterAnalyt() {
+        UntersuchterAnalytDefiningcode2 oxygenBlood = UntersuchterAnalytDefiningcode2.OXYGEN_PARTIAL_PRESSURE_IN_BLOOD;
+        UntersuchterAnalytDefiningcode2 oxygenArterial= UntersuchterAnalytDefiningcode2.OXYGEN_PARTIAL_PRESSURE_IN_ARTERIAL_BLOOD;
+        UntersuchterAnalytDefiningcode2 oxygenCapillary = UntersuchterAnalytDefiningcode2.OXYGEN_PARTIAL_PRESSURE_IN_CAPILLARY_BLOOD;
 
         for (Coding coding : fhirObservation.getCode().getCoding()) {
             String code = coding.getCode();

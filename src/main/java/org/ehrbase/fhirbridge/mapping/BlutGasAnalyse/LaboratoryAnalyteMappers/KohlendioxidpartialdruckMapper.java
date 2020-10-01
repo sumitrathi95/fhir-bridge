@@ -1,11 +1,9 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.KohlendioxidpartialdruckCluster;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode;
+import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode3;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
-
-import java.math.BigDecimal;
 
 public class KohlendioxidpartialdruckMapper extends LaboratoryTestAnalyteMapper {
 
@@ -21,11 +19,11 @@ public class KohlendioxidpartialdruckMapper extends LaboratoryTestAnalyteMapper 
         kohlendioxidpartialdruckCluster.setErgebnisStatusValue(mapValue());
         return kohlendioxidpartialdruckCluster;
     }
-    @Override
-    protected UntersuchterAnalytDefiningcode mapUntersuchterAnalyt() {
-        UntersuchterAnalytDefiningcode carbonDioxideBlood = UntersuchterAnalytDefiningcode.CARBON_DIOXIDE_IN_BLOOD;
-        UntersuchterAnalytDefiningcode carbonDioxideArterial= UntersuchterAnalytDefiningcode.CARBON_DIOXIDE_IN_ARTERIAL_BLOOD;
-        UntersuchterAnalytDefiningcode carbonDioxideCapillary = UntersuchterAnalytDefiningcode.CARBON_DIOXIDE_IN_CAPILLARY_BLOOD;
+
+    protected UntersuchterAnalytDefiningcode3 mapUntersuchterAnalyt() {
+        UntersuchterAnalytDefiningcode3 carbonDioxideBlood = UntersuchterAnalytDefiningcode3.CARBON_DIOXIDE_PARTIAL_PRESSURE_IN_BLOOD;
+        UntersuchterAnalytDefiningcode3 carbonDioxideArterial= UntersuchterAnalytDefiningcode3.CARBON_DIOXIDE_PARTIAL_PRESSURE_IN_ARTERIAL_BLOOD;
+        UntersuchterAnalytDefiningcode3 carbonDioxideCapillary = UntersuchterAnalytDefiningcode3.CARBON_DIOXIDE_PARTIAL_PRESSURE_IN_CAPILLARY_BLOOD;
 
         for (Coding coding : fhirObservation.getCode().getCoding()) {
             String code = coding.getCode();

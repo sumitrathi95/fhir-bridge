@@ -19,7 +19,7 @@
     <other_details id="original_namespace"/>
     <other_details id="original_publisher"/>
     <other_details id="custodian_namespace"/>
-    <other_details id="MD5-CAM-1.0.1">535dbb834a0d190acc8a61f2e63ee0a9</other_details>
+    <other_details id="MD5-CAM-1.0.1">cc5c9f49e12264392c1c8e747b5303eb</other_details>
     <other_details id="PARENT:MD5-CAM-1.0.1">137DCA7D21FA274494054E1B81B67FC5</other_details>
     <other_details id="original_language">ISO_639-1::de</other_details>
     <details>
@@ -741,10 +741,10 @@
                                     </occurrences>
                                     <node_id/>
                                     <item xsi:type="C_STRING">
-                                      <list>registered</list>
-                                      <list>preliminary</list>
+                                      <list>registriert</list>
+                                      <list>vorläufig</list>
                                       <list>final</list>
-                                      <list>amended</list>
+                                      <list>geändert</list>
                                     </item>
                                   </children>
                                 </attributes>
