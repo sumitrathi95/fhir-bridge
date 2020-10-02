@@ -3,7 +3,6 @@ package org.ehrbase.fhirbridge.fhir.audit;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.ehrbase.fhirbridge.fhir.util.ResourceUtils;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -89,7 +88,7 @@ public class AuditService {
         // @formatter:off
         return new AuditEvent.AuditEventEntityComponent()
             .setWhat(new Reference()
-                .setReference(ResourceUtils.getInternalReference(resource)))
+                .setReference(resource.getId()))
             .setType(entityTypeResolver.resolve(resource.getClass()));
         // @formatter:on
     }

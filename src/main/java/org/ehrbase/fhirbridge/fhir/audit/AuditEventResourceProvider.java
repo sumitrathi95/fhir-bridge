@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.fhir.audit;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.Count;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -11,6 +12,8 @@ import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
+import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.springframework.stereotype.Component;
@@ -19,12 +22,10 @@ import org.springframework.stereotype.Component;
  * Resource provider for AuditEvent
  */
 @Component
-public class AuditEventResourceProvider implements IResourceProvider {
+public class AuditEventResourceProvider extends AbstractResourceProvider {
 
-    private final AuditService auditService;
-
-    public AuditEventResourceProvider(AuditService auditService) {
-        this.auditService = auditService;
+    public AuditEventResourceProvider(FhirContext context, EhrbaseService ehrbaseService, AuditService auditService) {
+        super(context, ehrbaseService, auditService);
     }
 
 //    @Search
