@@ -3,9 +3,18 @@ package org.ehrbase.fhirbridge.fhir.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.datavalues.DvText;
+import com.nedap.archie.rm.datavalues.quantity.DvQuantity;
+import com.nedap.archie.rm.datavalues.quantity.datetime.DvDateTime;
+import org.ehrbase.client.aql.query.Query;
+import org.ehrbase.client.aql.record.Record4;
+import org.ehrbase.client.aql.record.Record5;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.mapping.FhirProcedureOpenehrProcedure;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
@@ -17,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,7 +45,6 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         this.procedureDao = procedureDao;
     }
 
-    /*
     @Read()
     @SuppressWarnings("unused")
     public Procedure getProcedureById(@IdParam IdType identifier)
@@ -43,31 +53,39 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
         // identifier.getValue() is the Resource/theId
 
-        Query<Record1<DiagnoseComposition>> query = Query.buildNativeQuery(
-        "SELECT c "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
-                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                "c/uid/value = '"+ identifier.getIdPart() +"'",
-            DiagnoseComposition.class
+        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time, al/items[at0001]/value "+
+            "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] CONTAINS CLUSTER al[openEHR-EHR-CLUSTER.anatomical_location.v1] "+
+            "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
+
+        // uid. procedure name, procedure description, procedure time, anatomical location
+        Query<Record5<String, DvText, DvText, DvDateTime, DvText>> query = Query.buildNativeQuery(
+            aql, String.class, DvText.class, DvText.class, DvDateTime.class, DvText.class
         );
 
-        List<Record1<DiagnoseComposition>> results;
+        List<Record5<String, DvText, DvText, DvDateTime, DvText>> results = new ArrayList<>();
 
         try
         {
             results = service.getClient().aqlEndpoint().execute(query);
-
-            DiagnoseComposition compo;
 
             if (results.isEmpty())
             {
                 throw new ResourceNotFoundException("Resource not found"); // causes 404
             }
 
-            compo = results.get(0).value1();
+            Record5<String, DvText, DvText, DvDateTime, DvText> record = results.get(0);
 
-            // COMPOSITION => FHIR Condition
-            result = FhirConditionOpenehrDiagnose.map(compo);
+            String uid = record.value1();
+
+            DvText procedureName = record.value2();
+            DvText procedureDescription = record.value3(); // optional
+
+            DvDateTime time = record.value4();
+
+            DvText bodyLocation = record.value5();
+
+            // COMPOSITION => FHIR Procedure
+            result = FhirProcedureOpenehrProcedure.map(uid, procedureName, procedureDescription, time, bodyLocation);
         }
         catch (ResourceNotFoundException e)
         {
@@ -81,6 +99,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         return result;
     }
 
+    /*
     @Search
     @SuppressWarnings("unused")
     public List<Procedure> getAllProcedures(
@@ -187,16 +206,18 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         // TODO: we don't have a profile for the diagnostic report to filter
         // *************************************************************************************
 
+        VersionUid versionUid = null;
+
         try {
             // FHIR Condition => COMPOSITION
             ProzedurComposition composition = FhirProcedureOpenehrProcedure.map(procedure);
-            VersionUid versionUid = service.saveProcedure(ehrUid, composition);
+            versionUid = service.saveProcedure(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
         } catch (Exception e) {
             throw new UnprocessableEntityException("There was an issue processing your request", e);
         }
 
-        procedure.setId(new IdType(1L));
+        procedure.setId(new IdType(versionUid.toString()));
         procedure.getMeta().setVersionId("1");
         procedure.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 

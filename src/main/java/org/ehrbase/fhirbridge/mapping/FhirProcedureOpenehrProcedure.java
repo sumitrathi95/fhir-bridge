@@ -2,6 +2,8 @@ package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
+import com.nedap.archie.rm.datavalues.DvText;
+import com.nedap.archie.rm.datavalues.quantity.datetime.DvDateTime;
 import com.nedap.archie.rm.generic.PartyIdentified;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.DetailsZurKorperstelleCluster;
@@ -11,7 +13,10 @@ import com.nedap.archie.rm.generic.PartySelf;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
@@ -108,6 +113,36 @@ public class FhirProcedureOpenehrProcedure {
         composition.setComposer(composer);
 
         return composition;
+    }
+
+    public static Procedure map(String uid, DvText procedureName, DvText procedureDescription, DvDateTime time, DvText bodyLocation)
+    {
+        Procedure procedure = new Procedure();
+
+        // name
+        // FIXME: we would need a coded text to get the code not just the string value
+        procedure.getCode().setText(procedureName.getValue());
+
+        // description
+        // description is optional
+        if (procedureDescription != null && procedureDescription.getValue() != null)
+        {
+            procedure.addNote(new Annotation(new MarkdownType(procedureDescription.getValue())));
+        }
+
+        // time
+        procedure.setPerformed(new DateTimeType(Date.from(((OffsetDateTime)time.getValue()).toInstant())));
+
+        // body site
+        // FIXME: we would need a coded text to get the code not just the string value
+        CodeableConcept bodySiteContainer = new CodeableConcept();
+        bodySiteContainer.addCoding(new Coding(null, null, bodyLocation.getValue()));
+        procedure.addBodySite(bodySiteContainer);
+
+        // id
+        procedure.setId(uid);
+
+        return procedure;
     }
 
     /*

@@ -15,12 +15,7 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.QuestionnaireResponse;
+import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,6 +92,7 @@ public class FhirBridgeApplicationIT {
         this.patientReference = "urn:uuid:" + subjectIdValue;
     }
 
+/*
     @Test
     public void createDiagnoseCondition() throws IOException {
         Date now = new Date();
@@ -335,6 +331,7 @@ public class FhirBridgeApplicationIT {
     public void testEhrExistsDoesNotExist() {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
+*/
 
     @Test
     public void searchBodyTemp() throws IOException {
@@ -353,6 +350,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
+/*
     @Test
     public void searchCoronavirusLabResults() throws IOException {
 
@@ -474,6 +472,20 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+*/
+
+    @Test
+    public void getProcedureById() throws IOException {
+        // Needs at least one condition, can't rely on the tess execution order
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Procedure procedure = client.read().resource(Procedure.class).withId(outcome.getId()).execute();
+
+        Assertions.assertNotNull(procedure);
     }
 
     private String getContent(String location) throws IOException {
