@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirProcedureOpenehrProcedure;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
@@ -29,8 +30,9 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
     private final IFhirResourceDao<Procedure> procedureDao;
 
-    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Procedure> procedureDao) {
-        super(fhirContext, service);
+    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
+                                     IFhirResourceDao<Procedure> procedureDao) {
+        super(fhirContext, ehrbaseService, auditService);
         this.procedureDao = procedureDao;
     }
 
@@ -175,7 +177,6 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
     }
 */
     @Create
-    @SuppressWarnings("unused")
     public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
 
         procedureDao.create(procedure);
@@ -190,7 +191,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         try {
             // FHIR Condition => COMPOSITION
             ProzedurComposition composition = FhirProcedureOpenehrProcedure.map(procedure);
-            VersionUid versionUid = service.saveProcedure(ehrUid, composition);
+            VersionUid versionUid = ehrbaseService.saveProcedure(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
         } catch (Exception e) {
             throw new UnprocessableEntityException("There was an issue processing your request", e);

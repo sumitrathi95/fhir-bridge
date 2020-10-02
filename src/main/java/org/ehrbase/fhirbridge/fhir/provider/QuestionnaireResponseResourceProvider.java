@@ -5,6 +5,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
@@ -15,13 +16,13 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
 
     private final IFhirResourceDao<QuestionnaireResponse> questionnaireResponseDao;
 
-    public QuestionnaireResponseResourceProvider(FhirContext context, EhrbaseService service, IFhirResourceDao<QuestionnaireResponse> questionnaireResponseDao) {
-        super(context, service);
+    public QuestionnaireResponseResourceProvider(FhirContext context, EhrbaseService ehrbaseService, AuditService auditService,
+                                                 IFhirResourceDao<QuestionnaireResponse> questionnaireResponseDao) {
+        super(context, ehrbaseService, auditService);
         this.questionnaireResponseDao = questionnaireResponseDao;
     }
 
     @Create
-    @SuppressWarnings("unused")
     public MethodOutcome createQuestionnaireResponse(@ResourceParam QuestionnaireResponse questionnaireResponse) {
         questionnaireResponseDao.create(questionnaireResponse);
         return new MethodOutcome()

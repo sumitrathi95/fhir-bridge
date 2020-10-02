@@ -19,6 +19,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
@@ -45,37 +46,34 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     private final IFhirResourceDao<Condition> conditionDao;
 
-    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService service, IFhirResourceDao<Condition> conditionDao) {
-        super(fhirContext, service);
+    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
+                                     IFhirResourceDao<Condition> conditionDao) {
+        super(fhirContext, ehrbaseService, auditService);
         this.conditionDao = conditionDao;
     }
 
-    @Read()
-    @SuppressWarnings("unused")
-    public Condition getConditionById(@IdParam IdType identifier)
-    {
+    @Read
+    public Condition getConditionById(@IdParam IdType identifier) {
         Condition result = new Condition();
 
         // identifier.getValue() is the Resource/theId
 
         Query<Record1<DiagnoseComposition>> query = Query.buildNativeQuery(
-        "SELECT c "+
-                "FROM EHR e CONTAINS COMPOSITION c "+
-                "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-                "c/uid/value = '"+ identifier.getIdPart() +"'",
-            DiagnoseComposition.class
+                "SELECT c " +
+                        "FROM EHR e CONTAINS COMPOSITION c " +
+                        "WHERE c/archetype_details/template_id/value = 'Diagnose' AND " +
+                        "c/uid/value = '" + identifier.getIdPart() + "'",
+                DiagnoseComposition.class
         );
 
         List<Record1<DiagnoseComposition>> results;
 
-        try
-        {
-            results = service.getClient().aqlEndpoint().execute(query);
+        try {
+            results = ehrbaseService.getClient().aqlEndpoint().execute(query);
 
             DiagnoseComposition compo;
 
-            if (results.isEmpty())
-            {
+            if (results.isEmpty()) {
                 throw new ResourceNotFoundException("Resource not found"); // causes 404
             }
 
@@ -83,13 +81,9 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
             // COMPOSITION => FHIR Condition
             result = FhirConditionOpenehrDiagnose.map(compo);
-        }
-        catch (ResourceNotFoundException e)
-        {
+        } catch (ResourceNotFoundException e) {
             throw e;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -103,14 +97,12 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     }
 
     @Search
-    @SuppressWarnings("unused")
     public List<Condition> getAllConditions(
-            @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId,
-            @OptionalParam(name=Condition.SP_RECORDED_DATE) DateRangeParam dateRange,
-            @OptionalParam(name=Condition.SP_CODE) TokenParam code
-    )
-    {
+            @OptionalParam(name = "_profile") UriParam profile,
+            @RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam subjectId,
+            @OptionalParam(name = Condition.SP_RECORDED_DATE) DateRangeParam dateRange,
+            @OptionalParam(name = Condition.SP_CODE) TokenParam code
+    ) {
         logger.info("SEARCH CONDITION! subjectId: {}", subjectId);
         List<Condition> result = new ArrayList<>();
 
@@ -120,45 +112,42 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // *************************************************************************************
 
         String aql =
-            "SELECT c "+
-            "FROM EHR e CONTAINS COMPOSITION c "+
-            "WHERE c/archetype_details/template_id/value = 'Diagnose' AND "+
-            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+                "SELECT c " +
+                        "FROM EHR e CONTAINS COMPOSITION c " +
+                        "WHERE c/archetype_details/template_id/value = 'Diagnose' AND " +
+                        "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
 
         // filters
-        if (dateRange != null)
-        {
+        if (dateRange != null) {
             // with date range we can also receive just one bound
             if (dateRange.getLowerBound() != null)
-                aql += " AND '"+ dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
+                aql += " AND '" + dateRange.getLowerBound().getValueAsString() + "' <= c/context/start_time/value";
 
             if (dateRange.getUpperBound() != null)
-                aql += " AND c/context/start_time/value <= '"+ dateRange.getUpperBound().getValueAsString() +"'";
+                aql += " AND c/context/start_time/value <= '" + dateRange.getUpperBound().getValueAsString() + "'";
         }
 
-        if (code != null)
-        {
+        if (code != null) {
             logger.info("code {}", code.getValue());
             String openEHRDiagnosis;
-            switch (code.getValue())
-            {
+            switch (code.getValue()) {
                 case "B97.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.B972.getCode();
-                break;
+                    break;
                 case "U07.1":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.U071.getCode();
-                break;
+                    break;
                 case "U07.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.U072.getCode();
-                break;
+                    break;
                 case "B34.2":
                     openEHRDiagnosis = DerDiagnoseDefiningcode.B342.getCode();
-                break;
+                    break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + code.getValue());
             }
 
-            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
+            aql += " AND eval/data[at0001]/items[at0002]/value/defining_code/code_string = '" + openEHRDiagnosis + "'";
             //aql += " WHERE eval/data[at0001]/items[at0002]/value/defining_code/code_string = '"+ openEHRDiagnosis +"'";
         }
 
@@ -168,15 +157,13 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
         List<Record1<DiagnoseComposition>> results;
 
-        try
-        {
-            results = service.getClient().aqlEndpoint().execute(query);
+        try {
+            results = ehrbaseService.getClient().aqlEndpoint().execute(query);
 
             DiagnoseComposition compo;
             Condition condition;
 
-            for (Record1<DiagnoseComposition> record: results)
-            {
+            for (Record1<DiagnoseComposition> record : results) {
                 compo = record.value1();
 
                 logger.info("compo.uid is {}", compo.getVersionUid());
@@ -186,9 +173,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
                 result.add(condition);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalErrorException("There was a problem retrieving the results", e);
         }
 
@@ -225,7 +210,6 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     }
 
     @Create
-    @SuppressWarnings("unused")
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
         conditionDao.create(condition);
 
@@ -241,7 +225,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             DiagnoseComposition composition = FhirConditionOpenehrDiagnose.map(condition);
 
             //UUID ehr_id = service.createEhr(); // <<< reflections error!
-            VersionUid versionUid = service.saveDiagnosis(ehrUid, composition);
+            VersionUid versionUid = ehrbaseService.saveDiagnosis(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
 
         } catch (Exception e) {
