@@ -14,7 +14,9 @@ import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
@@ -68,11 +70,13 @@ public class FhirBridgeApplicationIT {
     @Autowired
     private EhrbaseService service;
 
-    private UUID ehrId;
+    @Autowired
+    private AuditService auditService;
 
     private String subjectIdValue;
 
     private String patientReference;
+
 
     @BeforeEach
     public void setUp() {
@@ -89,9 +93,9 @@ public class FhirBridgeApplicationIT {
         ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
         ehrStatus.setName(new DvText("test status"));
 
-        this.ehrId = service.createEhr(ehrStatus);
+        UUID ehrId = service.createEhr(ehrStatus);
 
-        logger.info("EHR UID: {}", this.ehrId);
+        logger.info("EHR UID: {}", ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
 
         this.patientReference = "urn:uuid:" + subjectIdValue;
@@ -132,9 +136,8 @@ public class FhirBridgeApplicationIT {
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
         Assertions.assertEquals(true, outcome.getCreated());
-        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertNotNull(outcome.getId().getIdPartAsLong());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }

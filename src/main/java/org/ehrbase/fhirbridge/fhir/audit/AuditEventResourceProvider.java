@@ -10,8 +10,8 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Sort;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.param.ReferenceAndListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -28,19 +28,21 @@ public class AuditEventResourceProvider extends AbstractResourceProvider {
         super(context, ehrbaseService, auditService);
     }
 
-//    @Search
-//    public IBundleProvider search(
-//            @OptionalParam(name = AuditEvent.SP_ACTION) TokenParam action,
-//            @OptionalParam(name = AuditEvent.SP_OUTCOME) TokenParam outcome,
-//            @Sort SortSpec sort,
-//            @Count Integer count) {
-//        SearchParameterMap params = new SearchParameterMap();
-//        params.add(AuditEvent.SP_ACTION, action);
-//        params.add(AuditEvent.SP_OUTCOME, outcome);
-//        params.setSort(sort);
-//        params.setCount(count);
-//        return auditService.searchAuditEvent(params);
-//    }
+    @Search
+    public IBundleProvider search(
+            @OptionalParam(name = AuditEvent.SP_ACTION) TokenParam action,
+            @OptionalParam(name = AuditEvent.SP_OUTCOME) TokenParam outcome,
+            @OptionalParam(name = AuditEvent.SP_ENTITY) ReferenceAndListParam entity,
+            @Sort SortSpec sort,
+            @Count Integer count) {
+        SearchParameterMap params = new SearchParameterMap();
+        params.add(AuditEvent.SP_ACTION, action);
+        params.add(AuditEvent.SP_OUTCOME, outcome);
+        params.add(AuditEvent.SP_ENTITY, entity);
+        params.setSort(sort);
+        params.setCount(count);
+        return auditService.searchAuditEvent(params);
+    }
 
     @Read
     public AuditEvent read(@IdParam IIdType id) {
