@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Sort;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceAndListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
@@ -31,14 +32,18 @@ public class AuditEventResourceProvider extends AbstractResourceProvider {
     @Search
     public IBundleProvider search(
             @OptionalParam(name = AuditEvent.SP_ACTION) TokenParam action,
-            @OptionalParam(name = AuditEvent.SP_OUTCOME) TokenParam outcome,
+            @OptionalParam(name = AuditEvent.SP_DATE) DateParam date,
             @OptionalParam(name = AuditEvent.SP_ENTITY) ReferenceAndListParam entity,
+            @OptionalParam(name = AuditEvent.SP_OUTCOME) TokenParam outcome,
+            @OptionalParam(name = AuditEvent.SP_TYPE) TokenParam type,
             @Sort SortSpec sort,
             @Count Integer count) {
         SearchParameterMap params = new SearchParameterMap();
         params.add(AuditEvent.SP_ACTION, action);
-        params.add(AuditEvent.SP_OUTCOME, outcome);
+        params.add(AuditEvent.SP_DATE, date);
         params.add(AuditEvent.SP_ENTITY, entity);
+        params.add(AuditEvent.SP_OUTCOME, outcome);
+        params.add(AuditEvent.SP_TYPE, type);
         params.setSort(sort);
         params.setCount(count);
         return auditService.searchAuditEvent(params);
