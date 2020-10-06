@@ -15,6 +15,7 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
@@ -68,11 +69,10 @@ public class FhirBridgeApplicationIT {
     @Autowired
     private EhrbaseService service;
 
-    private UUID ehrId;
-
     private String subjectIdValue;
 
     private String patientReference;
+
 
     @BeforeEach
     public void setUp() {
@@ -89,9 +89,9 @@ public class FhirBridgeApplicationIT {
         ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
         ehrStatus.setName(new DvText("test status"));
 
-        this.ehrId = service.createEhr(ehrStatus);
+        UUID ehrId = service.createEhr(ehrStatus);
 
-        logger.info("EHR UID: {}", this.ehrId);
+        logger.info("EHR UID: {}", ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
 
         this.patientReference = "urn:uuid:" + subjectIdValue;
@@ -105,11 +105,17 @@ public class FhirBridgeApplicationIT {
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
-        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getId());
         Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getCreated());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+        Bundle bundle = client.search().forResource(AuditEvent.class)
+                .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertEquals(2, bundle.getTotal());
     }
 
     @Test
@@ -125,18 +131,16 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createDiagnosticReportLab() throws IOException {
-        Date now = new Date();
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> {
+                    String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
+                    resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+                    client.create().resource(resource).execute();
+                });
 
-        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
-        Assertions.assertEquals(true, outcome.getCreated());
-        Assertions.assertNotNull(outcome.getResource());
-        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
-        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+        Assertions.assertTrue(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())
+                .startsWith("There was a problem saving the compositionOne contained Observation was expected 0 were received in DiagnosticReport"));
     }
 
     @Test
@@ -148,11 +152,17 @@ public class FhirBridgeApplicationIT {
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
-        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getId());
         Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getCreated());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+        Bundle bundle = client.search().forResource(AuditEvent.class)
+                .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertEquals(2, bundle.getTotal());
     }
 
     @Test
@@ -199,6 +209,12 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+        Bundle bundle = client.search().forResource(AuditEvent.class)
+                .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertEquals(2, bundle.getTotal());
     }
 
     @Test
@@ -251,6 +267,12 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+        Bundle bundle = client.search().forResource(AuditEvent.class)
+                .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertEquals(2, bundle.getTotal());
     }
 
     @Test
@@ -306,6 +328,12 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(outcome.getResource() instanceof QuestionnaireResponse);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+        Bundle bundle = client.search().forResource(AuditEvent.class)
+                .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertEquals(1, bundle.getTotal());
     }
 
     // FIXME: we need to use the status in the create ehr service, we are using null
@@ -469,9 +497,9 @@ public class FhirBridgeApplicationIT {
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
-        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getId());
         Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getCreated());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
