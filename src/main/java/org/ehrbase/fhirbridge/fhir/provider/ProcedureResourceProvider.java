@@ -11,6 +11,7 @@ import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirProcedureOpenehrProcedure;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Procedure;
@@ -178,8 +179,8 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 */
     @Create
     public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
-
         procedureDao.create(procedure);
+        auditService.registerCreateResourceSuccessEvent(procedure);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split(":")[2]);
@@ -193,13 +194,11 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
             ProzedurComposition composition = FhirProcedureOpenehrProcedure.map(procedure);
             VersionUid versionUid = ehrbaseService.saveProcedure(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", procedure);
         } catch (Exception e) {
-            throw new UnprocessableEntityException("There was an issue processing your request", e);
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), procedure);
+            throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
-
-        procedure.setId(new IdType(1L));
-        procedure.getMeta().setVersionId("1");
-        procedure.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
         return new MethodOutcome()
                 .setCreated(true)

@@ -24,6 +24,7 @@ import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
@@ -212,6 +213,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
     @Create
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
         conditionDao.create(condition);
+        auditService.registerCreateResourceSuccessEvent(condition);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split(":")[2]);
@@ -227,14 +229,11 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             //UUID ehr_id = service.createEhr(); // <<< reflections error!
             VersionUid versionUid = ehrbaseService.saveDiagnosis(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
-
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", condition);
         } catch (Exception e) {
-            throw new UnprocessableEntityException("There was an issue processing your request", e);
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), condition);
+            throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
-
-        condition.setId(new IdType(1L));
-        condition.getMeta().setVersionId("1");
-        condition.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
         return new MethodOutcome()
                 .setCreated(true)

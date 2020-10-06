@@ -41,6 +41,7 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
@@ -418,6 +419,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         checkProfiles(observation);
 
         observationDao.create(observation);
+        auditService.registerCreateResourceSuccessEvent(observation);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split(":")[2]);
@@ -495,14 +497,11 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
             }
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
         } catch (Exception e) {
-            e.printStackTrace();
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), observation);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
-
-        observation.setId(new IdType(1L));
-        observation.getMeta().setVersionId("1");
-        observation.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
         return new MethodOutcome()
                 .setCreated(true)

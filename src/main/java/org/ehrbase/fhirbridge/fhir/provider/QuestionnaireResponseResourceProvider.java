@@ -25,6 +25,7 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
     @Create
     public MethodOutcome createQuestionnaireResponse(@ResourceParam QuestionnaireResponse questionnaireResponse) {
         questionnaireResponseDao.create(questionnaireResponse);
+        auditService.registerCreateResourceSuccessEvent(questionnaireResponse);
         return new MethodOutcome()
                 .setCreated(true)
                 .setResource(questionnaireResponse);

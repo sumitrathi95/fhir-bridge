@@ -51,7 +51,6 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(diagnosticReport.getSubject().getReference().split(":")[2]);
 
-
         if (ProfileUtils.hasProfile(diagnosticReport, Profile.DIAGNOSTIC_REPORT_LAB)) {
             try {
                 LaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(diagnosticReport);
@@ -59,10 +58,9 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveLab(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.DIAGNOSTIC_REPORT_LAB);
                 auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", diagnosticReport);
-            } catch (UnprocessableEntityException e) {
-                auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), diagnosticReport);
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), diagnosticReport);
+                throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
             }
         }
 
