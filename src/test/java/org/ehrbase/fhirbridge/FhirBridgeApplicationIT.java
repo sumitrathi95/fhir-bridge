@@ -1,7 +1,6 @@
 package org.ehrbase.fhirbridge;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
@@ -15,12 +14,10 @@ import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
-import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Patient;
@@ -134,18 +131,16 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createDiagnosticReportLab() throws IOException {
-        Date now = new Date();
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> {
+                    String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
+                    resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+                    client.create().resource(resource).execute();
+                });
 
-        String resource = getContent("classpath:/DiagnosticReport/diagnosticreport-diagnosticreportlab-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Assertions.assertNotNull(outcome.getId());
-        Assertions.assertNotNull(outcome.getResource());
-        Assertions.assertTrue(outcome.getCreated());
-        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
-        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+        Assertions.assertTrue(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())
+                .startsWith("There was a problem saving the compositionOne contained Observation was expected 0 were received in DiagnosticReport"));
     }
 
     @Test
