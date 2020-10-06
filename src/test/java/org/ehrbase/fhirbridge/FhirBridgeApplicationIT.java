@@ -92,7 +92,7 @@ public class FhirBridgeApplicationIT {
         this.patientReference = "urn:uuid:" + subjectIdValue;
     }
 
-/*
+
     @Test
     public void createDiagnoseCondition() throws IOException {
         Date now = new Date();
@@ -331,7 +331,6 @@ public class FhirBridgeApplicationIT {
     public void testEhrExistsDoesNotExist() {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
-*/
 
     @Test
     public void searchBodyTemp() throws IOException {
@@ -350,7 +349,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
-/*
     @Test
     public void searchCoronavirusLabResults() throws IOException {
 
@@ -467,13 +465,14 @@ public class FhirBridgeApplicationIT {
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
-        Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
+        // Can't compare the ID: it is given by the EHR Server
+        //Assertions.assertEquals(1L, outcome.getId().getIdPartAsLong());
         Assertions.assertEquals(true, outcome.getCreated());
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-*/
+
 
     @Test
     public void getProcedureById() throws IOException {
@@ -486,6 +485,23 @@ public class FhirBridgeApplicationIT {
         Procedure procedure = client.read().resource(Procedure.class).withId(outcome.getId()).execute();
 
         Assertions.assertNotNull(procedure);
+    }
+
+    @Test
+    public void searchProcedure() throws IOException {
+        // Needs at least one condition, can't rely on the tess execution order
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Bundle bundle = client.search().forResource(Procedure.class)
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
+
+        logger.info("PROCEDURES: " + bundle.getTotal());
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
     private String getContent(String location) throws IOException {

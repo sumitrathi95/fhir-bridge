@@ -135,9 +135,12 @@ public class FhirProcedureOpenehrProcedure {
 
         // body site
         // FIXME: we would need a coded text to get the code not just the string value
-        CodeableConcept bodySiteContainer = new CodeableConcept();
-        bodySiteContainer.addCoding(new Coding(null, null, bodyLocation.getValue()));
-        procedure.addBodySite(bodySiteContainer);
+        if (bodyLocation != null)
+        {
+            CodeableConcept bodySiteContainer = new CodeableConcept();
+            bodySiteContainer.addCoding(new Coding(null, null, bodyLocation.getValue()));
+            procedure.addBodySite(bodySiteContainer);
+        }
 
         // id
         procedure.setId(uid);

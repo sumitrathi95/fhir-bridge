@@ -2,11 +2,11 @@ package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.Create;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.datavalues.DvText;
@@ -21,6 +21,7 @@ import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +54,29 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
         // identifier.getValue() is the Resource/theId
 
-        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time, al/items[at0001]/value "+
-            "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] CONTAINS CLUSTER al[openEHR-EHR-CLUSTER.anatomical_location.v1] "+
-            "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
+        // Gets empty results if there is no data for the anatomical location
+        //String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time, al/items[at0001]/value "+
+        //    "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] CONTAINS CLUSTER al[openEHR-EHR-CLUSTER.anatomical_location.v1] "+
+        //    "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
 
-        // uid. procedure name, procedure description, procedure time, anatomical location
-        Query<Record5<String, DvText, DvText, DvDateTime, DvText>> query = Query.buildNativeQuery(
-            aql, String.class, DvText.class, DvText.class, DvDateTime.class, DvText.class
+        // Using the full path to the anatomical location also returns empty results if there are no values
+        //String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time, a/description[at0001]/items[openEHR-EHR-CLUSTER.anatomical_location.v1]/items[at0001]/value "+
+        //        "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] "+
+        //        "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
+
+        // Workaround: ignores anatomical location while the issue is reviewed
+        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time "+
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] "+
+                "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
+
+
+
+        // uid. procedure name, procedure description, procedure time, anatomical location (removed because the empty results issue)
+        Query<Record4<String, DvText, DvText, DvDateTime>> query = Query.buildNativeQuery(
+            aql, String.class, DvText.class, DvText.class, DvDateTime.class
         );
 
-        List<Record5<String, DvText, DvText, DvDateTime, DvText>> results = new ArrayList<>();
+        List<Record4<String, DvText, DvText, DvDateTime>> results = new ArrayList<>();
 
         try
         {
@@ -73,7 +87,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
                 throw new ResourceNotFoundException("Resource not found"); // causes 404
             }
 
-            Record5<String, DvText, DvText, DvDateTime, DvText> record = results.get(0);
+            Record4<String, DvText, DvText, DvDateTime> record = results.get(0);
 
             String uid = record.value1();
 
@@ -82,7 +96,8 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
             DvDateTime time = record.value4();
 
-            DvText bodyLocation = record.value5();
+            // Workaround for issue getting results with anatomical location
+            DvText bodyLocation = null; //record.value5();
 
             // COMPOSITION => FHIR Procedure
             result = FhirProcedureOpenehrProcedure.map(uid, procedureName, procedureDescription, time, bodyLocation);
@@ -95,6 +110,59 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         {
             e.printStackTrace();
         }
+
+        return result;
+    }
+
+    @Search
+    @SuppressWarnings("unused")
+    public List<Procedure> getAllProcedures(
+            @OptionalParam(name="_profile") UriParam profile,
+            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
+    )
+    {
+        List<Procedure> result = new ArrayList<>();
+
+        // Issue getting results with anatomical location
+        // Workaround: ignores anatomical location while the issue is reviewed
+        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time "+
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] "+
+                "WHERE e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+
+        // uid. procedure name, procedure description, procedure time, anatomical location (removed because the empty results issue)
+        Query<Record4<String, DvText, DvText, DvDateTime>> query = Query.buildNativeQuery(
+                aql, String.class, DvText.class, DvText.class, DvDateTime.class
+        );
+
+        List<Record4<String, DvText, DvText, DvDateTime>> results = new ArrayList<>();
+
+        try
+        {
+            results = service.getClient().aqlEndpoint().execute(query);
+
+            Procedure procedure;
+
+            for (Record4<String, DvText, DvText, DvDateTime> record: results)
+            {
+                String uid = record.value1();
+                DvText procedureName = record.value2();
+                DvText procedureDescription = record.value3(); // optional
+                DvDateTime time = record.value4();
+
+                // Workaround for issue getting results with anatomical location
+                DvText bodyLocation = null; //record.value5();
+
+                // COMPOSITION => FHIR Procedure
+                procedure = FhirProcedureOpenehrProcedure.map(uid, procedureName, procedureDescription, time, bodyLocation);
+                result.add(procedure);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new InternalErrorException("There was a problem retrieving the results", e);
+        }
+
 
         return result;
     }
