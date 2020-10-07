@@ -40,8 +40,9 @@ class LaborergebnisBefundMapper {
         laborergebnisObservation.setLanguage(Language.DE);// FIXME: we need to grab the language from the template
         laborergebnisObservation.setSubject(new PartySelf());
 
-     //   KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
-          laborergebnisObservation.setKohlendioxidpartialdruck(new KohlendioxidpartialdruckCluster());
+        KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
+        laborergebnisObservation.setKohlendioxidpartialdruck(new KohlendioxidpartialdruckCluster());
+
 //
 //        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
 //        laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());

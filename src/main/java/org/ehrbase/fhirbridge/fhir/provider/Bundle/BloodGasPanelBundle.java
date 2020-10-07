@@ -38,6 +38,7 @@ public class BloodGasPanelBundle extends SupportedBundle {
         SupportedBundle.logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_GAS);
     }
 
+    //TODO check if all profiles are necessary and which one can be left out
     private void setObservations() {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             String profileUrl = entry.getResource().getMeta().getProfile().get(0).getValue();
@@ -69,7 +70,7 @@ public class BloodGasPanelBundle extends SupportedBundle {
         if (bloodGasPanel == null || oxygenPartialPressure == null || carbonDioxidePartialPressure == null || pH == null || oxygenSaturation == null)
             throw new NullPointerException("Bundle does not contain all necessary profiles for Blood Gas Panel, please check that all profiles are present");
     }
-
+    //TODO refactor and move to Supported Bundle
     private String getEhrUID() {
         String ehrUID = "";
         for (Bundle.BundleEntryComponent bundle : bundle.getEntry()) {
