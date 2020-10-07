@@ -204,3 +204,84 @@ the patient in Ehrbase.
 
 For additional information about resources references, please refer to FHIR specifications (https://www.hl7.org/fhir/references.html) 
 and HAPI FHIR documentation (https://hapifhir.io/hapi-fhir/docs/model/references.html).
+
+## Audit
+FHIR-Bridge registers audit for the following operations:
+* Create a new FHIR resource.
+* Map a FHIR resource to Ehrbase.
+
+The audit mechanism uses the AuditEvent resource provided by FHIR:
+```
+{
+    "resourceType": "AuditEvent",
+    "id": "1204",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-10-06T10:44:38.630+02:00"
+    },
+    "type": {
+        "system": "http://terminology.hl7.org/CodeSystem/iso-21089-lifecycle",
+        "code": "transform",
+        "display": "Transform/Translate Record Lifecycle Event"
+    },
+    "action": "E",
+    "recorded": "2020-10-06T10:44:38.629+02:00",
+    "outcome": "8",
+    "outcomeDesc": "One contained Observation was expected 0 were received in DiagnosticReport DiagnosticReport/1202/_history/1",
+    "agent": [
+        {
+            "role": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/extra-security-role-type",
+                            "code": "dataprocessor",
+                            "display": "data processor"
+                        }
+                    ]
+                }
+            ],
+            "who": {
+                "identifier": {
+                    "value": "fhir-bridge - 1.0.0-SNAPSHOT"
+                }
+            },
+            "requestor": true,
+            "network": {
+                "address": "192.168.10.161",
+                "type": "2"
+            }
+        }
+    ],
+    "entity": [
+        {
+            "what": {
+                "reference": "DiagnosticReport/1202"
+            },
+            "type": {
+                "system": "http://hl7.org/fhir/resource-types",
+                "code": "DiagnosticReport",
+                "display": "DiagnosticReport"
+            }
+        }
+    ]
+}
+```
+In addition, the AuditEvent endpoint is available to search for resources using the following supported criteria:
+
+| Name | Type | Description |
+| --- | --- | --- |
+| action | token |	Type of action performed during the event |
+| date | date | Time when the event was recorded |
+| entity | reference | Specific instance of resource |
+| outcome | token | Whether the event succeeded or failed |
+| type | token | Type/identifier of event |
+
+Examples:
+```
+# All failed operations
+POST {base_url}/fhir/AuditEvent/_search?outcome=8
+
+# All transform operations
+POST {base_url}/fhir/AuditEvent/_search?type=transform
+```
