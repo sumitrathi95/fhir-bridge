@@ -1,8 +1,10 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
 import com.nedap.archie.rm.generic.PartyIdentified;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.DetailsZurKorperstelleCluster;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.definition.ProzedurAction;
@@ -27,6 +29,10 @@ public class FhirProcedureOpenehrProcedure {
     public static ProzedurComposition map(Procedure fhirProcedure) {
 
         ProzedurComposition composition = new ProzedurComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirProcedure);
+        composition.setFeederAudit(fa);
 
 
         Coding code = fhirProcedure.getCode().getCoding().get(0);

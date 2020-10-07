@@ -458,6 +458,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveSOFAScore(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SOFA_SCORE);
+
             } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
@@ -478,6 +479,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveFIO2(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.FIO2);
+
             } else if (ProfileUtils.hasProfile(observation, Profile.BLOOD_PRESSURE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BLOOD_PRESSURE");
@@ -497,15 +499,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
             }
+
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
+
         } catch (Exception e) {
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), observation);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
         return new MethodOutcome()
-                .setCreated(true)
-                .setResource(observation);
+            .setCreated(true)
+            .setResource(observation);
     }
 
     @Override

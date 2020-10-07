@@ -2,11 +2,13 @@ package org.ehrbase.fhirbridge.mapping;
 
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datatypes.CodePhrase;
 import com.nedap.archie.rm.datavalues.DvCodedText;
 import com.nedap.archie.rm.datavalues.quantity.DvOrdinal;
 import com.nedap.archie.rm.generic.PartySelf;
 import com.nedap.archie.rm.support.identification.TerminologyId;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
@@ -104,6 +106,11 @@ public class FhirObservationSofaScoreOpenehrSofa {
     public static SOFAComposition map(Observation fhirObservation) {
 
         SOFAComposition sofaScoreComposition = new SOFAComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        sofaScoreComposition.setFeederAudit(fa);
+
 
         SOFAScoreObservation sofaScore = new SOFAScoreObservation();
 

@@ -45,10 +45,9 @@ public class FhirDiagnosticReportOpenehrLabResults {
 
         LaborbefundComposition composition = new LaborbefundComposition();
 
-        // test
+        // set feeder audit
         FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
         composition.setFeederAudit(fa);
-        // /test
 
 
         LaboranalytResultatCluster resultCluster = mapObservation(fhirObservation);
