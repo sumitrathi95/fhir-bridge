@@ -21,7 +21,7 @@ import java.util.List;
 import static java.util.Date.from;
 
 /**
- * FHIR to openEHR - Laboratory report
+ * FHIR to openEHR - Pregnancy Status
  */
 public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
 
@@ -30,10 +30,9 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
     private FhirObservationPregnancyStatusOpenehrPregnancyStatus() {}
 
     /**
-     * this maps a single lab observation to a composition, the map(DiagnosticReport) method maps a
-     * DiagnosticReport with a direct contained Observation to a composition.
+     * this maps a FHIR Observation to a SchwangerschaftsstatusComposition.
      * @param fhirObservation the FHIR Observation resource received in the API.
-     * @return the Composition defined by the laborbefund template.
+     * @return the Composition defined by the Schwangerschaftsstatus template.
      */
     public static SchwangerschaftsstatusComposition map(Observation fhirObservation) {
 
@@ -44,7 +43,7 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
 
         composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
 
-        // TODO: map other context status
+        // FIXME: map other context status
         // Can't map because of https://github.com/ehrbase/openEHR_SDK/issues/84
 
         composition.setSchwangerschaftsstatus(mapObservation(fhirObservation));
@@ -54,7 +53,7 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
         // Required fields by API
         composition.setLanguage(Language.DE);
         composition.setLocation("test");
-        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
+        composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setStartTimeValue(OffsetDateTime.now());
@@ -67,122 +66,12 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
 
         return composition;
     }
-    
-
 
     /**
-     * this maps a DiagnosticReport with a direct contained Observation to an
-     * openEHR composition generated for the Laborbefund template.
-     * @param fhirDiagnosticReport the DiagnosticReport FHIR resource received in the API
-     * @return the Composition defined by the laborbefund template
-     */
-    /*
-    public static SchwangerschaftsstatusComposition map(DiagnosticReport fhirDiagnosticReport) {
-
-        SchwangerschaftsstatusComposition composition = new SchwangerschaftsstatusComposition();
-
-        logger.debug("Contained size: {}", fhirDiagnosticReport.getContained().size());
-
-        // one contained Observation is expected
-        if (fhirDiagnosticReport.getContained().size() != 1)
-        {
-            throw new UnprocessableEntityException("One contained Observation was expected "+ fhirDiagnosticReport.getContained().size() +" were received in DiagnosticReport "+ fhirDiagnosticReport.getId());
-        }
-        if (fhirDiagnosticReport.getContained().get(0).getResourceType() != ResourceType.Observation)
-        {
-            throw new UnprocessableEntityException("One contained Observation was expected, contained is there but is not Observation, it is "+ fhirDiagnosticReport.getContained().get(0).getResourceType().toString());
-        }
-
-        Observation fhirObservation = (Observation)fhirDiagnosticReport.getContained().get(0);
-
-        LaboranalytResultatCluster resultCluster = mapObservation(fhirObservation);
-
-        StandortJedesEreignisPointEvent resultEvent = new StandortJedesEreignisPointEvent();
-        resultEvent.setTimeValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-        resultEvent.setLabortestBezeichnungValue(fhirDiagnosticReport.getCode().getText());
-        resultEvent.setLabortestBezeichnungValueTree("test name");
-        resultEvent.setSchlussfolgerungValueTree(fhirDiagnosticReport.getConclusion());
-        resultEvent.setSchlussfolgerungValue("conclusion");
-
-        GesamtteststatusDefiningcode openEHRStatus = null;
-        // FHIR value set: https://simplifier.net/packages/simplifier.core.r4.valuesets/4.0.0/files/18799
-        // The openEHR template only accepts the 3 codes below
-        switch (fhirDiagnosticReport.getStatus())
-        {
-            case FINAL:
-                openEHRStatus = GesamtteststatusDefiningcode.FINAL;
-            break;
-            case REGISTERED:
-                openEHRStatus = GesamtteststatusDefiningcode.REGISTRIERT;
-            break;
-            case CANCELLED:
-                openEHRStatus = GesamtteststatusDefiningcode.ABGEBROCHEN;
-            break;
-            default:
-                openEHRStatus = GesamtteststatusDefiningcode.REGISTRIERT;
-        }
-        resultEvent.setGesamtteststatusDefiningcode(openEHRStatus);
-        resultEvent.setGesamtteststatusValue("test status");
-
-        List<LaboranalytResultatCluster> items = new ArrayList<>();
-        items.add(resultCluster);
-        resultEvent.setLaboranalytResultat(items);
-
-
-        StandortDetailsDerTestanforderungCluster testRequestDetails = new StandortDetailsDerTestanforderungCluster();
-        DvIdentifier receiverOrderIdentifier = new DvIdentifier();
-        receiverOrderIdentifier.setId(fhirDiagnosticReport.getIdentifier().get(0).getValue());
-        receiverOrderIdentifier.setType(fhirDiagnosticReport.getIdentifier().get(0).getSystem());
-        testRequestDetails.setAuftragsIdEmpfanger(receiverOrderIdentifier);
-
-
-        LaborergebnisObservation resultObs = new LaborergebnisObservation();
-
-        List<StandortJedesEreignisChoice> events = new ArrayList<>();
-        events.add(resultEvent);
-        resultObs.setJedesEreignis(events);
-
-        List<StandortDetailsDerTestanforderungCluster> testRequestDetailsList = new ArrayList<>();
-        testRequestDetailsList.add(testRequestDetails);
-        resultObs.setDetailsDerTestanforderung(testRequestDetailsList);
-
-        resultObs.setOriginValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-        resultObs.setLanguage(Language.EN); // FIXME: the lang should be retrieved from the template
-        resultObs.setSubject(new PartySelf());
-
-
-        List<LaborergebnisObservation> observations = new ArrayList<>();
-        observations.add(resultObs);
-        composition.setLaborergebnis(observations);
-
-
-        // ======================================================================================
-        // Required fields by API
-        composition.setLanguage(Language.EN); // FIXME: the lang should be retrieved from the template
-        composition.setLocation("test");
-        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
-        composition.setTerritory(Territory.DE);
-        composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        composition.setStartTimeValue(fhirDiagnosticReport.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-
-
-        // FIXME: https://github.com/ehrbase/ehrbase_client_library/issues/31
-        //        PartyProxy composer = new PartyIdentified();
-        //        composition.setComposer(composer);
-
-        composition.setComposer(new PartySelf());
-
-        return composition;
-    }
-    */
-
-
-    /**
-     * Maps a FHIR Observation to an openEHR LaboranalytResultatCluster generated from the Laborbefund template.
+     * Util method used from SchwangerschaftsstatusComposition map(Observation)
      * @param fhirObservation the FHIR Observation resource received in the API.
-     * @return the cluster defined in the OPT that maps to the FHIR observation
+     * @return the Observation defined in the OPT that maps to the FHIR observation
      */
-    
     private static SchwangerschaftsstatusObservation mapObservation(Observation fhirObservation)
     {
         SchwangerschaftsstatusObservation observation = new SchwangerschaftsstatusObservation();
@@ -207,7 +96,7 @@ public class FhirObservationPregnancyStatusOpenehrPregnancyStatus {
             case "LA15173-0": // pregnant
                 observation.setStatusDefiningcode(StatusDefiningcode.SCHWANGER);
             break;
-            case "LA26683-5": // not pregmant
+            case "LA26683-5": // not pregnant
                 observation.setStatusDefiningcode(StatusDefiningcode.NICHT_SCHWANGER);
             break;
             case "LA4489-6": // unknown
