@@ -41,7 +41,7 @@ public class FhirConditionSymptomAbsentOpenehrSymptom {
 
         DiagnoseDefiningcode diagnose = null;
 
-        // Neue Systeme werden eingepflegt sobald sie in DiagnoseDefiningcode definiert sind.
+        // Neue Systeme werden eingepflegt sobald sie in Diagnose Definingcode definiert sind.
         if (coding.getSystem().equals("http://snomed.info/sct")) {
             diagnose = diagnosenMap.get(coding.getCode());
         }
