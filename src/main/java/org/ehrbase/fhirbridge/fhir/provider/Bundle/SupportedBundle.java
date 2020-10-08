@@ -2,7 +2,6 @@ package org.ehrbase.fhirbridge.fhir.provider.Bundle;
 
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.provider.ObservationResourceProvider;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.Composition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

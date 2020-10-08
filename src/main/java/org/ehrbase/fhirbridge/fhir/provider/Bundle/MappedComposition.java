@@ -1,7 +1,6 @@
 package org.ehrbase.fhirbridge.fhir.provider.Bundle;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.Composition;
 
 public class MappedComposition {
 

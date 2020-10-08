@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
+import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.PhWertMapper;
@@ -12,6 +13,11 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 class LaborergebnisBefundMapper {
 
@@ -40,8 +46,133 @@ class LaborergebnisBefundMapper {
         laborergebnisObservation.setLanguage(Language.DE);// FIXME: we need to grab the language from the template
         laborergebnisObservation.setSubject(new PartySelf());
 
+
+//        KohlendioxidpartialdruckCluster kohlendioxidpartialdruckCluster = new KohlendioxidpartialdruckCluster();
+//        kohlendioxidpartialdruckCluster.setErgebnisStatusValue("");
+//        kohlendioxidpartialdruckCluster.setAnalytResultatUnits("");
+//        kohlendioxidpartialdruckCluster.setUntersuchterAnalytDefiningcode(UntersuchterAnalytDefiningcode3.CARBON_DIOXIDE_PARTIAL_PRESSURE_IN_ARTERIAL_BLOOD);
+//        kohlendioxidpartialdruckCluster.setAnalytResultatMagnitude(12.0);
+//        List<Cluster> analyseergebnisDetails = new List<Cluster>() {
+//            @Override
+//            public int size() {
+//                return 0;
+//            }
+//
+//            @Override
+//            public boolean isEmpty() {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean contains(Object o) {
+//                return false;
+//            }
+//
+//            @Override
+//            public Iterator<Cluster> iterator() {
+//                return null;
+//            }
+//
+//            @Override
+//            public Object[] toArray() {
+//                return new Object[0];
+//            }
+//
+//            @Override
+//            public <T> T[] toArray(T[] ts) {
+//                return null;
+//            }
+//
+//            @Override
+//            public boolean add(Cluster cluster) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean remove(Object o) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean containsAll(Collection<?> collection) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean addAll(Collection<? extends Cluster> collection) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean addAll(int i, Collection<? extends Cluster> collection) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean removeAll(Collection<?> collection) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean retainAll(Collection<?> collection) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void clear() {
+//
+//            }
+//
+//            @Override
+//            public Cluster get(int i) {
+//                return null;
+//            }
+//
+//            @Override
+//            public Cluster set(int i, Cluster cluster) {
+//                return null;
+//            }
+//
+//            @Override
+//            public void add(int i, Cluster cluster) {
+//
+//            }
+//
+//            @Override
+//            public Cluster remove(int i) {
+//                return null;
+//            }
+//
+//            @Override
+//            public int indexOf(Object o) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int lastIndexOf(Object o) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public ListIterator<Cluster> listIterator() {
+//                return null;
+//            }
+//
+//            @Override
+//            public ListIterator<Cluster> listIterator(int i) {
+//                return null;
+//            }
+//
+//            @Override
+//            public List<Cluster> subList(int i, int i1) {
+//                return null;
+//            }
+//        };
+//        kohlendioxidpartialdruckCluster.setAnalyseergebnisDetails(analyseergebnisDetails );
+
         KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
         laborergebnisObservation.setKohlendioxidpartialdruck(new KohlendioxidpartialdruckCluster());
+
 
 //
 //        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
