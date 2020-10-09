@@ -1,53 +1,37 @@
 # FHIR Bridge
 
-## Project setup
+FHIR Bridge is an official component of [EHRbase](https://ehrbase.readthedocs.io/en/latest/index.html) project. 
+The purpose of the application is to act as a broker between an HL7 FHIR client and an openEHR server.
 
-### Build
+## Getting Started
+### Prerequisites
+#### Java
 ```
-mvn clean install
+$ java -version
+java version "11.0.2" 2019-01-15 LTS
 ```
+FHIR Bridge requires JDK 11 or above. If you do not already have Java installed, 
+you can follow the instructions at [openjdk.java.net](https://openjdk.java.net/).
 
-### Build without running tests
+#### Apache Maven
 ```
-mvn clean install -DskipTests
+$ mvn --version
+Apache Maven 3.6.0 (97c98ec64a1fdfee7767ce5ffb20918da4f719f3; 2018-10-24T20:41:47+02:00)
 ```
+FHIR Bridge is compatible with Apache Maven 3.6 or above. If you do not already have Maven installed, 
+you can follow the instructions at [maven.apache.org](https://maven.apache.org/).
 
-### Run the application
+#### EHRbase 
+FHIR Bridge requires an EHRbase instance to communicate and exchange data. 
+If you do not already have EHRbase up and running, you can follow the installation procedure available 
+in [ehrbase/ehrbase](https://github.com/ehrbase/ehrbase) repository.
 
-Option 1:
-```
-mvn spring-boot:run
-```
+#### PostgreSQL
+FHIR Bridge requires an additional database schema for its internal audit mechanism. By default, the application already
+includes PostgreSQL driver. If you do not already have PostgreSQL installed, you can follow the instructions 
+at [postgresql.org](https://www.postgresql.org/).
 
-Option 2: (update the version number accordingly)
-```
-java -jar target/fhir-bridge-1.0.0-SNAPSHOT.jar 
-```
-
-### Run integration tests
-```
-mvn verify
-```
-
-### Custom Configuration
-You can customize the default configuration of the application stored in the `application.yml` and `application-dev.yml`files.
-* Create a custom configuration file for your local environment (e.g. `application-local.yml`)
-```
-spring:
-  datasource:
-    url: jdbc:oracle:thin:@localhost:1521:OR
-    username: FHIR_BRIDGE
-    password: Azerty#1234
-  jpa:
-    properties:
-      hibernate.show_sql: true
-      hibernate.format_sql: true
-      generate_statistics: true
-```
-* Run the application (Update the version number accordingly)
-```
-java -jar fhir-bridge-1.0.0-SNAPSHOT.jar  --spring.profiles.active=local
-```
+### Installation
 
 ## FHIR to openEHR Mappings
 
