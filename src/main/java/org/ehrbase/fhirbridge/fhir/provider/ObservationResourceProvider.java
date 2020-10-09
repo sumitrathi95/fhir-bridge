@@ -495,7 +495,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
             else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
 
-                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BLOOD_PRESSURE");
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION CLINICAL_FRAILTY_SCALE");
 
                 KlinischeFrailtySkalaComposition composition = FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale.map(observation);
 

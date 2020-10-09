@@ -113,12 +113,6 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-    public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
-
-        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-        return composition.getVersionUid();
-    }
-    
     public VersionUid saveFIO2(UUID ehrId, BeatmungswerteComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -151,5 +145,12 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
+    public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
 }
 

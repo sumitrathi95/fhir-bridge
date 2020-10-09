@@ -24,26 +24,65 @@ import com.nedap.archie.rm.support.identification.TerminologyId;
  */
 public class FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale {
 
-    private static final Logger logger = LoggerFactory.getLogger(FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale.class);
+    private static class ClinicalFrailty_Mapping_Assessment{
 
-    private static DvOrdinal ClinFrailty_Beurteilung_1_SEHR_FIT = new DvOrdinal(1L,
-            new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0005")));
-    private static DvOrdinal ClinFrailty_Beurteilung_2_DURCHSCHNITTLICH_AKTIV = new DvOrdinal(2L,
-            new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0006")));
-    private static DvOrdinal ClinFrailty_Beurteilung_3_GUT_ZURECHTKOMMEND = new DvOrdinal(3L,
-            new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0007")));
-    private static DvOrdinal ClinFrailty_Beurteilung_4_VULNERABEL = new DvOrdinal(4L,
-            new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0008")));
-    private static DvOrdinal ClinFrailty_Beurteilung_5_GERINGGRADIG_FRAIL = new DvOrdinal(5L,
-            new DvCodedText("5", new CodePhrase(new TerminologyId("local"), "at0009")));
-    private static DvOrdinal ClinFrailty_Beurteilung_6_MITTELGRADIG_FRAIL = new DvOrdinal(6L,
-            new DvCodedText("6", new CodePhrase(new TerminologyId("local"), "at0010")));
-    private static DvOrdinal ClinFrailty_Beurteilung_7_AUSGEPRAGT_FRAIL = new DvOrdinal(7L,
-            new DvCodedText("7", new CodePhrase(new TerminologyId("local"), "at0011")));
-    private static DvOrdinal ClinFrailty_Beurteilung_8_EXTREM_FRAIL = new DvOrdinal(8L,
-            new DvCodedText("8", new CodePhrase(new TerminologyId("local"), "at0012")));
-    private static DvOrdinal ClinFrailty_Beurteilung_9_TERMINAL_ERKRANKT = new DvOrdinal(9L,
-            new DvCodedText("9", new CodePhrase(new TerminologyId("local"), "at0013")));
+        private static DvOrdinal ClinFrailty_Beurteilung_1_SEHR_FIT = new DvOrdinal(1L,
+                new DvCodedText("1", new CodePhrase(new TerminologyId("local"), "at0005")));
+        private static DvOrdinal ClinFrailty_Beurteilung_2_DURCHSCHNITTLICH_AKTIV = new DvOrdinal(2L,
+                new DvCodedText("2", new CodePhrase(new TerminologyId("local"), "at0006")));
+        private static DvOrdinal ClinFrailty_Beurteilung_3_GUT_ZURECHTKOMMEND = new DvOrdinal(3L,
+                new DvCodedText("3", new CodePhrase(new TerminologyId("local"), "at0007")));
+        private static DvOrdinal ClinFrailty_Beurteilung_4_VULNERABEL = new DvOrdinal(4L,
+                new DvCodedText("4", new CodePhrase(new TerminologyId("local"), "at0008")));
+        private static DvOrdinal ClinFrailty_Beurteilung_5_GERINGGRADIG_FRAIL = new DvOrdinal(5L,
+                new DvCodedText("5", new CodePhrase(new TerminologyId("local"), "at0009")));
+        private static DvOrdinal ClinFrailty_Beurteilung_6_MITTELGRADIG_FRAIL = new DvOrdinal(6L,
+                new DvCodedText("6", new CodePhrase(new TerminologyId("local"), "at0010")));
+        private static DvOrdinal ClinFrailty_Beurteilung_7_AUSGEPRAGT_FRAIL = new DvOrdinal(7L,
+                new DvCodedText("7", new CodePhrase(new TerminologyId("local"), "at0011")));
+        private static DvOrdinal ClinFrailty_Beurteilung_8_EXTREM_FRAIL = new DvOrdinal(8L,
+                new DvCodedText("8", new CodePhrase(new TerminologyId("local"), "at0012")));
+        private static DvOrdinal ClinFrailty_Beurteilung_9_TERMINAL_ERKRANKT = new DvOrdinal(9L,
+                new DvCodedText("9", new CodePhrase(new TerminologyId("local"), "at0013")));
+
+        public DvOrdinal getDVOrdinal(int code){
+            DvOrdinal ret;
+            switch (code) {
+                case 1:
+                    ret = ClinFrailty_Beurteilung_1_SEHR_FIT;
+                    break;
+                case 2:
+                    ret = ClinFrailty_Beurteilung_2_DURCHSCHNITTLICH_AKTIV;
+                    break;
+                case 3:
+                    ret = ClinFrailty_Beurteilung_3_GUT_ZURECHTKOMMEND;
+                    break;
+                case 4:
+                    ret = ClinFrailty_Beurteilung_4_VULNERABEL;
+                    break;
+                case 5:
+                    ret = ClinFrailty_Beurteilung_5_GERINGGRADIG_FRAIL;
+                    break;
+                case 6:
+                    ret = ClinFrailty_Beurteilung_6_MITTELGRADIG_FRAIL;
+                    break;
+                case 7:
+                    ret = ClinFrailty_Beurteilung_7_AUSGEPRAGT_FRAIL;
+                    break;
+                case 8:
+                    ret = ClinFrailty_Beurteilung_8_EXTREM_FRAIL;
+                    break;
+                case 9:
+                    ret = ClinFrailty_Beurteilung_9_TERMINAL_ERKRANKT;
+                    break;
+                default:
+                    throw new UnprocessableEntityException("Cannot match beurteilung\""+code+"\"");
+            }
+            return ret;
+        }
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale.class);
 
     private FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale() {}
 
@@ -52,65 +91,33 @@ public class FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale {
         KlinischeFrailtySkalaComposition composition = new KlinischeFrailtySkalaComposition();
         KlinischeFrailtySkalaCfsObservation observation = new KlinischeFrailtySkalaCfsObservation();
 
-        // value quantity is expected
-        Quantity fhirValue = null;
-        BigDecimal fhirValueNumeric = null;
-        DateTimeType fhirEffectiveDateTime = null;
-
+        DateTimeType  fhirEffectiveDateTime = null;
         try {
-            fhirValue = fhirObservation.getValueQuantity();
-            fhirValueNumeric = fhirValue.getValue();
+
+            // default for every observation
             fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
-            logger.debug("Value numeric: {}", fhirValueNumeric);
-
-            String beurteilung = fhirObservation.getComponent().get(0).getValueCodeableConcept().getCoding().get(0).getCode();
-
-            // convert as int and compare int
-            // make interval class to insert fhir-Code and get DV_ORDINAL
-
-            // https://simplifier.net/forschungsnetzcovid-19/frailty-score hier gibt es die codes
-            switch (beurteilung) {
-                case "1":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_1_SEHR_FIT);
-                    observation.set
-                    break;
-                case "beu2":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_2_DURCHSCHNITTLICH_AKTIV);
-                    break;
-                case "beu3":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_3_GUT_ZURECHTKOMMEND);
-                    break;
-                case "beu4":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_4_VULNERABEL);
-                    break;
-                case "beu5":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_5_GERINGGRADIG_FRAIL);
-                    break;
-                case "beu6":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_6_MITTELGRADIG_FRAIL);
-                    break;
-                case "beu7":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_7_AUSGEPRAGT_FRAIL);
-                    break;
-                case "beu8":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_8_EXTREM_FRAIL);
-                    break;
-                case "beu9":
-                    observation.setBeurteilung(ClinFrailty_Beurteilung_9_TERMINAL_ERKRANKT);
-                    break;
-                default:
-                    logger.debug("Cannot match beurteilung\""+beurteilung+"\"");
-                    break;
-            }
-
-
-
-            //observation.setMesswertMagnitude(fhirValueNumeric.doubleValue());
-            //observation.setMesswertUnits(fhirValue.getUnit());
             observation.setTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
             observation.setOriginValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime()); // mandatory
             observation.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
             observation.setSubject(new PartySelf());
+
+            // special mapping content
+
+            // is this the correct equivalent?
+            //Fhir-Example: Observation.valueCodeableConcept[0].coding[0].code[0]
+            // I tried to access the object, but it crashes during runtime:
+            String string_assessment = fhirObservation.getComponent().get(0).getValueCodeableConcept().getCoding().get(0).getCode();
+            int assessment = Integer.parseInt(string_assessment);
+            
+            // get the mapping to the DV_Ordinal from inner class
+            ClinicalFrailty_Mapping_Assessment mapping = new ClinicalFrailty_Mapping_Assessment();
+            DvOrdinal ord_assessment = mapping.getDVOrdinal(assessment);
+
+            observation.setBeurteilung(ord_assessment);
+
+            //observation.setMesswertMagnitude(fhirValueNumeric.doubleValue());
+            //observation.setMesswertUnits(fhirValue.getUnit());
+
 
         } catch (Exception e) {
             throw new UnprocessableEntityException(e.getMessage());

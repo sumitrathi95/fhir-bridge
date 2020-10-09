@@ -17,10 +17,6 @@ public enum Profile {
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
 
-    // https://simplifier.net/guide/germancoronaconsensusdataset-implementationguide/frailtyscore:
-    //-->https://www.netzwerk-universitaetsmedizin.de/fhir/CodeSystem/frailty-score
-    // xml FrailtyScore: https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score
-    //-->https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score
     CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 
     FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
