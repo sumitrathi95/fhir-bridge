@@ -1,8 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
 import com.nedap.archie.rm.generic.PartySelf;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
-import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
@@ -10,10 +8,10 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
@@ -37,7 +35,6 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         befundDerBlutgasanalyseComposition.setTerritory(Territory.DE);
         befundDerBlutgasanalyseComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         befundDerBlutgasanalyseComposition.setStartTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-
         befundDerBlutgasanalyseComposition.setComposer(new PartySelf()); //FIXME: sensible value
 
         return befundDerBlutgasanalyseComposition;
@@ -60,16 +57,31 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         }
     }
 
-    //TODO can be a list of CodeableConcepts, but openEHR field is just a string for now i appended all
     private static String mapKategorie(Observation fhirObservation) {
-        StringBuilder categories = new StringBuilder();
-        for (CodeableConcept codeableConcept : fhirObservation.getCategory()
-        ) {
-            categories.append(codeableConcept.getText());
+        Optional<String> categoryCode;
+        for (CodeableConcept codingEntry : fhirObservation.getCategory()) {
+            categoryCode = getObservationCategory(codingEntry);
+            if (categoryCode.isPresent()) {
+                return categoryCode.get();
+            }
         }
-        return categories.toString();
+        throw new IllegalArgumentException("Category code is not defined in blood gas panel, therefore the bundle is incomplete. Please add category observation category to the panel");
+
     }
 
+    private static Optional<String> getObservationCategory(CodeableConcept codings) {
+        for (Coding categoryEntry : codings.getCoding()) {
+            if (isObservationCategory(categoryEntry)) {
+                return Optional.of(categoryEntry.getCode());
+            }
+        }
+        return Optional.empty();
+    }
+
+
+    private static boolean isObservationCategory(Coding categories) {
+        return categories.getSystem().equals("http://terminology.hl7.org/CodeSystem/observation-category");
+    }
 
 }
 

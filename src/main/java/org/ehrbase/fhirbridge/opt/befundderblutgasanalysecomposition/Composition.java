@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.fhir.provider.Bundle;
+package org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition;
 
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyProxy;

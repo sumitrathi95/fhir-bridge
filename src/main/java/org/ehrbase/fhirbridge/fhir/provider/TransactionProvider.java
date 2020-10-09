@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -76,38 +77,27 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     protected void saveCompositions(MappedComposition composition, SupportedBundle supportedBundle){
         UUID ehrUid = getEhrUidForSubjectId(composition.getSubjectId());
-       // VersionUid versionUid = service.saveBlutGas(ehrUid, new BefundDerBlutgasanalyseComposition());
-       // logger.info(composition.toString());
-        VersionUid versionUid = service.saveBlutGas(ehrUid, composition.getComposition());
+        VersionUid versionUid = service.save(ehrUid, composition.getComposition());
         supportedBundle.createdLog(versionUid);
-
-//        for (MappedComposition mappedComposition: compositions) {
-//            UUID ehrUid = getEhrUidForSubjectId(mappedComposition.getSubjectId());
-//            VersionUid versionUid = service.saveBlutGas(ehrUid, (BefundDerBlutgasanalyseComposition) mappedComposition.getComposition());
-//            supportedBundle.createdLog(versionUid);
-//        }
-
     }
 
     private SupportedBundle getBundleType(Bundle bundle){
-        //FIXME try to avoid using null
-        SupportedBundle supportedBundle;
+        Optional<SupportedBundle> supportedBundle;
         for (Bundle.BundleEntryComponent bundleEntryComponent:bundle.getEntry()) {
             String profileUrl = bundleEntryComponent.getResource().getMeta().getProfile().get(0).getValueAsString();
             supportedBundle = determineBundleType(profileUrl, bundle);
-            if(supportedBundle != null){
-                return supportedBundle;
+            if(supportedBundle.isPresent()){
+                return supportedBundle.get();
             }
         }
         throw new UnprocessableEntityException("The Bundle provided is not supported. Supported is currently only a Bundle containing the profiles for Blood Gas Panel"); //TODO define this in a more generic way!
     }
 
-    private SupportedBundle determineBundleType(String profileUrl, Bundle bundle) {
-        if(profileUrl.equals(Profile.BLOOD_GAS.getUrl())){
-            return new BloodGasPanelBundle(bundle);
-        }else{
-            return null;
+    private Optional<SupportedBundle> determineBundleType(String profileUrl, Bundle bundle) {
+        if(profileUrl.equals(Profile.BLOOD_GAS.getUrl())) {
+            return Optional.of(new BloodGasPanelBundle(bundle));
         }
+            return Optional.empty();
     }
 
 

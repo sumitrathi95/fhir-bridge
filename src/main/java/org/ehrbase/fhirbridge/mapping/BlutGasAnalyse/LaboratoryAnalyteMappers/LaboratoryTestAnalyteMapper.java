@@ -7,6 +7,8 @@ import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode;
 import org.hl7.fhir.r4.model.Observation;
 
+import java.math.BigDecimal;
+
 abstract class LaboratoryTestAnalyteMapper {
     protected final Observation fhirObservation;
 
@@ -32,10 +34,10 @@ abstract class LaboratoryTestAnalyteMapper {
         }
     }
 
-    protected String mapValue() {
+    protected Double mapValue() {
         // FIXME in the profile it is Observation.value[x]:valueQuantity.value and NOT Observation.:valueQuantity.value
         //return fhirObservation.getValue().getValueQuantity().getValue();
-        return fhirObservation.getValueQuantity().getValue().toString();
+        return fhirObservation.getValueQuantity().getValue().doubleValue();
     }
     abstract EnumValueSet mapUntersuchterAnalyt();
 

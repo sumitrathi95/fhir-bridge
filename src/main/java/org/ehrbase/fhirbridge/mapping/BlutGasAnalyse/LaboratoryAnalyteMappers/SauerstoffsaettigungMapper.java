@@ -16,7 +16,7 @@ public class SauerstoffsaettigungMapper extends LaboratoryTestAnalyteMapper{
         sauerstoffsattigungCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
         sauerstoffsattigungCluster.setAnalytResultatUnits("%");
         //TODO this profile also has normal values ? but no text or descriptions for them
-        sauerstoffsattigungCluster.setErgebnisStatusValue(mapValue());
+        sauerstoffsattigungCluster.setAnalytResultatMagnitude(mapValue());
         return sauerstoffsattigungCluster;
     }
 

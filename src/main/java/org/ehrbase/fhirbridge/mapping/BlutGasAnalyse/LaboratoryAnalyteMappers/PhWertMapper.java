@@ -18,7 +18,7 @@ public class PhWertMapper extends LaboratoryTestAnalyteMapper{
         phWertCluster.setErgebnisStatusValue(mapErgebnisStatus());
         phWertCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
         phWertCluster.setAnalytResultatUnits("pH");
-        phWertCluster.setErgebnisStatusValue(mapValue());
+        phWertCluster.setAnalytResultatMagnitude(mapValue());
         return phWertCluster;
     }
 

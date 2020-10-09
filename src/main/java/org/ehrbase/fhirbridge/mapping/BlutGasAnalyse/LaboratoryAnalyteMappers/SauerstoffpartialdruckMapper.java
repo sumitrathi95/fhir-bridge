@@ -16,7 +16,7 @@ public class SauerstoffpartialdruckMapper extends LaboratoryTestAnalyteMapper{
         sauerstoffpartialdruckCluster.setErgebnisStatusValue(mapErgebnisStatus());
         sauerstoffpartialdruckCluster.setAnalytResultatUnits("mmHg");
         sauerstoffpartialdruckCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
-        sauerstoffpartialdruckCluster.setErgebnisStatusValue(mapValue());
+        sauerstoffpartialdruckCluster.setAnalytResultatMagnitude(mapValue());
         return sauerstoffpartialdruckCluster;
     }
 
