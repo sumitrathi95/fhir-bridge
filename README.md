@@ -59,6 +59,10 @@ spring:
     password:           Password of the database (ex: fhir_bridge_pwd)            
 ```
 
+If you want more details about configuration and/or customization of the default one, you can check the official documentation of 
+[Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config) 
+feature provided by Spring Boot.
+
 #### Run the application
 In order to start the application, go to the correct location and use the `java` command (update the version number accordingly).
 ```
