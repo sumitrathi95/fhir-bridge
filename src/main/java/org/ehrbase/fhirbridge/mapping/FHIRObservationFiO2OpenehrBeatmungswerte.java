@@ -1,5 +1,7 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.definition.BeobachtungenAmBeatmungsgeratObservation;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.definition.EingeatmeterSauerstoffCluster;
@@ -20,6 +22,12 @@ public class FHIRObservationFiO2OpenehrBeatmungswerte {
     public static BeatmungswerteComposition map(Observation fhirObservation) {
         
         BeatmungswerteComposition composition = new BeatmungswerteComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        composition.setFeederAudit(fa);
+
+
         BeobachtungenAmBeatmungsgeratObservation observation = new BeobachtungenAmBeatmungsgeratObservation();
         ZonedDateTime effectiveDateTime = null;
         EingeatmeterSauerstoffCluster eingeatmeterSauerstoff = new EingeatmeterSauerstoffCluster();
