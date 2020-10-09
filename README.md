@@ -32,6 +32,39 @@ includes PostgreSQL driver. If you do not already have PostgreSQL installed, you
 at [postgresql.org](https://www.postgresql.org/).
 
 ### Installation
+#### Cloning the repository
+```
+$ git clone https://github.com/ehrbase/fhir-bridge.git
+```
+#### Build the application
+```
+$ mvn clean install
+```
+#### Configure the application
+Before running the application, you need, at least, to configure the database and EHRbase instance. The easiest solution is to 
+use an `application.yml` file:
+* In the same directory as `fhir-bridge-X-X-X.jar` file.
+* Under a `/config` subdirectory.
+
+The `application.yml` must include (at least) the following properties:
+```
+ehrbase:
+  address:              Hostname of the EHRbase instance (ex: localhost)   
+  port:                 Port of the EHRbase instance (ex: 8080)
+  path:                 Context path of the EHRbase instance (ex: /ehrbase/rest/openehr/v1/)
+spring:
+  datasource:
+    url:                JDBC URL of the database (ex: jdbc:postgresql://fhirdb:5432/fhir_bridge)
+    username:           Username of the database (ex: fhir_bridge_usr)           
+    password:           Password of the database (ex: fhir_bridge_pwd)            
+```
+
+#### Run the application
+In order to start the application, go to the correct location and use the `java` command (update the version number accordingly).
+```
+$ cd [fhir-bridge_jar_file_dir]
+$ java -jar fhir-bridge-X.X.X.jar
+```
 
 ## FHIR to openEHR Mappings
 
