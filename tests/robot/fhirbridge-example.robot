@@ -12,7 +12,8 @@ Force Tags              FHIR
 *** Variables ***
 ${BASE_URL}             http://localhost:8888/fhir-bridge/fhir
 ${EHRBASE_URL}          http://localhost:8080/ehrbase/rest/openehr/v1
-${DATA_SET_PATH}        ${CURDIR}/_resources/test_data/Condition
+${DATA_SET_PATH_CONDITION}        ${CURDIR}/_resources/test_data/Condition
+${DATA_SET_PATH_OBSERVATION}        ${CURDIR}/_resources/test_data/Observation
 ${VALID EHR DATA SETS}       ${CURDIR}/_resources/test_data/ehr/valid
 
 
@@ -32,6 +33,12 @@ ${VALID EHR DATA SETS}       ${CURDIR}/_resources/test_data/ehr/valid
     get diagnose condition
 
 
+003 Create Body Temperature 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	create new ehr               000_ehr_status.json
+	create body temperature    observation-bodytemp-example.json
 
 *** Keywords ***
 create new ehr
@@ -67,13 +74,22 @@ create ehr
 create diagnose condition
     [Arguments]         ${fhir_resource}
 
-    ${payload}          Load JSON From File    ${DATA_SET_PATH}/${fhir_resource}
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_CONDITION}/${fhir_resource}
                         # Output    ${payload}
                         Update Value To Json    ${payload}    $.subject.reference    Patien/${subject_id}
 
     &{resp}             POST    ${BASE_URL}/Condition    body=${payload}
                         Output Debug Info To Console
 
+create body temperature
+    [Arguments]         ${fhir_resource}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+                        # Output    ${payload}
+                        Update Value To Json    ${payload}    $.subject.reference    Patien/${subject_id}
+
+    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+                        Output Debug Info To Console
 
 get diagnose condition
     &{resp}             GET    ${BASE_URL}/Condition?identifier=${subject_id}

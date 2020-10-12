@@ -20,5 +20,5 @@ robot -d results/ -L TRACE robot/fhirbridge-example.robot
 # ensures robot output files are save in ./results
 
 -L TRACE
-# ensures output log has all availavle details
+# ensures output log has all available details
 ```
