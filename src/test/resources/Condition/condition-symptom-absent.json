@@ -44,5 +44,6 @@
 	"subject": {
 		"reference": "Patient/example"
 	},
-	"recordedDate": "2020-10-05"
+	"recordedDate": "2020-10-05",
+	"onsetDateTime": "2020-10-05"
 }

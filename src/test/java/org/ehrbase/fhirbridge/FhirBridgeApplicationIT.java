@@ -487,8 +487,8 @@ public class FhirBridgeApplicationIT {
     public void createSymptom() throws IOException {
 
         String[] resources = {
-                getContent("classpath:/Condition/condition-symptom-present.json"),
-                getContent("classpath:/Condition/condition-symptom-absent.json")
+                getContent("classpath:/Condition/condition-symptom-absent.json"),
+                getContent("classpath:/Condition/condition-symptom-present.json")
         };
 
         for(String resource: resources)
