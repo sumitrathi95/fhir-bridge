@@ -1,20 +1,22 @@
 package org.ehrbase.fhirbridge.fhir.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirProcedureOpenehrProcedure;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -27,9 +29,12 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ProcedureResourceProvider.class);
 
-    @Autowired
-    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService service) {
-        super(fhirContext, service);
+    private final IFhirResourceDao<Procedure> procedureDao;
+
+    public ProcedureResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
+                                     IFhirResourceDao<Procedure> procedureDao) {
+        super(fhirContext, ehrbaseService, auditService);
+        this.procedureDao = procedureDao;
     }
 
     /*
@@ -173,11 +178,12 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
     }
 */
     @Create
-    @SuppressWarnings("unused")
     public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
+        procedureDao.create(procedure);
+        auditService.registerCreateResourceSuccessEvent(procedure);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
-        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split("/")[1]);
+        UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split(":")[2]);
 
         // *************************************************************************************
         // TODO: we don't have a profile for the diagnostic report to filter
@@ -186,15 +192,13 @@ public class ProcedureResourceProvider extends AbstractResourceProvider {
         try {
             // FHIR Condition => COMPOSITION
             ProzedurComposition composition = FhirProcedureOpenehrProcedure.map(procedure);
-            VersionUid versionUid = service.saveProcedure(ehrUid, composition);
+            VersionUid versionUid = ehrbaseService.saveProcedure(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", procedure);
         } catch (Exception e) {
-            throw new UnprocessableEntityException("There was an issue processing your request", e);
+            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), procedure);
+            throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
-
-        procedure.setId(new IdType(1L));
-        procedure.getMeta().setVersionId("1");
-        procedure.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
         return new MethodOutcome()
                 .setCreated(true)

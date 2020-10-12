@@ -10,7 +10,7 @@
   ],
   "basedOn": [
     {
-      "reference": "ServiceRequest/req"
+      "reference": "http://external.fhir.server/ServiceRequest/req"
     }
   ],
   "status": "final",
@@ -39,31 +39,31 @@
     ]
   },
   "subject": {
-    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49",
+    "reference": "urn:uuid:07f602e0-579e-4fe3-95af-381728bf0d49",
     "display": "P. van den Heuvel"
   },
   "issued": "2013-05-15T19:32:52+01:00",
   "performer": [
     {
-      "reference": "Organization/f001",
+      "reference": "http://external.fhir.server/Organization/f001",
       "display": "Burgers University Medical Centre"
     }
   ],
   "result": [
     {
-      "reference": "Observation/f001"
+      "reference": "http://external.fhir.server/Observation/f001"
     },
     {
-      "reference": "Observation/f002"
+      "reference": "http://external.fhir.server/Observation/f002"
     },
     {
-      "reference": "Observation/f003"
+      "reference": "http://external.fhir.server/Observation/f003"
     },
     {
-      "reference": "Observation/f004"
+      "reference": "http://external.fhir.server/Observation/f004"
     },
     {
-      "reference": "Observation/f005"
+      "reference": "http://external.fhir.server/Observation/f005"
     }
   ],
   "conclusion": "Core lab"

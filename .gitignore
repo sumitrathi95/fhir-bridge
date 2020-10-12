@@ -4,10 +4,12 @@
 target
 
 *-local.yml
+lucene
 
 # VSCode editor settings
 .vscode
 .classpath
 .factorypath
 .project
+.settings
 org.eclipse*

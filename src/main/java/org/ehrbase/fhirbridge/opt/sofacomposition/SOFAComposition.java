@@ -1,5 +1,6 @@
-package org.ehrbase.fhirbridge.opt.laborbefundcomposition;
+package org.ehrbase.fhirbridge.opt.sofacomposition;
 
+import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
 import com.nedap.archie.rm.generic.PartyProxy;
@@ -12,24 +13,19 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.FallidentifikationCluster;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.definition.LaborergebnisObservation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
-import com.nedap.archie.rm.archetyped.FeederAudit;
+import org.ehrbase.fhirbridge.opt.sofacomposition.definition.SOFAScoreObservation;
+import org.ehrbase.fhirbridge.opt.sofacomposition.definition.StatusDefiningcode;
 
 @Entity
-@Archetype("openEHR-EHR-COMPOSITION.report-result.v1")
-@Template("Laborbefund")
-public class LaborbefundComposition {
+@Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
+@Template("SOFA")
+public class SOFAComposition {
   @Id
   private VersionUid versionUid;
-
-  // test
-  @Path("/feeder_audit")
-  private FeederAudit feederAudit;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -43,20 +39,20 @@ public class LaborbefundComposition {
   @Path("/context/health_care_facility")
   private PartyIdentified healthCareFacility;
 
-  @Path("/context/other_context[at0001]/items[at0005]/value|value")
-  private String statusValue;
+  @Path("/context/other_context[at0001]/items[at0004]/value|defining_code")
+  private StatusDefiningcode statusDefiningcode;
 
-  @Path("/context/other_context[at0001]/items[at0002]/value|value")
-  private String berichtIdValue;
+  @Path("/context/other_context[at0001]/items[at0005]/value|value")
+  private String kategorieValue;
+
+  @Path("/content[openEHR-EHR-OBSERVATION.sofa_score.v0]")
+  private SOFAScoreObservation sofaScore;
 
   @Path("/territory")
   private Territory territory;
 
   @Path("/context/start_time|value")
   private TemporalAccessor startTimeValue;
-
-  @Path("/context/other_context[at0001]/items[openEHR-EHR-CLUSTER.case_identification.v0]")
-  private FallidentifikationCluster fallidentifikation;
 
   @Path("/composer")
   private PartyProxy composer;
@@ -70,21 +66,8 @@ public class LaborbefundComposition {
   @Path("/category|defining_code")
   private CategoryDefiningcode categoryDefiningcode;
 
-  @Path("/context/other_context[at0001]/items[at0002]/name|value")
-  private String berichtIdValueBaum;
-
-  @Path("/content[openEHR-EHR-OBSERVATION.laboratory_test_result.v1]")
-  private List<LaborergebnisObservation> laborergebnis;
-
-  // test
-  public void setFeederAudit(FeederAudit feederAudit)
-  {
-     this.feederAudit = feederAudit;
-  }
-  public FeederAudit getFeederAudit()
-  {
-     return this.feederAudit;
-  }
+  @Path("/context/other_context[at0001]/items[at0002]")
+  private List<Cluster> erweiterung;
 
   public VersionUid getVersionUid() {
      return this.versionUid ;
@@ -126,20 +109,28 @@ public class LaborbefundComposition {
      return this.healthCareFacility ;
   }
 
-  public void setStatusValue(String statusValue) {
-     this.statusValue = statusValue;
+  public void setStatusDefiningcode(StatusDefiningcode statusDefiningcode) {
+     this.statusDefiningcode = statusDefiningcode;
   }
 
-  public String getStatusValue() {
-     return this.statusValue ;
+  public StatusDefiningcode getStatusDefiningcode() {
+     return this.statusDefiningcode ;
   }
 
-  public void setBerichtIdValue(String berichtIdValue) {
-     this.berichtIdValue = berichtIdValue;
+  public void setKategorieValue(String kategorieValue) {
+     this.kategorieValue = kategorieValue;
   }
 
-  public String getBerichtIdValue() {
-     return this.berichtIdValue ;
+  public String getKategorieValue() {
+     return this.kategorieValue ;
+  }
+
+  public void setSofaScore(SOFAScoreObservation sofaScore) {
+     this.sofaScore = sofaScore;
+  }
+
+  public SOFAScoreObservation getSofaScore() {
+     return this.sofaScore ;
   }
 
   public void setTerritory(Territory territory) {
@@ -156,14 +147,6 @@ public class LaborbefundComposition {
 
   public TemporalAccessor getStartTimeValue() {
      return this.startTimeValue ;
-  }
-
-  public void setFallidentifikation(FallidentifikationCluster fallidentifikation) {
-     this.fallidentifikation = fallidentifikation;
-  }
-
-  public FallidentifikationCluster getFallidentifikation() {
-     return this.fallidentifikation ;
   }
 
   public void setComposer(PartyProxy composer) {
@@ -198,19 +181,11 @@ public class LaborbefundComposition {
      return this.categoryDefiningcode ;
   }
 
-  public void setBerichtIdValueBaum(String berichtIdValueBaum) {
-     this.berichtIdValueBaum = berichtIdValueBaum;
+  public void setErweiterung(List<Cluster> erweiterung) {
+     this.erweiterung = erweiterung;
   }
 
-  public String getBerichtIdValueBaum() {
-     return this.berichtIdValueBaum ;
-  }
-
-  public void setLaborergebnis(List<LaborergebnisObservation> laborergebnis) {
-     this.laborergebnis = laborergebnis;
-  }
-
-  public List<LaborergebnisObservation> getLaborergebnis() {
-     return this.laborergebnis ;
+  public List<Cluster> getErweiterung() {
+     return this.erweiterung ;
   }
 }

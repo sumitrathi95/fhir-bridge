@@ -3,7 +3,8 @@
   "meta": {
     "profile": [
       "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab"
-    ]
+    ],
+    "source": "http://www.highmed.org"
   },
   "contained": [
     {
@@ -60,16 +61,16 @@
         "text": "Kreatinin"
       },
       "subject": {
-        "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49"
+        "reference": "urn:uuid:07f602e0-579e-4fe3-95af-381728bf0d49"
       },
       "encounter": {
-        "reference": "Encounter/555"
+        "reference": "http://external.fhir.server/Encounter/555"
       },
       "effectiveDateTime": "2018-11-20T12:05:00+01:00",
       "issued": "2018-03-11T10:28:00+01:00",
       "performer": [
         {
-          "reference": "Organization/7772",
+          "reference": "http://external.fhir.server/Organization/7772",
           "display": "Zentrallabor des IKCL"
         }
       ],
@@ -132,7 +133,7 @@
   ],
   "basedOn": [
     {
-      "reference": "ServiceRequest/111"
+      "reference": "http://external.fhir.server/ServiceRequest/111"
     }
   ],
   "status": "final",
@@ -161,7 +162,7 @@
     ]
   },
   "subject": {
-    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49"
+    "reference": "urn:uuid:07f602e0-579e-4fe3-95af-381728bf0d49"
   },
   "effectiveDateTime": "2018-11-20T12:05:00+01:00",
   "issued": "2018-03-11T10:28:00+01:00",
