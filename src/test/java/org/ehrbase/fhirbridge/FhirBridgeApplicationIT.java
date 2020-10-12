@@ -504,6 +504,12 @@ public class FhirBridgeApplicationIT {
             Assertions.assertTrue(outcome.getResource() instanceof Condition);
             Assertions.assertNotNull(outcome.getResource());
             Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+
+            Bundle bundle = client.search().forResource(AuditEvent.class)
+                    .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
+                    .returnBundle(Bundle.class).execute();
+
+            Assertions.assertEquals(2, bundle.getTotal());
         }
 
     }
