@@ -24,8 +24,6 @@ public enum Territory implements EnumValueSet {
 
   UZ("UZ", "UZ", "ISO_3166-1", "UZ"),
 
-  SY("SY", "SY", "ISO_3166-1", "SY"),
-
   NO("NO", "NO", "ISO_3166-1", "NO"),
 
   SO("SO", "SO", "ISO_3166-1", "SO"),

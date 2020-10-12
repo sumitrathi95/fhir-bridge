@@ -236,7 +236,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
                 SymptomComposition composition = FhirConditionSymptomPresentOpenehrSymptom.map(condition);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveSymptom(ehrUid, composition);
+                VersionUid versionUid = ehrbaseService.saveSymptom(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM_PRESENT);
             } else if (ProfileUtils.hasProfile(condition, Profile.SYMPTOM_ABSENT)) {
 
@@ -246,7 +246,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
                 SymptomComposition composition = FhirConditionSymptomAbsentOpenehrSymptom.map(condition);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = service.saveSymptom(ehrUid, composition);
+                VersionUid versionUid = ehrbaseService.saveSymptom(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM_ABSENT);
 
             } else {
