@@ -40,6 +40,9 @@ $ git clone https://github.com/ehrbase/fhir-bridge.git
 ```
 $ mvn clean install
 ```
+*Remark: Unlike the standalone execution that requires a database like PostgreSQL, the build process uses [H2](https://www.h2database.com/html/main.html) 
+database to execute the Integration Tests and no additional configuration is required.*
+
 #### Configure the application
 Before running the application, you need, at least, to configure the database and EHRbase instance. The easiest solution is to 
 use an `application.yml` file:
