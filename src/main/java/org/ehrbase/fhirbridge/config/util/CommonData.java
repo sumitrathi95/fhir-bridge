@@ -4,8 +4,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.archetyped.FeederAuditDetails;
+import com.nedap.archie.rm.datavalues.DvIdentifier;
 import com.nedap.archie.rm.datavalues.encapsulated.DvParsable;
 import org.hl7.fhir.r4.model.DomainResource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommonData {
 
@@ -25,7 +29,19 @@ public class CommonData {
         fa.setOriginatingSystemAudit(fad);
 
 
+        // set item id
+        List<DvIdentifier> ids = new ArrayList<>();
+
+        DvIdentifier id = new DvIdentifier();
+        id.setId(fhirResource.getId().toString());
+        id.setType("fhir_logical_id");
+
+        ids.add(id);
+        fa.setOriginatingSystemItemIds(ids);
+
+
         // original content
+        /* now the content is stored in the bridge
         FhirContext ctx = FhirContext.forR4();
         IParser parser = ctx.newJsonParser();
         String originalContent = parser.encodeResourceToString(fhirResource);
@@ -35,7 +51,7 @@ public class CommonData {
         originalContentEnc.setFormalism("application/json");
 
         fa.setOriginalContent(originalContentEnc);
-
+        */
 
         return fa;
     }

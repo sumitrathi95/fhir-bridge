@@ -1,6 +1,8 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisPointEvent;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
@@ -30,6 +32,11 @@ public class FhirSarsTestResultOpenehrPathogenDetection {
     public static KennzeichnungErregernachweisSARSCoV2Composition map(Observation fhirObservation) {
 
         KennzeichnungErregernachweisSARSCoV2Composition composition = new KennzeichnungErregernachweisSARSCoV2Composition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        composition.setFeederAudit(fa);
+
 
         // TODO: I'm not sure this is a complete list of "positive" results in LOINC, these are just "SARS"+"presence" search
         // https://search.loinc.org/searchLOINC/search.zul?query=sars+presence
