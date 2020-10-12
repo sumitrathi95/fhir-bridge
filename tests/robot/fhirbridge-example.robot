@@ -40,6 +40,11 @@ ${VALID EHR DATA SETS}       ${CURDIR}/_resources/test_data/ehr/valid
 	create new ehr               000_ehr_status.json
 	create body temperature    observation-bodytemp-example.json
 
+004 Search Body Temperature
+    [Documentation]    Search Body Temperature
+
+	get body temperature
+
 *** Keywords ***
 create new ehr
     [Arguments]         ${ehr_status_object}
@@ -93,6 +98,11 @@ create body temperature
 
 get diagnose condition
     &{resp}             GET    ${BASE_URL}/Condition?identifier=${subject_id}
+                        Integer    response status    200
+                        Output Debug Info To Console
+
+get body temperature
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}
                         Integer    response status    200
                         Output Debug Info To Console
 
