@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition;
 
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyProxy;
+import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.openehrclient.VersionUid;
@@ -14,6 +15,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.List;
 
 //TODO define generic Composition more precise this is a bold example
+// and move to opt
 public abstract class Composition {
 
     @Id
@@ -131,4 +133,13 @@ public abstract class Composition {
     }
 
 
+    public void setMandatoryFields(){
+        //Mandatory Stuff
+        setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        setLocation("test"); //FIXME: sensible value
+        setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        setTerritory(Territory.DE);
+        setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        setComposer(new PartySelf()); //FIXME: sensible value
+    }
 }

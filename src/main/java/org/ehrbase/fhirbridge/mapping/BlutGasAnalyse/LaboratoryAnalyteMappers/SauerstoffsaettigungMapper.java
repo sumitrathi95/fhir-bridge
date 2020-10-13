@@ -9,13 +9,11 @@ public class SauerstoffsaettigungMapper extends LaboratoryTestAnalyteMapper{
         super(fhirObservation);
     }
 
-    //TODO Pulsoxymetrie befuellen template
     public SauerstoffsattigungCluster map() {
         SauerstoffsattigungCluster sauerstoffsattigungCluster = new SauerstoffsattigungCluster();
         sauerstoffsattigungCluster.setErgebnisStatusValue(mapErgebnisStatus());
         sauerstoffsattigungCluster.setUntersuchterAnalytDefiningcode(mapUntersuchterAnalyt());
         sauerstoffsattigungCluster.setAnalytResultatUnits("%");
-        //TODO this profile also has normal values ? but no text or descriptions for them
         sauerstoffsattigungCluster.setAnalytResultatMagnitude(mapValue());
         return sauerstoffsattigungCluster;
     }

@@ -2,12 +2,12 @@ package org.ehrbase.fhirbridge.fhir.provider.Bundle;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 
-public class MappedComposition {
+public class MappedBundleComposition {
 
     final String subjectId;
     final BefundDerBlutgasanalyseComposition composition;
 
-    public MappedComposition(BefundDerBlutgasanalyseComposition composition, String subjectId) {
+    public MappedBundleComposition(BefundDerBlutgasanalyseComposition composition, String subjectId) {
         this.subjectId = subjectId;
         this.composition = composition;
     }

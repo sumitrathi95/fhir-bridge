@@ -1,43 +1,19 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
-import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
-import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
 import java.util.Optional;
-
+//TODO correct openEHRSDK version from POM
+//TODO fix Tests
+//TODO
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
     private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
-    }
-
-    public static BefundDerBlutgasanalyseComposition map(Observation bloodGasPanel, Observation oxygenPartialPressure,
-                                                         Observation pH, Observation carbonDioxidePartialPressure, Observation oxygenSaturation) {
-        BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition = new BefundDerBlutgasanalyseComposition();
-
-        befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(bloodGasPanel));
-        befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(bloodGasPanel));
-
-        LaborergebnisBefundMapper fhirObservationOpenehrLaborergebnisBefund = new LaborergebnisBefundMapper(bloodGasPanel, oxygenPartialPressure, pH, carbonDioxidePartialPressure, oxygenSaturation);
-        befundDerBlutgasanalyseComposition.setLaborergebnis(fhirObservationOpenehrLaborergebnisBefund.map());
-
-        //Mandatory Stuff
-        befundDerBlutgasanalyseComposition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
-        befundDerBlutgasanalyseComposition.setLocation("test"); //FIXME: sensible value
-        befundDerBlutgasanalyseComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
-        befundDerBlutgasanalyseComposition.setTerritory(Territory.DE);
-        befundDerBlutgasanalyseComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        befundDerBlutgasanalyseComposition.setStartTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-        befundDerBlutgasanalyseComposition.setComposer(new PartySelf()); //FIXME: sensible value
-
-        return befundDerBlutgasanalyseComposition;
     }
 
     //TODO match codes not strings
@@ -83,6 +59,21 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         return categories.getSystem().equals("http://terminology.hl7.org/CodeSystem/observation-category");
     }
 
+    public static BefundDerBlutgasanalyseComposition map(BloodGasPanelBundle bloodGasPanelBundle) {
+        Observation bloodGasPanel = bloodGasPanelBundle.getBloodGasPanel();
+
+        BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition = new BefundDerBlutgasanalyseComposition();
+
+        befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(bloodGasPanel));
+        befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(bloodGasPanel));
+        befundDerBlutgasanalyseComposition.setMandatoryFields();
+        befundDerBlutgasanalyseComposition.setStartTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+
+        befundDerBlutgasanalyseComposition.setLaborergebnis(LaborergebnisBefundMapper.map(bloodGasPanelBundle));
+
+
+        return befundDerBlutgasanalyseComposition;
+    }
 }
 
 

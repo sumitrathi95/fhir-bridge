@@ -11,9 +11,8 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
-import org.ehrbase.fhirbridge.fhir.provider.Bundle.MappedComposition;
+import org.ehrbase.fhirbridge.fhir.provider.Bundle.MappedBundleComposition;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.SupportedBundle;
-import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
@@ -23,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,11 +69,11 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     private void createBundle( Bundle bundle){
         SupportedBundle supportedBundle = getBundleType(bundle);
-        MappedComposition composition = supportedBundle.processBundle();
+        MappedBundleComposition composition = supportedBundle.processBundle();
         saveCompositions(composition, supportedBundle);
     }
 
-    protected void saveCompositions(MappedComposition composition, SupportedBundle supportedBundle){
+    protected void saveCompositions(MappedBundleComposition composition, SupportedBundle supportedBundle){
         UUID ehrUid = getEhrUidForSubjectId(composition.getSubjectId());
         VersionUid versionUid = service.save(ehrUid, composition.getComposition());
         supportedBundle.createdLog(versionUid);

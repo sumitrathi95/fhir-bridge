@@ -1,68 +1,72 @@
 package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
 
-import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.PhWertMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffpartialdruckMapper;
 import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffsaettigungMapper;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
-import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
-import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 class LaborergebnisBefundMapper {
 
-    private final Observation oxygenPartialPressure;
-    private final Observation pH;
-    private final Observation carbonDioxidePartialPressure;
-    private final Observation oxygenSaturation;
-    private final Observation bloodGasPanel;
-
-    public LaborergebnisBefundMapper(Observation bloodGasPanel, Observation oxygenPartialPressure, Observation pH, Observation carbonDioxidePartialPressure, Observation oxygenSaturation) {
-        this.oxygenPartialPressure = oxygenPartialPressure;
-        this.pH = pH;
-        this.carbonDioxidePartialPressure = carbonDioxidePartialPressure;
-        this.oxygenSaturation = oxygenSaturation;
-        this.bloodGasPanel = bloodGasPanel;
-    }
-
-    public LaborergebnisObservation map() {
-
+    public static LaborergebnisObservation map(BloodGasPanelBundle bloodGasPanelBundle) {
         LaborergebnisObservation laborergebnisObservation = new LaborergebnisObservation();
-        laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanel));
+        laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanelBundle.getBloodGasPanel()));
 
-        //Mandatory stuff
+        //TODO implement heritage to all classes that extends Composition so we dont need this block
         laborergebnisObservation.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
-        laborergebnisObservation.setOriginValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime()); // mandatory
-        laborergebnisObservation.setTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+        laborergebnisObservation.setOriginValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+        laborergebnisObservation.setTimeValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
         laborergebnisObservation.setSubject(new PartySelf());
 
+        mapCarbonDioxidePartialPressureIfPresent(laborergebnisObservation, bloodGasPanelBundle.getCarbonDioxidePartialPressure());
 
-        KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure);
-        laborergebnisObservation.setKohlendioxidpartialdruck(kohlendioxidpartialdruckMapper.map());
+        mapOxygenPartialPressureIfPresent(laborergebnisObservation, bloodGasPanelBundle.getOxygenPartialPressure());
 
-        SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure);
-        laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
+        mapPhIfPresent(laborergebnisObservation, bloodGasPanelBundle.getpH());
 
-        PhWertMapper phWertMapper = new PhWertMapper(pH);
-        laborergebnisObservation.setPhWert(phWertMapper.map());
-
-        SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation);
-        laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
+        mapOxygenSaturationIfPresent(laborergebnisObservation, bloodGasPanelBundle.getOxygenSaturation());
 
         return laborergebnisObservation;
     }
 
-    private LabortestBezeichnungDefiningcode mapLabortestBezeichnung(Observation fhirObservation){
+    private static void mapOxygenPartialPressureIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> oxygenPartialPressure) {
+        if(oxygenPartialPressure.isPresent()){
+            SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure.get());
+            laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
+        }
+
+    }
+
+    private static void mapCarbonDioxidePartialPressureIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> carbonDioxidePartialPressure) {
+        if(carbonDioxidePartialPressure.isPresent()){
+            KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure.get());
+            laborergebnisObservation.setKohlendioxidpartialdruck(kohlendioxidpartialdruckMapper.map());
+        }
+    }
+
+    private static void mapPhIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> pH) {
+        if(pH.isPresent()){
+            PhWertMapper phWertMapper = new PhWertMapper(pH.get());
+            laborergebnisObservation.setPhWert(phWertMapper.map());
+        }
+    }
+
+    private static void mapOxygenSaturationIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> oxygenSaturation){
+        if(oxygenSaturation.isPresent()){
+            SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation.get());
+            laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
+        }
+    }
+
+
+    private static LabortestBezeichnungDefiningcode mapLabortestBezeichnung(Observation fhirObservation){
         LabortestBezeichnungDefiningcode gasPanelBlood = LabortestBezeichnungDefiningcode.GAS_PANEL_BLOOD;
         LabortestBezeichnungDefiningcode gasPanelArterial = LabortestBezeichnungDefiningcode.GAS_PANEL_ARTERIAL_BLOOD;
         LabortestBezeichnungDefiningcode gasPanelCapillary = LabortestBezeichnungDefiningcode.GAS_PANEL_CAPILLARY_BLOOD;
@@ -81,4 +85,7 @@ class LaborergebnisBefundMapper {
                 ", arterial blood (24336-0) or capillary blood (24337-8), check JSON at path Observation.code.coding");
     }
 
+  
 }
+
+
