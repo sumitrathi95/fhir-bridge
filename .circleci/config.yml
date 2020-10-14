@@ -62,8 +62,8 @@ jobs:
             - cache-in-fhirbridge-m2-dependencies
             # - collect-fhirbridge-unittest-results
             - collect-fhirbridge-integrationtest-results
-            - save-fhirbridge-test-results
-            - save-jacoco-coverage-report
+            # - save-fhirbridge-test-results
+            # - save-jacoco-coverage-report
             # - sonarcloud/scan:
             #     cache_version: 1
 
@@ -190,7 +190,7 @@ commands:
                     This make Spring Boot load this config when starting fhirbridge .jar
                     And is required to start fhirbrige in CI pipeline.
                 command: |
-                    cp src/test/resources/application-ci.yml ./application-ci.yml
+                    cp src/test/resources/application-ci.yml ./application.yml
             - run:
                 name: START FHIRBRIDGE APPLICATION
                 background: true
