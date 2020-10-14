@@ -236,22 +236,22 @@ commands:
                 name: RUN ROBOT TESTS
                 command: |
                     cd tests/
-                    robot -d results -L TRACE -e todo --noncritical not-ready robot/
+                    robot -d results/0 -L TRACE -e todo --noncritical not-ready robot/
             - run:
-                name: GENERATE XUNIT REPORT FROM ROBOT OUPUT
+                name: GENERATE XUNIT REPORT FOR CIRCLECI UI INTEGRATION
                 command: |
                     cd tests/
-                    rebot --outputdir results/robot \
+                    rebot --outputdir results/1/robot-tests \
                         --exclude TODO -e future -e obsolete -e libtest \
                         --noncritical not-ready \
                         --removekeywords for \
                         --removekeywords wuks \
                         --loglevel TRACE \
-                        --output FHIR-Bridge-output.xml \
-                        --log FHIR-Bridge-log.html \
-                        --report FHIR-Bridge-report.html \
+                        --output NONE \
+                        --log NONE \
+                        --report NONE \
                         --xunit junit-output.xml --xunitskipnoncritical \
-                        results/output.xml
+                        results/0/output.xml
 
             
     cache-out-fhirbridge-m2-dependencies:
@@ -319,7 +319,7 @@ commands:
     save-fhirbridge-robot-test-results:
         steps:
             - store_test_results:
-                path: ~/projects/tests/results/robot/junit-output.xml
+                path: ~/projects/tests/results/1
             - store_artifacts:
                 path: ~/projects/tests/results
 
