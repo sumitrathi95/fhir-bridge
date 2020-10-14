@@ -87,6 +87,7 @@ jobs:
             - save-jacoco-coverage-report
             - start-fhirbridge-application
             - run-robot-integration-tests
+            - save-fhirbridge-robot-test-results
             - sonarcloud/scan:
                 cache_version: 1
 
