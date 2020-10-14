@@ -185,6 +185,13 @@ commands:
     start-fhirbridge-application:
         steps:
             - run:
+                name: COPY APPLICATION-CI.yml to ./application.yml
+                description: |
+                    This make Spring Boot load this config when starting fhirbridge .jar
+                    And is required to start fhirbrige in CI pipeline.
+                command: |
+                    cp src/test/resources/application-ci.yml ./application-ci.yml
+            - run:
                 name: START FHIRBRIDGE APPLICATION
                 background: true
                 command: |
