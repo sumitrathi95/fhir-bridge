@@ -29,6 +29,25 @@ java -jar target/fhir-bridge-1.0.0-SNAPSHOT.jar
 mvn verify
 ```
 
+### Custom Configuration
+You can customize the default configuration of the application stored in the `application.yml` and `application-dev.yml`files.
+* Create a custom configuration file for your local environment (e.g. `application-local.yml`)
+```
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:OR
+    username: FHIR_BRIDGE
+    password: Azerty#1234
+  jpa:
+    properties:
+      hibernate.show_sql: true
+      hibernate.format_sql: true
+      generate_statistics: true
+```
+* Run the application (Update the version number accordingly)
+```
+java -jar fhir-bridge-1.0.0-SNAPSHOT.jar  --spring.profiles.active=local
+```
 
 ## FHIR to openEHR Mappings
 
@@ -148,3 +167,121 @@ The GET request is:
  * FHIR-BRIDGE test get Condition
 
 Right now we are mapping the COMPOSITION.uid to the FHIR resource ID, so the ID will look like this: d4090552-d85c-4828-9282-3dbabb9c4d43::local.ehrbase.org::1 
+
+### Resource References
+With the introduction of the HAPI FHIR JPA SERVER module, the FHIR-Bridge application is now verifying the references used in the resources sent for creation.
+
+#### Local reference
+```
+{
+  "result" : {
+    "reference" : "Observation/123456"
+  }
+}
+```
+The use of a local reference in a submitted resource requires that the referenced resource exists in the database.
+
+#### External reference
+```
+{
+  "result" : {
+    "reference" : "http://fhir.server.com/Observation/987654321"
+  }
+}
+```
+External references must be use for resources that do not exist on the FHIR-Bridge but have to be referenced in the submitted resource.
+
+#### Logical identifier
+```
+{
+  "subject" : {
+    "reference" : "urn:uuid:f1a977bd-5090-413c-9719-3e709fd6b0ff"
+  }
+}
+```
+Regarding patient identification in submitted resources, the reference shall be a logical identifier as it is used to identify 
+the patient in Ehrbase.
+
+For additional information about resources references, please refer to FHIR specifications (https://www.hl7.org/fhir/references.html) 
+and HAPI FHIR documentation (https://hapifhir.io/hapi-fhir/docs/model/references.html).
+
+## Audit
+FHIR-Bridge registers audit for the following operations:
+* Create a new FHIR resource.
+* Map a FHIR resource to Ehrbase.
+
+The audit mechanism uses the AuditEvent resource provided by FHIR:
+```
+{
+    "resourceType": "AuditEvent",
+    "id": "1204",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-10-06T10:44:38.630+02:00"
+    },
+    "type": {
+        "system": "http://terminology.hl7.org/CodeSystem/iso-21089-lifecycle",
+        "code": "transform",
+        "display": "Transform/Translate Record Lifecycle Event"
+    },
+    "action": "E",
+    "recorded": "2020-10-06T10:44:38.629+02:00",
+    "outcome": "8",
+    "outcomeDesc": "One contained Observation was expected 0 were received in DiagnosticReport DiagnosticReport/1202/_history/1",
+    "agent": [
+        {
+            "role": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/extra-security-role-type",
+                            "code": "dataprocessor",
+                            "display": "data processor"
+                        }
+                    ]
+                }
+            ],
+            "who": {
+                "identifier": {
+                    "value": "fhir-bridge - 1.0.0-SNAPSHOT"
+                }
+            },
+            "requestor": true,
+            "network": {
+                "address": "192.168.10.161",
+                "type": "2"
+            }
+        }
+    ],
+    "entity": [
+        {
+            "what": {
+                "reference": "DiagnosticReport/1202"
+            },
+            "type": {
+                "system": "http://hl7.org/fhir/resource-types",
+                "code": "DiagnosticReport",
+                "display": "DiagnosticReport"
+            }
+        }
+    ]
+}
+```
+In addition, the AuditEvent endpoint is available to search for resources using the following supported criteria:
+
+| Name | Type | Description |
+| --- | --- | --- |
+| action | token |	Type of action performed during the event |
+| date | date | Time when the event was recorded |
+| entity | reference | Specific instance of resource |
+| outcome | token | Whether the event succeeded or failed |
+| type | token | Type/identifier of event |
+
+Examples:
+```
+# All failed operations
+POST {base_url}/fhir/AuditEvent/_search?outcome=8
+
+# All transform operations
+POST {base_url}/fhir/AuditEvent/_search?type=transform
+```

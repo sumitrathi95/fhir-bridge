@@ -1,10 +1,12 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
 import com.nedap.archie.rm.generic.PartyIdentified;
 import com.nedap.archie.rm.generic.PartyProxy;
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
@@ -29,6 +31,10 @@ public class FhirConditionOpenehrDiagnose {
     public static DiagnoseComposition map(Condition fhirCondition) {
 
         DiagnoseComposition composition = new DiagnoseComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirCondition);
+        composition.setFeederAudit(fa);
 
         // ========================================================================================
         // FHIR values

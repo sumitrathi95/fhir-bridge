@@ -4,6 +4,7 @@
 target
 
 *-local.yml
+lucene
 
 # VSCode editor settings
 .vscode
@@ -20,3 +21,7 @@ venv
 
 # Robot Framework
 tests/results
+
+
+# unknown
+lucene
