@@ -19,4 +19,6 @@ public class AppConfiguration {
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
         return messageSource;
     }
+
+
 }

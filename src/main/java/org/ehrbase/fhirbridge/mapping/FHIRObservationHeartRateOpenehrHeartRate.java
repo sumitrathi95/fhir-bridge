@@ -2,6 +2,8 @@ package org.ehrbase.fhirbridge.mapping;
 
 import java.time.ZonedDateTime;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.definition.HerzfrequenzObservation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
@@ -18,8 +20,14 @@ public class FHIRObservationHeartRateOpenehrHeartRate {
     private FHIRObservationHeartRateOpenehrHeartRate() {}
 
     public static HerzfrequenzComposition map(Observation fhirObservation) {
+
         //create composition and observation objects
         HerzfrequenzComposition composition = new HerzfrequenzComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        composition.setFeederAudit(fa);
+
         HerzfrequenzObservation observation = new HerzfrequenzObservation();
 
         //map values of interest from FHIR observation

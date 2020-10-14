@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.opt.diagnosecomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
 import com.nedap.archie.rm.generic.PartyProxy;
@@ -28,6 +29,9 @@ public class DiagnoseComposition {
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
+
+    @Path("/feeder_audit")
+    private FeederAudit feederAudit;
 
   @Path("/context/participations")
   private List<Participation> participations;
@@ -64,6 +68,15 @@ public class DiagnoseComposition {
 
   @Path("/category|defining_code")
   private CategoryDefiningcode categoryDefiningcode;
+
+  public void setFeederAudit(FeederAudit feederAudit)
+    {
+this.feederAudit = feederAudit;
+}
+  public FeederAudit getFeederAudit()
+{
+    return this.feederAudit;
+}
 
   public VersionUid getVersionUid() {
      return this.versionUid ;
