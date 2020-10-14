@@ -102,7 +102,7 @@ get diagnose condition
                         Output Debug Info To Console
 
 get body temperature
-    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=http://hl7.org/fhir/StructureDefinition/bodytemp
                         Integer    response status    200
                         Output Debug Info To Console
 
