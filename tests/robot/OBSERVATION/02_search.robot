@@ -22,9 +22,9 @@
 # Library                 JSONLibrary
 Resource                ${EXECDIR}/robot/_resources/suite_settings.robot
 
-Test Setup              generic.prepare new request session    Prefer=return=representation
+Test Setup              establish preconditions
 
-Force Tags              create
+Force Tags              search
 
 
 
@@ -34,18 +34,22 @@ Force Tags              create
 
 
 *** Test Cases ***
-001 Create Body Temperature 
-	[Documentation]    1. create EHR
-	...                2. trigger observation endpoint
+001 Search Body Temperature
+    [Documentation]    Search Body Temperature
 
-	ehr.create new ehr    000_ehr_status.json
-	observation.create body temperature    observation-bodytemp-example.json
-    observation.validate response - 201
+	observation.get body temperature
 
 
-002 Create Observation Foo 
-	Pass Execution    dummy
+002 Search Observation Foo
+    Pass Execution    dummy
 
 
-003 Create Observation Bar
-	Pass Execution    dummy
+003 Search Observation Bar
+    Pass Execution    dummy
+
+
+*** Keywords ***
+establish preconditions
+    generic.prepare new request session    Prefer=return=representation
+    ehr.create new ehr    000_ehr_status.json
+    observation.create body temperature    observation-bodytemp-example.json
