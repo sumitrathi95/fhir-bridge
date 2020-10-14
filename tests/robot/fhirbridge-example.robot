@@ -59,6 +59,42 @@ ${VALID EHR DATA SETS}       ${CURDIR}/_resources/test_data/ehr/valid
 	create new ehr               000_ehr_status.json
 	create body temperature    observation-bodytemp-example.json
 
+004 Search Body Temperature
+    [Documentation]    Search Body Temperature
+
+	get body temperature
+
+
+
+*** Keywords ***
+create new ehr
+    [Arguments]         ${ehr_status_object}
+    [Documentation]     Creates new EHR record with a server-generated ehr_id.
+    ...                 DEPENDENCY: `prepare new request session`
+    ...                 :ehr_status_object: ehr_status_as_json_file
+
+    ${ehr_status_json}  Load JSON From File    ${VALID EHR DATA SETS}/${ehr_status_object}
+                        Update Value To Json    ${ehr_status_json}    $.subject.external_ref.id.value
+                        ...    ${{str(uuid.uuid4())}}
+                        Update Value To Json    ${ehr_status_json}    $.subject.external_ref.namespace
+                        ...    namespace_${{''.join(random.choices(string.digits, k=7))}}
+
+    &{resp}=            POST    ${EHRBASE_URL}/ehr    ${ehr_status_json}
+                        Integer      response status    201
+                        Output Debug Info To Console
+
+                        Set Suite Variable    ${response}    ${resp}
+                        extract subject_id from response
+
+
+create ehr
+    [Documentation]     Creates new EHR record with a server-generated ehr_id.
+    ...                 DEPENDENCY: `prepare new request session`
+
+    &{resp}=            REST.POST    ${EHRBASE_URL}/ehr
+                        Set Test Variable    ${response}    ${resp}
+                        Output Debug Info To Console
+                        extract ehr_id from response
 
 
 *** Keywords ***
@@ -86,6 +122,11 @@ create body temperature
 
 get diagnose condition
     &{resp}             GET    ${BASE_URL}/Condition?identifier=${subject_id}
+                        Integer    response status    200
+                        Output Debug Info To Console
+
+get body temperature
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=http://hl7.org/fhir/StructureDefinition/bodytemp
                         Integer    response status    200
                         Output Debug Info To Console
 
