@@ -237,6 +237,7 @@ commands:
             - run:
                 name: RUN ROBOT TESTS
                 command: |
+                    cd tests/
                     robot -d results -L TRACE -e todo --noncritical not-ready robot/
 
             
