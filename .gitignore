@@ -20,3 +20,7 @@ venv
 
 # Robot Framework
 tests/results
+
+
+# unknown
+lucene
