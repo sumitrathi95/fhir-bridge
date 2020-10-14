@@ -62,10 +62,7 @@ jobs:
             - cache-in-fhirbridge-m2-dependencies
             # - collect-fhirbridge-unittest-results
             - collect-fhirbridge-integrationtest-results
-            # - save-fhirbridge-test-results
-            # - save-jacoco-coverage-report
-            # - sonarcloud/scan:
-            #     cache_version: 1
+            - save-fhirbridge-test-results
 
 
     build-and-test-fhirbridge:
@@ -239,6 +236,21 @@ commands:
                 command: |
                     cd tests/
                     robot -d results -L TRACE -e todo --noncritical not-ready robot/
+            - run:
+                name: GENERATE XUNIT REPORT FROM ROBOT OUPUT
+                command: |
+                    cd tests/
+                    rebot --outputdir results/robot \
+                        --exclude TODO -e future -e obsolete -e libtest \
+                        --noncritical not-ready \
+                        --removekeywords for \
+                        --removekeywords wuks \
+                        --loglevel TRACE \
+                        --output FHIR-Bridge-output.xml \
+                        --log FHIR-Bridge-log.html \
+                        --report FHIR-Bridge-report.html \
+                        --xunit junit-output.xml --xunitskipnoncritical \
+                        results/output.xml
 
             
     cache-out-fhirbridge-m2-dependencies:
@@ -286,49 +298,59 @@ commands:
 
     collect-fhirbridge-integrationtest-results:
         steps:
-          - run:
-              name: Save integration test results
-              command: |
-                mkdir -p ~/test-results/integration-tests/
-                find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/integration-tests/ \;
-                find . -type f -regex ".*/target/failsafe-reports/.*txt" -exec cp {} ~/test-results/integration-tests/ \;
-              when: always
+            - run:
+                name: Save integration test results
+                command: |
+                    mkdir -p ~/test-results/integration-tests/
+                    find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/integration-tests/ \;
+                    find . -type f -regex ".*/target/failsafe-reports/.*txt" -exec cp {} ~/test-results/integration-tests/ \;
+                when: always
 
 
     save-fhirbridge-test-results:
         steps:
-          - store_test_results:
-              path: ~/test-results
-          - store_artifacts:
-              path: ~/test-results
+            - store_test_results:
+                path: ~/test-results
+            - store_artifacts:
+                path: ~/test-results
+
+
+    save-fhirbridge-robot-test-results:
+        steps:
+            - store_test_results:
+                path: ~/projects/tests/results/robot/junit-output.xml
+            - store_artifacts:
+                path: ~/projects/tests/results
 
 
     save-jacoco-coverage-report:
         description: |
-          Uploads Jacoco coverage report as circleci artifact
+            Uploads Jacoco coverage report as circleci artifact
         steps:
-          - store_artifacts:
-              path: target/site/jacoco
+            - store_artifacts:
+                path: target/site/jacoco
 
 
     save-fhirbridge-workspace:
+        description: |
+          Persists files/folders to share them between jobs.
+          NOTE: best practise is to persist files or folders very selectively.
+                Do not persist root or the whole workspace at ones, otherwise concurrent jobs
+                may fail to restore that stuff.
         steps:
-          - persist_to_workspace:
-              root: /home/circleci
-              paths:
-                - .m2
-                - projects
+            - persist_to_workspace:
+                root: /home/circleci
+                paths:
+                    - .m2
+                    - projects
     
     
     restore-fhirbridge-workspace:
         description: |
-          Restores any file / folder that was previously persisted w/ 'persist_to_workspace'.
-          NOTE: best practise is to persist files or folders very selectively.
-                Do not persist root or the whole workspace at one, otherwise concurrent jobs
-                may fail to restore that stuff.
+            Restores any file / folder that was previously persisted w/ 'persist_to_workspace'.
         steps:
-          - attach_workspace:
-              at: /home/circleci/
+            - attach_workspace:
+                at: /home/circleci/
 
 
 
