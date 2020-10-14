@@ -28,11 +28,13 @@ import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationRespRateOpenehrRespRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
 import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.opt.atemfrequenzcomposition.AtemfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
@@ -497,6 +499,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
+            } else if (ProfileUtils.hasProfile(observation, Profile.RESP_RATE)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION RESP_RATE");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                AtemfrequenzComposition composition = FHIRObservationRespRateOpenehrRespRate.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveRespRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
             }
 
