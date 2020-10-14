@@ -38,6 +38,12 @@ validate response - 201
                         Integer    response status    201
 
 
+validate response - 422 (Unprocessable Entity)
+                        Integer    response status    422
+                        String     $.issue[0]['diagnostics']
+                        ...        Specified profile type was 'Observation', but found type 'Condition'
+
+
 get diagnose condition
     &{resp}             GET    ${BASE_URL}/Condition?identifier=${subject_id}
                         Integer    response status    200
