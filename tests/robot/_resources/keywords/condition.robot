@@ -27,7 +27,7 @@ create diagnose condition
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH}/${fhir_resource}
                         # Output    ${payload}
-                        Update Value To Json    ${payload}    $.subject.reference    Patient/${subject_id}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
     &{resp}             POST    ${BASE_URL}/Condition    body=${payload}
                         Output Debug Info To Console
