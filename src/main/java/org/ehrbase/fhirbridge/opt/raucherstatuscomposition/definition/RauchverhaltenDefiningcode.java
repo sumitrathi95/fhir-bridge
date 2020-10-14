@@ -1,14 +1,16 @@
-package org.ehrbase.fhirbridge.opt.shareddefinition;
+package org.ehrbase.fhirbridge.opt.raucherstatuscomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  EVENT("event", "event", "openehr", "433"),
+public enum RauchverhaltenDefiningcode implements EnumValueSet {
+  LA189763("LA18976-3", "LA18976-3", "LOINC", "LA18976-3"),
 
-  EPISODIC("episodic", "episodic", "openehr", "435"),
+  LA189789("LA18978-9", "LA18978-9", "LOINC", "LA18978-9"),
 
-  PERSISTENT("persistent", "persistent", "openehr", "431");
+  LA159204("LA15920-4", "LA15920-4", "LOINC", "LA15920-4"),
+
+  LA189805("LA18980-5", "LA18980-5", "LOINC", "LA18980-5");
 
   private String value;
 
@@ -18,7 +20,7 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  RauchverhaltenDefiningcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;

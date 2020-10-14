@@ -18,6 +18,7 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.raucherstatuscomposition.RaucherstatusComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -144,6 +145,14 @@ public class EhrbaseService {
     public VersionUid saveBloodPressure(UUID ehrId, BlutdruckComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+    
+    public VersionUid saveSmokingStatus(UUID ehrId, RaucherstatusComposition composition) {
+        // TODO invoke post processing
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
         return composition.getVersionUid();
     }
 
