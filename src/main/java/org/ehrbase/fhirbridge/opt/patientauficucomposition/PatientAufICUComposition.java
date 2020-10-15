@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.opt.sofacomposition;
+package org.ehrbase.fhirbridge.opt.patientauficucomposition;
 
 import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
@@ -16,17 +16,17 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.PatientAufDerIntensivstationObservation;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.StatusDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
-import org.ehrbase.fhirbridge.opt.sofacomposition.definition.SOFAScoreObservation;
-import org.ehrbase.fhirbridge.opt.sofacomposition.definition.StatusDefiningcode;
 
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
-@Template("SOFA")
-public class SOFAComposition {
+@Template("Patient auf ICU")
+public class PatientAufICUComposition {
     @Id
     private VersionUid versionUid;
 
@@ -48,17 +48,14 @@ public class SOFAComposition {
     @Path("/context/other_context[at0001]/items[at0004]/value|defining_code")
     private StatusDefiningcode statusDefiningcode;
 
-    @Path("/context/other_context[at0001]/items[at0005]/value|value")
-    private String kategorieValue;
-
-    @Path("/content[openEHR-EHR-OBSERVATION.sofa_score.v0]")
-    private SOFAScoreObservation sofaScore;
-
     @Path("/territory")
     private Territory territory;
 
     @Path("/context/start_time|value")
     private TemporalAccessor startTimeValue;
+
+    @Path("/content[openEHR-EHR-OBSERVATION.management_screening.v0 and name/value='Patient auf der Intensivstation']")
+    private PatientAufDerIntensivstationObservation patientAufDerIntensivstation;
 
     @Path("/composer")
     private PartyProxy composer;
@@ -79,16 +76,16 @@ public class SOFAComposition {
         return this.versionUid;
     }
 
+    public void setVersionUid(VersionUid versionUid) {
+        this.versionUid = versionUid;
+    }
+
     public void setFeederAudit(FeederAudit feederAudit) {
         this.feederAudit = feederAudit;
     }
 
     public FeederAudit getFeederAudit() {
         return this.feederAudit;
-    }
-
-    public void setVersionUid(VersionUid versionUid) {
-        this.versionUid = versionUid;
     }
 
     public void setEndTimeValue(TemporalAccessor endTimeValue) {
@@ -131,22 +128,6 @@ public class SOFAComposition {
         return this.statusDefiningcode;
     }
 
-    public void setKategorieValue(String kategorieValue) {
-        this.kategorieValue = kategorieValue;
-    }
-
-    public String getKategorieValue() {
-        return this.kategorieValue;
-    }
-
-    public void setSofaScore(SOFAScoreObservation sofaScore) {
-        this.sofaScore = sofaScore;
-    }
-
-    public SOFAScoreObservation getSofaScore() {
-        return this.sofaScore;
-    }
-
     public void setTerritory(Territory territory) {
         this.territory = territory;
     }
@@ -161,6 +142,15 @@ public class SOFAComposition {
 
     public TemporalAccessor getStartTimeValue() {
         return this.startTimeValue;
+    }
+
+    public void setPatientAufDerIntensivstation(
+            PatientAufDerIntensivstationObservation patientAufDerIntensivstation) {
+        this.patientAufDerIntensivstation = patientAufDerIntensivstation;
+    }
+
+    public PatientAufDerIntensivstationObservation getPatientAufDerIntensivstation() {
+        return this.patientAufDerIntensivstation;
     }
 
     public void setComposer(PartyProxy composer) {

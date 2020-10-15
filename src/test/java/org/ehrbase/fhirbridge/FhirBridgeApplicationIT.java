@@ -484,6 +484,19 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
+    public void createPatientAufICU() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-patient-auf-ICU-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
     public void createProcedure() throws IOException {
         Date now = new Date();
 
