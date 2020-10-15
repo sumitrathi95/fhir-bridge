@@ -465,7 +465,6 @@ public class FhirBridgeApplicationIT {
                 .execute();
 
         Assertions.assertEquals(true, outcome.getCreated());
-        //Assertions.assertTrue(outcome.getResource() instanceof Condition);
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());

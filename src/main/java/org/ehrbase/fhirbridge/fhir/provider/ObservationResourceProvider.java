@@ -502,6 +502,16 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
+            } else if (ProfileUtils.hasProfile(observation, Profile.SMOKING_STATUS)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION Smoking Status");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                RaucherstatusComposition composition = FHIRConditionSmokingStatusOpenehrSmokingStatus.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveSmokingStatus(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SMOKING_STATUS);
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);

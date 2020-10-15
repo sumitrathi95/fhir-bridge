@@ -21,13 +21,13 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 public class FHIRConditionSmokingStatusOpenehrSmokingStatus {
     private FHIRConditionSmokingStatusOpenehrSmokingStatus() {}
 
-    public static RaucherstatusComposition map(Condition fhirCondition) {
-
+    public static RaucherstatusComposition map(Observation fhirObservation) {
+    
         //create composition and observation objects
     	RaucherstatusComposition composition = new RaucherstatusComposition();
 
         // set feeder audit
-        FeederAudit fa = CommonData.constructFeederAudit(fhirCondition);
+    	FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
         composition.setFeederAudit(fa);
        
         RaucherstatusEvaluation evaluation = new RaucherstatusEvaluation();
@@ -35,10 +35,9 @@ public class FHIRConditionSmokingStatusOpenehrSmokingStatus {
         //map values of interest from FHIR observation
         ZonedDateTime effectiveDateTime = null;
         try {
-            effectiveDateTime = fhirCondition.getRecordedDateElement().getValueAsCalendar().toZonedDateTime();
-            
-            //Coding fhir_Rauchverhalten = fhirObservation.getComponent().get(0).getCode().getCoding().get(0);
-            Coding fhir_Rauchverhalten = fhirCondition.getSeverity().getCoding().get(0);
+        	effectiveDateTime = fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime();
+
+            Coding fhir_Rauchverhalten = fhirObservation.getValueCodeableConcept().getCoding().get(0);
             
             RauchverhaltenDefiningcode openEHR_Rauchverhalten;
             switch (fhir_Rauchverhalten.getCode())
