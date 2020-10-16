@@ -18,6 +18,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.report-result.v1")
@@ -25,6 +26,9 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 public class LaborbefundComposition {
   @Id
   private VersionUid versionUid;
+
+  @Path("/feeder_audit")
+  private FeederAudit feederAudit;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -70,6 +74,15 @@ public class LaborbefundComposition {
 
   @Path("/content[openEHR-EHR-OBSERVATION.laboratory_test_result.v1]")
   private List<LaborergebnisObservation> laborergebnis;
+
+  public void setFeederAudit(FeederAudit feederAudit)
+  {
+     this.feederAudit = feederAudit;
+  }
+  public FeederAudit getFeederAudit()
+  {
+     return this.feederAudit;
+  }
 
   public VersionUid getVersionUid() {
      return this.versionUid ;

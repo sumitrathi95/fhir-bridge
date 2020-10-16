@@ -10,7 +10,10 @@ public enum OperationalTemplateData {
     CLINICAL_FRAILTY_SCALE("", "KlinischeFrailty.opt", "Klinische Frailty-Skala"),
     CORONA_TEST("", "Kennzeichnung Erregernachweis SARS-CoV-2.opt", "Kennzeichnung Erregernachweis SARS-CoV-2"),
     CORONA_LAB("", "Laborbefund.opt", "Laborbefund"),
+
+    PROCEDURE("", "Prozedur.opt", "Prozedur"),
     FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
+    CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
 

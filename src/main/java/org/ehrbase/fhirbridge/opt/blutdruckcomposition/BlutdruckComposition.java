@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.opt.blutdruckcomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
@@ -25,6 +26,9 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 public class BlutdruckComposition {
   @Id
   private VersionUid versionUid;
+
+    @Path("/feeder_audit")
+    private FeederAudit feederAudit;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -61,6 +65,15 @@ public class BlutdruckComposition {
 
   @Path("/context/other_context[at0001]/items[at0002]")
   private List<Cluster> erweiterung;
+
+  public void setFeederAudit(FeederAudit feederAudit)
+    {
+        this.feederAudit = feederAudit;
+    }
+  public FeederAudit getFeederAudit()
+    {
+        return this.feederAudit;
+    }
 
   public VersionUid getVersionUid() {
      return this.versionUid ;

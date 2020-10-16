@@ -3,13 +3,19 @@ package org.ehrbase.fhirbridge.fhir.validation;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ConceptValidationOptions;
 import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.context.support.ValidationSupportContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.util.ParametersUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,7 +47,7 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
 
     @Cacheable(cacheNames = "validateCodeInValueSet", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSet.url")
     @Override
-    public CodeValidationResult validateCodeInValueSet(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions,
+    public CodeValidationResult validateCodeInValueSet(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions,
                                                        String theCodeSystem, String theCode, String theDisplay, @Nonnull IBaseResource theValueSet) {
 
         String valueSetUrl = ((ValueSet) theValueSet).getUrl();
@@ -103,7 +109,7 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
 
     @Cacheable(cacheNames = "codeSystemSupported", key = "#theSystem")
     @Override
-    public boolean isCodeSystemSupported(IValidationSupport theRootValidationSupport, String theSystem) {
+    public boolean isCodeSystemSupported(ValidationSupportContext theValidationSupportContext, String theSystem) {
         logger.debug("Perform '/CodeSystem/_search' operation: url={}", theSystem);
 
         IBaseParameters requestParams = ParametersUtil.newInstance(getFhirContext());
@@ -120,7 +126,8 @@ public class RemoteTerminologyServerValidationSupport implements IValidationSupp
 
     @Cacheable(cacheNames = "validateCode", key = "#theCodeSystem + '_' + #theCode + '_'+ #theValueSetUrl")
     @Override
-    public CodeValidationResult validateCode(IValidationSupport theRootValidationSupport, ConceptValidationOptions theOptions, String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
+    public CodeValidationResult validateCode(ValidationSupportContext theValidationSupportContext, ConceptValidationOptions theOptions,
+                                             String theCodeSystem, String theCode, String theDisplay, String theValueSetUrl) {
         if (StringUtils.isEmpty(theValueSetUrl)) {
             try {
                 logger.debug("Perform '/CodeSystem/$lookup' operation: system={}, code={}", theCodeSystem, theCode);

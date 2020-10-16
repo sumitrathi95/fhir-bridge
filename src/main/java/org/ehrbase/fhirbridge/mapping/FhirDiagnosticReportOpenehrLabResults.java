@@ -1,7 +1,13 @@
 package org.ehrbase.fhirbridge.mapping;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.archetyped.FeederAudit;
+import com.nedap.archie.rm.archetyped.FeederAuditDetails;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
+import com.nedap.archie.rm.datavalues.encapsulated.DvParsable;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
@@ -38,6 +44,11 @@ public class FhirDiagnosticReportOpenehrLabResults {
     public static LaborbefundComposition map(Observation fhirObservation) {
 
         LaborbefundComposition composition = new LaborbefundComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        composition.setFeederAudit(fa);
+
 
         LaboranalytResultatCluster resultCluster = mapObservation(fhirObservation);
 

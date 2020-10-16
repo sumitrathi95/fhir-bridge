@@ -184,6 +184,8 @@ public enum Territory implements EnumValueSet {
 
   RS("RS", "RS", "ISO_3166-1", "RS"),
 
+  TT("TT", "TT", "ISO_3166-1", "TT"),
+
   UY("UY", "UY", "ISO_3166-1", "UY"),
 
   TW("TW", "TW", "ISO_3166-1", "TW"),
@@ -261,8 +263,6 @@ public enum Territory implements EnumValueSet {
   AO("AO", "AO", "ISO_3166-1", "AO"),
 
   SR("SR", "SR", "ISO_3166-1", "SR"),
-
-  TT("TT", "TT", "ISO_3166-1", "TT"),
 
   PL("PL", "PL", "ISO_3166-1", "PL"),
 

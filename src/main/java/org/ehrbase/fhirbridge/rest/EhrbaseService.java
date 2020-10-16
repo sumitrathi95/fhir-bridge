@@ -17,6 +17,8 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
+import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -146,6 +148,20 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
+        // TODO invoke post processing
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
     public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
