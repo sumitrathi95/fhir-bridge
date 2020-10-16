@@ -27,7 +27,9 @@ public enum Profile {
 
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
 
-    SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation);
+    SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
+
+    BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation);
 
 
     private final String url;
