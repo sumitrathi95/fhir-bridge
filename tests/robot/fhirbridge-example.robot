@@ -38,18 +38,7 @@ ${VALID EHR DATA SETS}       ${CURDIR}/_resources/test_data/ehr/valid
 
 
 *** Test Cases ***
-001 Create Diagnose Condition
-    [Documentation]     1. create EHR
-    ...                 2. trigger condition endpoint
 
-    create new ehr               000_ehr_status.json
-    create diagnose condition    condition-example.json
-
-
-002 Search Diagnose Condition
-    [Documentation]     Search Diagnose Condition
-
-    get diagnose condition
 
 
 003 Create Body Temperature 
@@ -103,7 +92,7 @@ create diagnose condition
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH_CONDITION}/${fhir_resource}
                         # Output    ${payload}
-                        Update Value To Json    ${payload}    $.subject.reference    Patient/${subject_id}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
     &{resp}             POST    ${BASE_URL}/Condition    body=${payload}
                         Integer    response status    201
@@ -114,7 +103,7 @@ create body temperature
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
                         # Output    ${payload}
-                        Update Value To Json    ${payload}    $.subject.reference    Patient/${subject_id}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Integer    response status    201
