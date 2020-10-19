@@ -36,3 +36,15 @@ get body temperature
     &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=http://hl7.org/fhir/StructureDefinition/bodytemp
                         Integer    response status    200
                         Output Debug Info To Console
+
+
+create FIO2
+    [Arguments]         ${fhir_resource}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+                        # Output    ${payload}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+                        Output Debug Info To Console
+
