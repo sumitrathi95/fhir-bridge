@@ -190,6 +190,11 @@ commands:
                 command: |
                     cp src/test/resources/application-ci.yml ./application.yml
             - run:
+                name: WORKAROUND FOR ISSUE github.com/ehrbase/fhir-bridge/issues/60
+                command: |
+                    rm -rf target/lib/
+                    ls -la target/
+            - run:
                 name: START FHIRBRIDGE APPLICATION
                 background: true
                 command: |
@@ -204,7 +209,7 @@ commands:
                 name: WAIT FOR FHIRBRIDE TO BE READY
                 command: |
                     ls -la
-                    timeout=30
+                    timeout=60
                     while [ ! -f fhirbride_log ];
                         do
                             echo "Waiting for file fhirbride_log ..."
@@ -219,7 +224,7 @@ commands:
                         do
                             echo "waiting for FHIR-Bridge to be ready ...";
                             if [ "$timeout" == 0 ]; then
-                                echo "WARNING: Did not see a startup message even after waiting 30s"
+                                echo "WARNING: Did not see a startup message even after waiting 60s"
                                 exit 1
                             fi
                             sleep 1;
@@ -227,7 +232,16 @@ commands:
                     done
                     echo "REMAINING TIMEOUT: $timeout"
                     jps
-
+            - run:
+                name: Save fhirbridge starup log
+                command: |
+                    mkdir -p /tmp/logs
+                    cp fhirbride_log /tmp/logs
+                    cat /tmp/logs/fhirbride_log
+                when: always
+            - store_artifacts:
+                path: /tmp/logs/fhirbride_log
+      
 
     run-robot-integration-tests:
         steps:
