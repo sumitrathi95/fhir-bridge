@@ -36,14 +36,6 @@ Force Tags              search
     condition.get diagnose condition
 
 
-002 Search Diagnose Foo
-    Pass Execution    dummy
-
-
-003 Search Diagnose Bar
-    Pass Execution    dummy
-
-
 
 *** Keywords ***
 establish preconditions
