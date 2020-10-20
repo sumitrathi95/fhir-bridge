@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-public class BundleTest extends FhirBridgeApplicationTest {
+public class BundleTest extends FhirBridgeApplicationTestFactory {
     @Test
     public void createBloodGasPanel() throws IOException {
 

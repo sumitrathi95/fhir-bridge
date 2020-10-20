@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FhirBridgeApplicationTest {
+public class FhirBridgeApplicationTestFactory {
 
      final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
 
