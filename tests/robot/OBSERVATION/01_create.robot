@@ -52,5 +52,14 @@ Force Tags              create
 	...                2. trigger observation endpoint
 
 	ehr.create new ehr    000_ehr_status.json
-	observation.create body temperature    observation-example-fiO2.json
+	observation.create FIO2    observation-example-fiO2.json
+    observation.validate response - 201
+
+
+004 Create Heart Rate 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create heart rate    observation-example-heart-rate.json
     observation.validate response - 201
