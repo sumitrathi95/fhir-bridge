@@ -38,9 +38,17 @@
                 <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
+                        <id>build-info</id>
                         <goals>
                             <goal>build-info</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
                     </execution>
                 </executions>
                 <configuration>
@@ -212,6 +220,12 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
