@@ -188,6 +188,11 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.16</version>
         </dependency>
+        <dependency>
+            <groupId>org.openehealth.ipf.commons</groupId>
+            <artifactId>ipf-commons-audit</artifactId>
+            <version>3.7.2</version>
+        </dependency>
 
         <!-- SDK -->
         <dependency>

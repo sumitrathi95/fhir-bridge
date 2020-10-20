@@ -15,6 +15,13 @@ import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.openehealth.ipf.commons.audit.AuditContext;
+import org.openehealth.ipf.commons.audit.codes.EventActionCode;
+import org.openehealth.ipf.commons.audit.codes.EventOutcomeIndicator;
+import org.openehealth.ipf.commons.audit.event.CustomAuditMessageBuilder;
+import org.openehealth.ipf.commons.audit.types.EventId;
+import org.openehealth.ipf.commons.audit.types.EventType;
+import org.openehealth.ipf.commons.audit.types.PurposeOfUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,18 +38,35 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
 
     private final IFhirResourceDao<DiagnosticReport> diagnosticReportDao;
 
+    private final AuditContext auditContext;
+
     public DiagnosticReportResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
-                                            IFhirResourceDao<DiagnosticReport> diagnosticReportDao) {
+                                            IFhirResourceDao<DiagnosticReport> diagnosticReportDao, AuditContext auditContext) {
         super(fhirContext, ehrbaseService, auditService);
         this.diagnosticReportDao = diagnosticReportDao;
+        this.auditContext = auditContext;
     }
 
     @Create
     public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
         checkProfiles(diagnosticReport);
 
+        auditContext.audit(
+                new CustomAuditMessageBuilder(
+                        EventOutcomeIndicator.Success,
+                        "",
+                        EventActionCode.Create,
+                        EventId.of("eventIdCode", "eventIdCodeSystem", "Event Id Code"),
+                        EventType.of("eventTypeCode", "eventTypeCodeSystem", "Event Type Code"),
+                        PurposeOfUse.of("purposeOfUseCode", "purposeOfUseCodeSystem", "Purpose of use")
+                ).getMessage()
+        );
+
         diagnosticReportDao.create(diagnosticReport);
         auditService.registerCreateResourceSuccessEvent(diagnosticReport);
+
+
+
 
         logger.info(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT {}", diagnosticReport.getIdentifier().get(0).getValue());
         logger.info(">>>>>>>>>>>>>>>>>> CONTAINED {}", diagnosticReport.getContained().size());
