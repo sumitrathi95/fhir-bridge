@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), P. Wohlfarth (Appsfactory)
+# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH), Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #

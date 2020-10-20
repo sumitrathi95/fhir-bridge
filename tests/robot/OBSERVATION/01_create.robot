@@ -1,4 +1,4 @@
-# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH)
+# Copyright (c) 2020 Peter Wohlfarth (Appsfactory GmbH), Wladislaw Wagner (Vitasystems GmbH), Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -67,4 +67,13 @@ Force Tags              create
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create heart rate    observation-example-heart-rate.json
+    observation.validate response - 201
+
+
+005 Create Sofa Score
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create sofa score    observation-sofa-score-example.json
     observation.validate response - 201
