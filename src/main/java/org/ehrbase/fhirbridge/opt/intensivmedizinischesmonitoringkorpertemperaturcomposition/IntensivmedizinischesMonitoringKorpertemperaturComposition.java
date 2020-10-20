@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
 import com.nedap.archie.rm.generic.PartyProxy;
@@ -25,6 +26,9 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 public class IntensivmedizinischesMonitoringKorpertemperaturComposition {
   @Id
   private VersionUid versionUid;
+
+  @Path("/feeder_audit")
+  private FeederAudit feederAudit;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -74,6 +78,15 @@ public class IntensivmedizinischesMonitoringKorpertemperaturComposition {
   public VersionUid getVersionUid() {
      return this.versionUid ;
   }
+
+  public void setFeederAudit(FeederAudit feederAudit)
+    {
+        this.feederAudit = feederAudit;
+    }
+  public FeederAudit getFeederAudit()
+    {
+        return this.feederAudit;
+    }
 
   public void setVersionUid(VersionUid versionUid) {
      this.versionUid = versionUid;

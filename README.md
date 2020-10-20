@@ -1,34 +1,77 @@
 # FHIR Bridge
 
-## Project setup
+FHIR Bridge is an official component of [EHRbase](https://ehrbase.readthedocs.io/en/latest/index.html) project. 
+The purpose of the application is to act as a broker between an HL7 FHIR client and an openEHR server.
 
-### Build
+## Getting Started
+### Prerequisites
+#### Java
 ```
-mvn clean install
+$ java -version
+java version "11.0.2" 2019-01-15 LTS
+```
+FHIR Bridge requires JDK 11 or above. If you do not already have Java installed, 
+you can follow the instructions at [openjdk.java.net](https://openjdk.java.net/).
+
+#### Apache Maven
+```
+$ mvn --version
+Apache Maven 3.6.0 (97c98ec64a1fdfee7767ce5ffb20918da4f719f3; 2018-10-24T20:41:47+02:00)
+```
+FHIR Bridge is compatible with Apache Maven 3.6 or above. If you do not already have Maven installed, 
+you can follow the instructions at [maven.apache.org](https://maven.apache.org/).
+
+#### EHRbase 
+FHIR Bridge requires an EHRbase instance to communicate and exchange data. 
+If you do not already have EHRbase up and running, you can follow the installation procedure available 
+in [ehrbase/ehrbase](https://github.com/ehrbase/ehrbase) repository.
+
+#### PostgreSQL
+FHIR Bridge requires an additional database schema for its internal audit mechanism. By default, the application already
+includes PostgreSQL driver. If you do not already have PostgreSQL installed, you can follow the instructions 
+at [postgresql.org](https://www.postgresql.org/).
+
+### Installation
+#### Cloning the repository
+```
+$ git clone https://github.com/ehrbase/fhir-bridge.git
+```
+#### Build the application
+```
+$ mvn clean install
+```
+*Remark: Unlike the standalone execution that requires a database like PostgreSQL, the build process uses [H2](https://www.h2database.com/html/main.html) 
+database to execute the Integration Tests and no additional configuration is required.*
+
+#### Configure the application
+Before running the application, you need, at least, to configure the database and EHRbase instance. The easiest solution is to 
+use an `application.yml` file:
+* In the same directory as `fhir-bridge-X-X-X.jar` file.
+* Under a `/config` subdirectory.
+
+The `application.yml` must include (at least) the following properties:
+```
+ehrbase:
+  address:              Hostname of the EHRbase instance (ex: localhost)   
+  port:                 Port of the EHRbase instance (ex: 8080)
+  path:                 Context path of the EHRbase instance (ex: /ehrbase/rest/openehr/v1/)
+spring:
+  datasource:
+    url:                JDBC URL of the database (ex: jdbc:postgresql://fhirdb:5432/fhir_bridge)
+    username:           Username of the database (ex: fhir_bridge_usr)           
+    password:           Password of the database (ex: fhir_bridge_pwd)            
 ```
 
-### Build without running tests
-```
-mvn clean install -DskipTests
-```
+If you want more details about configuration and/or customization of the default one, you can check the official documentation of 
+[Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config) 
+feature provided by Spring Boot.
 
-### Run the application
-
-Option 1:
+#### Run the application
+In order to start the application, go to the correct location and use the `java` command (update the version number accordingly).
 ```
-mvn spring-boot:run
+$ cd [fhir-bridge_jar_file_dir]
+$ java -jar fhir-bridge-X.X.X.jar
 ```
-
-Option 2: (update the version number accordingly)
-```
-java -jar target/fhir-bridge-1.0.0-SNAPSHOT.jar 
-```
-
-### Run integration tests
-```
-mvn verify
-```
-
 
 ## FHIR to openEHR Mappings
 
@@ -148,3 +191,121 @@ The GET request is:
  * FHIR-BRIDGE test get Condition
 
 Right now we are mapping the COMPOSITION.uid to the FHIR resource ID, so the ID will look like this: d4090552-d85c-4828-9282-3dbabb9c4d43::local.ehrbase.org::1 
+
+### Resource References
+With the introduction of the HAPI FHIR JPA SERVER module, the FHIR-Bridge application is now verifying the references used in the resources sent for creation.
+
+#### Local reference
+```
+{
+  "result" : {
+    "reference" : "Observation/123456"
+  }
+}
+```
+The use of a local reference in a submitted resource requires that the referenced resource exists in the database.
+
+#### External reference
+```
+{
+  "result" : {
+    "reference" : "http://fhir.server.com/Observation/987654321"
+  }
+}
+```
+External references must be use for resources that do not exist on the FHIR-Bridge but have to be referenced in the submitted resource.
+
+#### Logical identifier
+```
+{
+  "subject" : {
+    "reference" : "urn:uuid:f1a977bd-5090-413c-9719-3e709fd6b0ff"
+  }
+}
+```
+Regarding patient identification in submitted resources, the reference shall be a logical identifier as it is used to identify 
+the patient in Ehrbase.
+
+For additional information about resources references, please refer to FHIR specifications (https://www.hl7.org/fhir/references.html) 
+and HAPI FHIR documentation (https://hapifhir.io/hapi-fhir/docs/model/references.html).
+
+## Audit
+FHIR-Bridge registers audit for the following operations:
+* Create a new FHIR resource.
+* Map a FHIR resource to Ehrbase.
+
+The audit mechanism uses the AuditEvent resource provided by FHIR:
+```
+{
+    "resourceType": "AuditEvent",
+    "id": "1204",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-10-06T10:44:38.630+02:00"
+    },
+    "type": {
+        "system": "http://terminology.hl7.org/CodeSystem/iso-21089-lifecycle",
+        "code": "transform",
+        "display": "Transform/Translate Record Lifecycle Event"
+    },
+    "action": "E",
+    "recorded": "2020-10-06T10:44:38.629+02:00",
+    "outcome": "8",
+    "outcomeDesc": "One contained Observation was expected 0 were received in DiagnosticReport DiagnosticReport/1202/_history/1",
+    "agent": [
+        {
+            "role": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/extra-security-role-type",
+                            "code": "dataprocessor",
+                            "display": "data processor"
+                        }
+                    ]
+                }
+            ],
+            "who": {
+                "identifier": {
+                    "value": "fhir-bridge - 1.0.0-SNAPSHOT"
+                }
+            },
+            "requestor": true,
+            "network": {
+                "address": "192.168.10.161",
+                "type": "2"
+            }
+        }
+    ],
+    "entity": [
+        {
+            "what": {
+                "reference": "DiagnosticReport/1202"
+            },
+            "type": {
+                "system": "http://hl7.org/fhir/resource-types",
+                "code": "DiagnosticReport",
+                "display": "DiagnosticReport"
+            }
+        }
+    ]
+}
+```
+In addition, the AuditEvent endpoint is available to search for resources using the following supported criteria:
+
+| Name | Type | Description |
+| --- | --- | --- |
+| action | token |	Type of action performed during the event |
+| date | date | Time when the event was recorded |
+| entity | reference | Specific instance of resource |
+| outcome | token | Whether the event succeeded or failed |
+| type | token | Type/identifier of event |
+
+Examples:
+```
+# All failed operations
+POST {base_url}/fhir/AuditEvent/_search?outcome=8
+
+# All transform operations
+POST {base_url}/fhir/AuditEvent/_search?type=transform
+```

@@ -1,7 +1,9 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.definition.KorpertemperaturBeliebigesEreignisChoice;
@@ -34,6 +36,11 @@ public class FhirObservationTempOpenehrBodyTemperature {
     public static IntensivmedizinischesMonitoringKorpertemperaturComposition map(Observation fhirObservation) {
 
         IntensivmedizinischesMonitoringKorpertemperaturComposition composition = new IntensivmedizinischesMonitoringKorpertemperaturComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
+        composition.setFeederAudit(fa);
+
 
         // ========================================================================================
         // value quantity is expected
@@ -129,8 +136,6 @@ public class FhirObservationTempOpenehrBodyTemperature {
         observation.setStatus(Observation.ObservationStatus.FINAL);
 
         observation.getMeta().addProfile(Profile.BODY_TEMP.getUrl());
-
-        observation.setId("bodytemp");
 
 
         // FIXME: all FHIR resources need an ID, currently we are using the compo.uid as the resource ID,

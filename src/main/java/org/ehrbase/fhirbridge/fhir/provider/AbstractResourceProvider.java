@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.PrimitiveType;
@@ -27,14 +28,18 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractResourceProvider implements IResourceProvider, MessageSourceAware {
 
-    private final FhirContext context;
-    protected final EhrbaseService service;
+    protected final FhirContext context;
 
-    private MessageSourceAccessor messages;
+    protected final EhrbaseService ehrbaseService;
 
-    public AbstractResourceProvider(FhirContext context, EhrbaseService service) {
+    protected final AuditService auditService;
+
+    protected MessageSourceAccessor messages;
+
+    public AbstractResourceProvider(FhirContext context, EhrbaseService ehrbaseService, AuditService auditService) {
         this.context = context;
-        this.service = service;
+        this.ehrbaseService = ehrbaseService;
+        this.auditService = auditService;
     }
 
     public boolean isDefaultProfileSupported() {
@@ -66,32 +71,19 @@ public abstract class AbstractResourceProvider implements IResourceProvider, Mes
         }
     }
 
-    public UUID getEhrUidForSubjectId(String subjectId)
-    {
-        String ehrId = null;
-        UUID ehrUid = null;
-        try
-        {
-            ehrId = service.ehrIdBySubjectId(subjectId);
-            if (ehrId != null)
-            {
-                ehrUid = UUID.fromString(ehrId); // validates the format
+    public UUID getEhrUidForSubjectId(String subjectId) {
+        try {
+            String ehrId = ehrbaseService.ehrIdBySubjectId(subjectId);
+            if (ehrId != null) {
+                return UUID.fromString(ehrId); // validates the format
+            } else {
+                throw new ResourceNotFoundException("EHR for patient " + subjectId + " doesn't exists");
             }
-            else
-            {
-                throw new ResourceNotFoundException("EHR for patient "+ subjectId +" doesn't exists");
-            }
-        }
-        catch (ResourceNotFoundException e)
-        {
+        } catch (ResourceNotFoundException e) {
             throw e;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new UnprocessableEntityException("Couldn't get the EHR ID", e);
         }
-
-        return ehrUid;
     }
 
     @Override

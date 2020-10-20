@@ -23,7 +23,7 @@
     ]
   },
   "subject": {
-    "reference": "Patient/07f602e0-579e-4fe3-95af-381728bf0d49",
+    "reference": "urn:uuid:07f602e0-579e-4fe3-95af-381728bf0d49",
     "display": "P. van de Heuvel"
   },
   "effectivePeriod": {
@@ -32,7 +32,7 @@
   "issued": "2013-04-03T15:30:10+01:00",
   "performer": [
     {
-      "reference": "Practitioner/f005",
+      "reference": "http://external.fhir.server/Practitioner/f005",
       "display": "A. Langeveld"
     }
   ],

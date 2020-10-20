@@ -12,7 +12,11 @@ import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
 import org.ehrbase.fhirbridge.fhir.validation.RemoteTerminologyServerValidationSupport;
-import org.hl7.fhir.common.hapi.validation.support.*;
+import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.slf4j.Logger;
@@ -41,14 +45,14 @@ public class FhirConfiguration {
 
     private final ListableBeanFactory beanFactory;
 
-    public FhirConfiguration(FhirProperties fhirProperties, ResourcePatternResolver resourceLoader, ListableBeanFactory beanFactory) {
+    public FhirConfiguration(FhirProperties fhirProperties, ResourcePatternResolver resourceLoader,
+                             ListableBeanFactory beanFactory) {
         this.fhirProperties = fhirProperties;
         this.resourceLoader = resourceLoader;
         this.beanFactory = beanFactory;
     }
 
-    public FhirProperties getFhirProperties()
-    {
+    public FhirProperties getFhirProperties() {
         return this.fhirProperties;
     }
 
@@ -71,7 +75,9 @@ public class FhirConfiguration {
     @Bean
     public RestfulServer fhirServlet() {
         RestfulServer server = new RestfulServer(fhirContext());
-        server.registerProviders(beanFactory.getBeansOfType(AbstractResourceProvider.class).values());
+        server.registerProviders(
+                beanFactory.getBeansOfType(AbstractResourceProvider.class).values()
+        );
         server.registerInterceptor(requestValidatingInterceptor());
         server.registerInterceptor(corsValidatingInterceptor());
         return server;
@@ -94,12 +100,9 @@ public class FhirConfiguration {
         // *********************************************************************************************************
         // Support for remote validation
         //
-        if (fhirProperties.getValidation().getTerminology().getMode() == TerminologyMode.REMOTE)
-        {
+        if (fhirProperties.getValidation().getTerminology().getMode() == TerminologyMode.REMOTE) {
             supportChain.addValidationSupport(remoteTerminologyServerValidationSupport());
-        }
-        else
-        {
+        } else {
             logger.debug(">>>>>>>>>>>>> NOT DOING REMOTE VALIDATION");
         }
 

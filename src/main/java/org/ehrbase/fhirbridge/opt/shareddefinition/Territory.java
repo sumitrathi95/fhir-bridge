@@ -100,7 +100,7 @@ public enum Territory implements EnumValueSet {
 
   IR("IR", "IR", "ISO_3166-1", "IR"),
 
-  UZ("UZ", "UZ", "ISO_3166-1", "UZ"),
+  SL("SL", "SL", "ISO_3166-1", "SL"),
 
   AR("AR", "AR", "ISO_3166-1", "AR"),
 
@@ -111,6 +111,8 @@ public enum Territory implements EnumValueSet {
   SE("SE", "SE", "ISO_3166-1", "SE"),
 
   TG("TG", "TG", "ISO_3166-1", "TG"),
+
+  TT("TT", "TT", "ISO_3166-1", "TT"),
 
   OM("OM", "OM", "ISO_3166-1", "OM"),
 
@@ -261,8 +263,6 @@ public enum Territory implements EnumValueSet {
   AO("AO", "AO", "ISO_3166-1", "AO"),
 
   SR("SR", "SR", "ISO_3166-1", "SR"),
-
-  TT("TT", "TT", "ISO_3166-1", "TT"),
 
   PL("PL", "PL", "ISO_3166-1", "PL"),
 
@@ -423,8 +423,6 @@ public enum Territory implements EnumValueSet {
   DO("DO", "DO", "ISO_3166-1", "DO"),
 
   GU("GU", "GU", "ISO_3166-1", "GU"),
-
-  SL("SL", "SL", "ISO_3166-1", "SL"),
 
   TN("TN", "TN", "ISO_3166-1", "TN"),
 
