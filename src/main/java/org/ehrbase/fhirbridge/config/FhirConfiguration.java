@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
+import org.ehrbase.fhirbridge.atna.AtnaInterceptor;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
 import org.ehrbase.fhirbridge.fhir.validation.RemoteTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
@@ -80,6 +81,7 @@ public class FhirConfiguration {
         );
         server.registerInterceptor(requestValidatingInterceptor());
         server.registerInterceptor(corsValidatingInterceptor());
+        server.registerInterceptor(new AtnaInterceptor());
         return server;
     }
 
