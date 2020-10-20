@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.MappedBundleComposition;
 import org.ehrbase.fhirbridge.fhir.provider.Bundle.SupportedBundle;
@@ -27,21 +28,18 @@ import java.util.UUID;
 
 @Component
 public class TransactionProvider extends AbstractResourceProvider {
+
     private final Logger logger = LoggerFactory.getLogger(TransactionProvider.class);
 
     @Autowired
-    public TransactionProvider(FhirContext fhirContext, EhrbaseService service) {
-        super(fhirContext, service);
+    public TransactionProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService) {
+        super(fhirContext, ehrbaseService, auditService);
     }
 
     @Transaction
-    @SuppressWarnings("unused")
-    public Bundle transaction(@TransactionParam Bundle bundle)
-    {
-        logger.info("Bundle.id={}", bundle.getId());
-      //      createBundle(bundle);
-
-        return bundle;
+    public Bundle transaction(@TransactionParam Bundle tx) {
+        logger.info("Bundle.id={}", tx.getId());
+        return tx;
     }
 
     @Create
@@ -49,12 +47,7 @@ public class TransactionProvider extends AbstractResourceProvider {
     public MethodOutcome create(@ResourceParam Bundle bundle)
     {
         logger.info("Bundle.id={}", bundle.getId());
-        //       try {
-//          createBundle(bundle);
-//        }catch (Exception e)
-//        {
-//            throw new UnprocessableEntityException("There was a problem saving the composition: " + e.getMessage(), e);
-//        }
+
         createBundle(bundle);
 
         bundle.setId(new IdType(1L));
@@ -75,7 +68,7 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     protected void saveCompositions(MappedBundleComposition composition, SupportedBundle supportedBundle){
         UUID ehrUid = getEhrUidForSubjectId(composition.getSubjectId());
-        VersionUid versionUid = service.save(ehrUid, composition.getComposition());
+        VersionUid versionUid = ehrbaseService.save(ehrUid, composition.getComposition());
         supportedBundle.createdLog(versionUid);
     }
 

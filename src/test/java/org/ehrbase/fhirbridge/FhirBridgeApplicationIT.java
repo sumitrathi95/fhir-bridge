@@ -126,9 +126,6 @@ public class FhirBridgeApplicationIT {
                 "Angegebener Profiltyp war \"Observation\", aber gefundener Typ \"Condition\".".equals(
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())));
 
-
-        Assertions.assertEquals("Specified profile type was 'Observation', but found type 'Condition'",
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -366,40 +363,40 @@ public class FhirBridgeApplicationIT {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
 
-    @Test
-    public void searchBodyTemp() throws IOException {
+//    @Test
+//    public void searchBodyTemp() throws IOException {
+//
+//        // Needs at least one temp, can't rely on the test execution order to create a
+//        // body temp in the server
+//        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
+//        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+//
+//        client.create().resource(resource).execute();
+//
+//        Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
+//                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+//                .returnBundle(Bundle.class).execute();
+//
+//        Assertions.assertTrue(bundle.getTotal() > 0);
+//    }
 
-        // Needs at least one temp, can't rely on the test execution order to create a
-        // body temp in the server
-        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-
-        client.create().resource(resource).execute();
-
-        Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
-                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                .returnBundle(Bundle.class).execute();
-
-        Assertions.assertTrue(bundle.getTotal() > 0);
-    }
-
-    @Test
-    public void searchCoronavirusLabResults() throws IOException {
-
-        // Needs at least one lab result, can't rely on the test execution order
-        // WARNING: this will fail if terminology validation is turned on
-        String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Bundle bundle = client.search().forResource(Observation.class)
-                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
-                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                .returnBundle(Bundle.class).execute();
-
-        Assertions.assertTrue(bundle.getTotal() > 0);
-    }
+//    @Test
+//    public void searchCoronavirusLabResults() throws IOException {
+//
+//        // Needs at least one lab result, can't rely on the test execution order
+//        // WARNING: this will fail if terminology validation is turned on
+//        String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
+//        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+//
+//        MethodOutcome outcome = client.create().resource(resource).execute();
+//
+//        Bundle bundle = client.search().forResource(Observation.class)
+//                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
+//                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+//                .returnBundle(Bundle.class).execute();
+//
+//        Assertions.assertTrue(bundle.getTotal() > 0);
+//    }
 
     @Test
     public void searchObservationLab() throws IOException {
@@ -453,20 +450,8 @@ public class FhirBridgeApplicationIT {
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
-        MethodOutcome outcome = client.create()
-                .resource(resource)
-                .execute();
-
-        Assertions.assertEquals(true, outcome.getCreated());
-        Assertions.assertTrue(outcome.getResource() instanceof Observation);
-        Assertions.assertNotNull(outcome.getResource());
-        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
-    }
-
-    @Test
-    public void createSofaScore() throws IOException {
-        String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+        // Change patients id to test patient id
+        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create()
                 .resource(resource)
@@ -480,8 +465,11 @@ public class FhirBridgeApplicationIT {
 
     @Test
     public void createFIO2() throws IOException {
+
         String resource = getContent("classpath:/Observation/observation-example-fiO2.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+        resource = resource.replaceAll(
+            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
+            "Patient/" + this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -489,53 +477,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
-    }
-
-    @Test
-    public void createProcedure() throws IOException {
-        Date now = new Date();
-
-        String resource = getContent("classpath:/Procedure/Procedure-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Assertions.assertNotNull(outcome.getId());
-        Assertions.assertNotNull(outcome.getResource());
-        Assertions.assertTrue(outcome.getCreated());
-        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
-        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
-    }
-
-
-    @Test
-    public void getProcedureById() throws IOException {
-        // Needs at least one condition, can't rely on the tess execution order
-        String resource = getContent("classpath:/Procedure/Procedure-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Procedure procedure = client.read().resource(Procedure.class).withId(outcome.getId()).execute();
-
-        Assertions.assertNotNull(procedure);
-    }
-
-    @Test
-    public void searchProcedure() throws IOException {
-        // Needs at least one condition, can't rely on the tess execution order
-        String resource = getContent("classpath:/Procedure/Procedure-example.json");
-        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-
-        MethodOutcome outcome = client.create().resource(resource).execute();
-
-        Bundle bundle = client.search().forResource(Procedure.class)
-                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-                .returnBundle(Bundle.class).execute();
-
-        logger.info("PROCEDURES: " + bundle.getTotal());
-
-        Assertions.assertTrue(bundle.getTotal() > 0);
     }
 
     private String getContent(String location) throws IOException {

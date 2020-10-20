@@ -30,7 +30,9 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class FhirBridgeApplicationTestFactory {
 
-     final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
+    final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
+
+    private static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
 
     @LocalServerPort
      int port;
@@ -52,6 +54,8 @@ public class FhirBridgeApplicationTestFactory {
      UUID ehrId;
      String subjectIdValue;
 
+     String patientReference;
+
     @BeforeEach
     public void setUp() {
         context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
@@ -67,12 +71,15 @@ public class FhirBridgeApplicationTestFactory {
         ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
         ehrStatus.setName(new DvText("test status"));
 
-        this.ehrId = service.createEhr(ehrStatus);
+        UUID ehrId = service.createEhr(ehrStatus);
 
-        logger.info("EHR UID: {}", this.ehrId);
+        logger.info("EHR UID: {}", ehrId);
         logger.info("Subjed ID: {}", this.subjectIdValue);
+
+        this.patientReference = "urn:uuid:" + subjectIdValue;
     }
-    protected String getContent(String location) throws IOException {
+
+     String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
             return IOUtils.toString(input, StandardCharsets.UTF_8);

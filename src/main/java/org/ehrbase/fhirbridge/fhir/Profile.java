@@ -27,8 +27,6 @@ public enum Profile {
 
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
 
-    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
-
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
 
     BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle); //TODO should be threated as observation ?
