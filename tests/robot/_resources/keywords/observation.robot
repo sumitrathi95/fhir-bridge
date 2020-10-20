@@ -54,7 +54,7 @@ create FIO2
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
                         # Output    ${payload}
-
                         Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
