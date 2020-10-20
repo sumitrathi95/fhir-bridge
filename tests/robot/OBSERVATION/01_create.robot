@@ -52,5 +52,10 @@ Force Tags              create
     observation.validate response - 201
 
 
-003 Create Observation Bar
-	Pass Execution    dummy
+003 Create FIO2 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create FIO2    observation-example-fiO2.json
+    observation.validate response - 201
