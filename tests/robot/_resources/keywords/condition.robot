@@ -16,16 +16,11 @@
 
 
 
-*** Variables ***
-${DATA_SET_PATH}        ${EXECDIR}/robot/_resources/test_data/Condition
-
-
-
 *** Keywords ***
 create diagnose condition
     [Arguments]         ${fhir_resource}
 
-    ${payload}          Load JSON From File    ${DATA_SET_PATH}/${fhir_resource}
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_CONDITION}/${fhir_resource}
                         # Output    ${payload}
                         Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 

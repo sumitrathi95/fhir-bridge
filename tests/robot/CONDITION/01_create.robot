@@ -48,7 +48,3 @@ Force Tags              create
     ehr.create new ehr    000_ehr_status.json
     condition.create diagnose condition    condition-invalid-profile-example.json
     condition.validate response - 422 (Unprocessable Entity)
-
-
-003 Create Bar Condition
-    Pass Execution      dummy
