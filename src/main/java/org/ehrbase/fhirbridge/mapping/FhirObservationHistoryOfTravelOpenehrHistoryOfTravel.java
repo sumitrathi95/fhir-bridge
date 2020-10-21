@@ -44,7 +44,7 @@ public class FhirObservationHistoryOfTravelOpenehrHistoryOfTravel {
             observation.setSubject(new PartySelf());
 
             // special mapping content
-/*
+
             // TravelStartDate
 
             observation.setAbreisedatumValue(
@@ -55,7 +55,7 @@ public class FhirObservationHistoryOfTravelOpenehrHistoryOfTravel {
             observation.setRuckreisedatumValue(
                     fhirObservation.getComponent().get(4).getValueDateTimeType().getValueAsCalendar().toZonedDateTime()
             );
- */
+
             // Destination of travel
             //observation.setBestimmtesReiseziel(
             //        fhirObservation.getComponent().get(1).getValueCodeableConcept().getText()
