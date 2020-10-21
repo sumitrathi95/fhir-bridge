@@ -16,6 +16,7 @@ import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzCompositio
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,14 @@ public class EhrbaseService {
     }
 
     public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveHistoryOfTravel(UUID ehrId, ReiseaktivitatComposition composition) {
+        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
 

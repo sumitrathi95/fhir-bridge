@@ -14,7 +14,8 @@ public enum OperationalTemplateData {
     FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
     CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
-    HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
+    HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
+    HISTORY_OF_TRAVEL("", "Reiseaktivitaet.opt", "Reiseaktivität");
 
     private final String filename;
     private final String templateId;

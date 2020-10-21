@@ -26,19 +26,14 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
-import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
-import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
-import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
-import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
-import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.mapping.*;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
@@ -488,7 +483,15 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 VersionUid versionUid = ehrbaseService.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
-            } else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+            } else if (ProfileUtils.hasProfile(observation, Profile.HISTORY_OF_TRAVEL)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HISTORY_OF_TRAVEL");
+
+                ReiseaktivitatComposition composition = FhirObservationHistoryOfTravelOpenehrHistoryOfTravel.map(observation);
+
+                VersionUid versionUid = ehrbaseService.saveHistoryOfTravel(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HISTORY_OF_TRAVEL);
+            } else if (ProfileUtils.hasProfile(observation, Profile.HISTORY_OF_TRAVEL)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
