@@ -40,6 +40,11 @@ Force Tags              search
 	observation.get body temperature
 
 
+002 Search Observation Lab
+    [Documentation]    Search Observation Lab
+
+	observation.get observation lab
+
 
 *** Keywords ***
 establish preconditions
