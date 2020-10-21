@@ -94,5 +94,5 @@ create observation lab
 
 
 get observation lab
-    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=ttps://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab
                         Output Debug Info To Console
