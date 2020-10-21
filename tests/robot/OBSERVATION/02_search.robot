@@ -40,13 +40,6 @@ Force Tags              search
 	observation.get body temperature
 
 
-002 Search Observation Foo
-    Pass Execution    dummy
-
-
-003 Search Observation Bar
-    Pass Execution    dummy
-
 
 *** Keywords ***
 establish preconditions

@@ -17,9 +17,6 @@
 
 
 *** Settings ***
-# Library                 REST
-# Library                 Collections
-# Library                 JSONLibrary
 Resource                ${EXECDIR}/robot/_resources/suite_settings.robot
 
 Test Setup              generic.prepare new request session    Prefer=return=representation
@@ -43,9 +40,11 @@ Force Tags              create
     condition.validate response - 201
 
 
-002 Create Foo Condition
-    Pass Execution      dummy
+002 Create Condition Using Invalid Profile
+    [Tags]              xxx
+    [Documentation]     1. create EHR
+    ...                 2. trigger condition endpoint using invalid payload
 
-
-003 Create Bar Condition
-    Pass Execution      dummy
+    ehr.create new ehr    000_ehr_status.json
+    condition.create diagnose condition    condition-invalid-profile-example.json
+    condition.validate response - 422 (Unprocessable Entity)

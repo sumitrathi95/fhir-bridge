@@ -43,9 +43,28 @@ Force Tags              create
     observation.validate response - 201
 
 
-002 Create Observation Foo 
-	Pass Execution    dummy
+002 Create Blood Pressure 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create blood pressure    observation-bloodpressure-example.json
+    observation.validate response - 201
 
 
-003 Create Observation Bar
-	Pass Execution    dummy
+003 Create FIO2 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create FIO2    observation-example-fiO2.json
+    observation.validate response - 201
+
+
+004 Create Heart Rate 
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create heart rate    observation-example-heart-rate.json
+    observation.validate response - 201
