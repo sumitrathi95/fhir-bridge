@@ -91,3 +91,4 @@ create observation lab
 
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
+                        
