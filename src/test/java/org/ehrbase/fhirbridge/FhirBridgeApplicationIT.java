@@ -286,8 +286,8 @@ public class FhirBridgeApplicationIT {
                         "http://hl7.org/fhir/StructureDefinition/heartrate, " +
                         "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
                         "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -309,8 +309,8 @@ public class FhirBridgeApplicationIT {
                         "http://hl7.org/fhir/StructureDefinition/heartrate," +
                         " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
                         "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 

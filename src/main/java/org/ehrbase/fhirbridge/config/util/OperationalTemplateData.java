@@ -15,7 +15,7 @@ public enum OperationalTemplateData {
     CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
-    BODY_HEIGHT("","Koerpergroesse.opt","");
+    BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße");
 
     private final String filename;
     private final String templateId;

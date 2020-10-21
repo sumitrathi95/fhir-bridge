@@ -46,7 +46,7 @@ public class FhirObservationKorpergrosseOpenehrKorpergrosse {
             observation.setSubject(new PartySelf());
 
             // special mapping content
-            observation.setGrosseLangeUnits(fhirObservation.getValueQuantity().getUnit());
+            observation.setGrosseLangeUnits(fhirObservation.getValueQuantity().getCode());
             observation.setGrosseLangeMagnitude(fhirObservation.getValueQuantity().getValue().doubleValue());
 
         } catch (Exception e) {
