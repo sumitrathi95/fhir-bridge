@@ -51,3 +51,5 @@ establish preconditions
     generic.prepare new request session    Prefer=return=representation
     ehr.create new ehr    000_ehr_status.json
     observation.create body temperature    observation-bodytemp-example.json
+    observation.create observation lab    observation-observationlab-example.json
+    
