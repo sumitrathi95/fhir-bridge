@@ -40,9 +40,16 @@ Force Tags              search
 	observation.get body temperature
 
 
+002 Search Observation Lab
+    [Documentation]    Search Observation Lab
+
+	observation.get observation lab
+
 
 *** Keywords ***
 establish preconditions
     generic.prepare new request session    Prefer=return=representation
     ehr.create new ehr    000_ehr_status.json
     observation.create body temperature    observation-bodytemp-example.json
+    observation.create observation lab    observation-observationlab-example.json
+    

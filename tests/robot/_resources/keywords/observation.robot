@@ -91,4 +91,8 @@ create observation lab
 
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
-                        
+
+
+get observation lab
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab
+                        Output Debug Info To Console
