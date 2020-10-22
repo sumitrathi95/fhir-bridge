@@ -77,3 +77,13 @@ Force Tags              create
 	ehr.create new ehr    000_ehr_status.json
 	observation.create sofa score    observation-sofa-score-example.json
     observation.validate response - 201
+
+
+006 Create Observation Lab
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation lab    observation-observationlab-example.json
+    observation.validate response - 201
+	
