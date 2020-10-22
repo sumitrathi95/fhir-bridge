@@ -41,7 +41,6 @@ Force Tags              create
 
 
 002 Create Condition Using Invalid Profile
-    [Tags]              xxx
     [Documentation]     1. create EHR
     ...                 2. trigger condition endpoint using invalid payload
 
