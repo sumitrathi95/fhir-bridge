@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), P. Wohlfarth (Appsfactory)
+# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH), Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -61,6 +61,17 @@ create FIO2
 
 
 create heart rate
+    [Arguments]         ${fhir_resource}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+                        # Output    ${payload}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+                        Output Debug Info To Console
+
+
+create sofa score
     [Arguments]         ${fhir_resource}
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
