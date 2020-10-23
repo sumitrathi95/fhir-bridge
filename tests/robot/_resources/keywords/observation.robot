@@ -39,6 +39,13 @@ validate response - 201
     String     response body meta versionId    1
 
 
+validate response - 422 (profile not supported)
+    Integer    response status    422
+
+    String     response body issue 0 diagnostics
+    ...        pattern=Default profile is not supported for Observation. One of the following profiles is expected:
+
+
 # .----------------.  .----------------.  .----------------. 
 #| .--------------. || .--------------. || .--------------. |
 #| |    ______    | || |  _________   | || |  _________   | |

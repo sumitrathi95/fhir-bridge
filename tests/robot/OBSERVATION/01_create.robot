@@ -94,4 +94,4 @@ Force Tags              create
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create observation    observation-example.json
-    observation.validate response - 422
+    observation.validate response - 422 (profile not supported)
