@@ -86,4 +86,12 @@ Force Tags              create
 	ehr.create new ehr    000_ehr_status.json
 	observation.create observation lab    observation-observationlab-example.json
     observation.validate response - 201
-	
+
+
+007 Create Observation Using Default Profil
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-example.json
+    observation.validate response - 422
