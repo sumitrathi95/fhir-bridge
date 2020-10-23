@@ -31,6 +31,10 @@ create body temperature
 validate response - 201
                         Integer    response status    201
 
+                        String     response body resourceType    Procedure
+                        String     response body id
+                        String     response body meta versionId    1
+
 
 get body temperature
     &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=http://hl7.org/fhir/StructureDefinition/bodytemp
