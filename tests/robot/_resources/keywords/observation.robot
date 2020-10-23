@@ -42,6 +42,7 @@ validate response - 201
 validate response - 422 (default profile not supported)
     Integer    response status    422
 
+    String     response body resourceType    OperationOutcome
     String     response body issue 0 diagnostics
     ...        pattern=Default profile is not supported for Observation. One of the following profiles is expected:
 
@@ -49,6 +50,7 @@ validate response - 422 (default profile not supported)
 validate response - 422 (profile not supported)
     Integer    response status    422
 
+    String     response body resourceType    OperationOutcome
     String     response body issue 0 diagnostics
     ...        pattern=Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected:
 
