@@ -32,11 +32,11 @@
 
 
 validate response - 201
-                        Integer    response status    201
+    Integer    response status    201
 
-                        String     response body resourceType    Observation
-                        String     response body id
-                        String     response body meta versionId    1
+    String     response body resourceType    Observation
+    String     response body id
+    String     response body meta versionId    1
 
 
 # .----------------.  .----------------.  .----------------. 
@@ -133,6 +133,17 @@ create observation lab
 
 
 create sofa score
+    [Arguments]         ${fhir_resource}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+                        # Output    ${payload}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+                        Output Debug Info To Console
+
+
+create observation
     [Arguments]         ${fhir_resource}
 
     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
