@@ -94,4 +94,13 @@ Force Tags              create
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create observation    observation-example.json
+    observation.validate response - 422 (default profile not supported)
+
+
+008 Create Observation Using Unsupported Profil
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-vitalsigns-example.json
     observation.validate response - 422 (profile not supported)
