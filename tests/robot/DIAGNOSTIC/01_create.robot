@@ -56,7 +56,7 @@ Force Tags              create
     diagnostic.validate response - 422 (profile not supported)
 
 
-004 Create Diagnostic Report Using Usupported Profile
+004 Create Diagnostic Report Using Unsupported Profile
     [Documentation]     Trigger endpoint using invalid payload.
 
     ehr.create new ehr    000_ehr_status.json
