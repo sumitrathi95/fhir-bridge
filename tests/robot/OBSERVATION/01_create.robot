@@ -88,7 +88,7 @@ Force Tags              create
     observation.validate response - 201
 
 
-007 Create Observation Using Default Profil
+007 Create Observation Using Default Profile
 	[Documentation]    1. create EHR
 	...                2. trigger observation endpoint
 
@@ -97,7 +97,7 @@ Force Tags              create
     observation.validate response - 422 (default profile not supported)
 
 
-008 Create Observation Using Unsupported Profil
+008 Create Observation Using Unsupported Profile
 	[Documentation]    1. create EHR
 	...                2. trigger observation endpoint
 
