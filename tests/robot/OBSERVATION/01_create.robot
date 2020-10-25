@@ -86,4 +86,30 @@ Force Tags              create
 	ehr.create new ehr    000_ehr_status.json
 	observation.create observation lab    observation-observationlab-example.json
     observation.validate response - 201
-	
+
+
+007 Create Observation Using Default Profile
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-example.json
+    observation.validate response - 422 (default profile not supported)
+
+
+008 Create Observation Using Unsupported Profile
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-vitalsigns-example.json
+    observation.validate response - 422 (profile not supported)
+
+
+009 Create Coronavirus Lab Result
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-coronavirusnachweistest-example.json
+    observation.validate response - 201
