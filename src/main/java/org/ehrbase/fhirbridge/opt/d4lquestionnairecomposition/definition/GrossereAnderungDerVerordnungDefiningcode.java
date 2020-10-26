@@ -1,14 +1,10 @@
-package org.ehrbase.fhirbridge.opt.shareddefinition;
+package org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  EVENT("event", "event", "openehr", "433"),
-
-  EPISODIC("episodic", "episodic", "openehr", "435"),
-
-  PERSISTENT("persistent", "persistent", "openehr", "431");
+public enum GrossereAnderungDerVerordnungDefiningcode implements EnumValueSet {
+  ABORTED("aborted", "aborted", "openehr", "531");
 
   private String value;
 
@@ -18,7 +14,8 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  GrossereAnderungDerVerordnungDefiningcode(String value, String description, String terminologyId,
+      String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;
