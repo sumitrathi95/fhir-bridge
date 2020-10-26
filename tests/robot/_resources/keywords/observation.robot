@@ -71,27 +71,28 @@ validate response - 422 (profile not supported)
 get body temperature
     &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=http://hl7.org/fhir/StructureDefinition/bodytemp
                         Integer    response status    200
+                        String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
-                        #String     response body entry resource resourceType    Observation
+                        # Eventuell mit Array noch resourcetype Observation im entry abfragen
                         Output Debug Info To Console
 
 
 get observation lab
     &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab
                         Integer    response status    200
+                        String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
-                        #String     response body entry resource resourceType    Observation
                         Output Debug Info To Console
 
 
 get coronavirus lab results
     &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest
                         Integer    response status    200
+                        String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
-                        #String     response body entry resource resourceType    Observation
                         Output Debug Info To Console
 
 
