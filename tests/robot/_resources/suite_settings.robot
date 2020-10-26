@@ -28,8 +28,9 @@ Library     JSONLibrary
 Resource    ${EXECDIR}/robot/_resources/keywords/generic.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/ehr.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/condition.robot
-Resource    ${EXECDIR}/robot/_resources/keywords/observation.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/diagnostic.robot
+Resource    ${EXECDIR}/robot/_resources/keywords/observation.robot
+Resource    ${EXECDIR}/robot/_resources/keywords/procedure.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/questionaire.robot
 
 
@@ -39,7 +40,8 @@ Resource    ${EXECDIR}/robot/_resources/keywords/questionaire.robot
 ${BASE_URL}                     http://localhost:8888/fhir-bridge/fhir
 ${EHRBASE_URL}                  http://localhost:8080/ehrbase/rest/openehr/v1
 ${DATA_SET_PATH_CONDITION}      ${EXECDIR}/../src/test/resources/Condition
-${DATA_SET_PATH_OBSERVATION}    ${EXECDIR}/../src/test/resources/Observation
 ${DATA_SET_PATH_DIAGNOSTIC}     ${EXECDIR}/../src/test/resources/DiagnosticReport
+${DATA_SET_PATH_OBSERVATION}    ${EXECDIR}/../src/test/resources/Observation
+${DATA_SET_PATH_PROCEDURE}      ${EXECDIR}/../src/test/resources/Procedure
 ${DATA_SET_PATH_QUESTIONAIRE}   ${EXECDIR}/../src/test/resources/QuestionnaireResponse
 ${VALID EHR DATA SETS}          ${EXECDIR}/robot/_resources/test_data/ehr/valid
