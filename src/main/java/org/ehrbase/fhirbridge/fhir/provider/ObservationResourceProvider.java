@@ -25,7 +25,6 @@ import org.ehrbase.client.aql.record.Record3;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
-import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
@@ -41,9 +40,6 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.AuditEvent;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
@@ -62,16 +58,14 @@ import static java.util.Date.from;
  * Resource provider for Observation
  */
 @Component
-public class ObservationResourceProvider extends AbstractResourceProvider {
+public class ObservationResourceProvider extends AbstractResourceProvider<Observation> {
 
     private final Logger logger = LoggerFactory.getLogger(ObservationResourceProvider.class);
 
-    private final IFhirResourceDao<Observation> observationDao;
-
-    public ObservationResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
-                                       IFhirResourceDao<Observation> observationDao) {
-        super(fhirContext, ehrbaseService, auditService);
-        this.observationDao = observationDao;
+    public ObservationResourceProvider(FhirContext fhirContext,
+                                       IFhirResourceDao<Observation> observationDao,
+                                       EhrbaseService ehrbaseService) {
+        super(fhirContext, Observation.class, observationDao, ehrbaseService);
     }
 
     @Search
@@ -418,8 +412,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
     public MethodOutcome createObservation(@ResourceParam Observation observation) {
         checkProfiles(observation);
 
-        observationDao.create(observation);
-        auditService.registerCreateResourceSuccessEvent(observation);
+        fhirResourceDao.create(observation);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split(":")[2]);
@@ -499,22 +492,13 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
             }
-
-            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
-
         } catch (Exception e) {
-            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), observation);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
         return new MethodOutcome()
-            .setCreated(true)
-            .setResource(observation);
-    }
-
-    @Override
-    public Class<Observation> getResourceType() {
-        return Observation.class;
+                .setCreated(true)
+                .setResource(observation);
     }
 
     @Override

@@ -1,4 +1,11 @@
 fhir-bridge:
+  audit:
+    atna:
+      enabled: false
+    #  hostname: localhost
+    #  port: 514
+    internal:
+      enabled: true
   fhir:
     narrative-generation: false
     url-mapping: /fhir/*

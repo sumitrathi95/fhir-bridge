@@ -19,15 +19,12 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +38,12 @@ import java.util.UUID;
  * Resource provider for Condition
  */
 @Component
-public class ConditionResourceProvider extends AbstractResourceProvider {
+public class ConditionResourceProvider extends AbstractResourceProvider<Condition> {
 
     private final Logger logger = LoggerFactory.getLogger(ConditionResourceProvider.class);
 
-    private final IFhirResourceDao<Condition> conditionDao;
-
-    public ConditionResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
-                                     IFhirResourceDao<Condition> conditionDao) {
-        super(fhirContext, ehrbaseService, auditService);
-        this.conditionDao = conditionDao;
+    public ConditionResourceProvider(FhirContext fhirContext, IFhirResourceDao<Condition> conditionDao, EhrbaseService ehrbaseService) {
+        super(fhirContext, Condition.class, conditionDao, ehrbaseService);
     }
 
     @Read
@@ -212,8 +205,7 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
 
     @Create
     public MethodOutcome createCondition(@ResourceParam Condition condition) {
-        conditionDao.create(condition);
-        auditService.registerCreateResourceSuccessEvent(condition);
+        fhirResourceDao.create(condition);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split(":")[2]);
@@ -229,19 +221,12 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
             //UUID ehr_id = service.createEhr(); // <<< reflections error!
             VersionUid versionUid = ehrbaseService.saveDiagnosis(ehrUid, composition);
             logger.info("Composition created with UID {}", versionUid);
-            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", condition);
         } catch (Exception e) {
-            auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), condition);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
         return new MethodOutcome()
                 .setCreated(true)
                 .setResource(condition);
-    }
-
-    @Override
-    public Class<Condition> getResourceType() {
-        return Condition.class;
     }
 }

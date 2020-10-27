@@ -9,19 +9,10 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
-import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.openehealth.ipf.commons.audit.AuditContext;
-import org.openehealth.ipf.commons.audit.codes.EventActionCode;
-import org.openehealth.ipf.commons.audit.codes.EventOutcomeIndicator;
-import org.openehealth.ipf.commons.audit.event.CustomAuditMessageBuilder;
-import org.openehealth.ipf.commons.audit.types.EventId;
-import org.openehealth.ipf.commons.audit.types.EventType;
-import org.openehealth.ipf.commons.audit.types.PurposeOfUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,41 +23,21 @@ import java.util.UUID;
  * Resource provider for DiagnosticReport
  */
 @Component
-public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
+public class DiagnosticReportProvider extends AbstractResourceProvider<DiagnosticReport> {
 
-    private final Logger logger = LoggerFactory.getLogger(DiagnosticReportResourceProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(DiagnosticReportProvider.class);
 
-    private final IFhirResourceDao<DiagnosticReport> diagnosticReportDao;
-
-    private final AuditContext auditContext;
-
-    public DiagnosticReportResourceProvider(FhirContext fhirContext, EhrbaseService ehrbaseService, AuditService auditService,
-                                            IFhirResourceDao<DiagnosticReport> diagnosticReportDao, AuditContext auditContext) {
-        super(fhirContext, ehrbaseService, auditService);
-        this.diagnosticReportDao = diagnosticReportDao;
-        this.auditContext = auditContext;
+    public DiagnosticReportProvider(FhirContext fhirContext,
+                                    IFhirResourceDao<DiagnosticReport> diagnosticReportDao,
+                                    EhrbaseService ehrbaseService) {
+        super(fhirContext, DiagnosticReport.class, diagnosticReportDao, ehrbaseService);
     }
 
     @Create
     public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
         checkProfiles(diagnosticReport);
 
-        auditContext.audit(
-                new CustomAuditMessageBuilder(
-                        EventOutcomeIndicator.Success,
-                        "",
-                        EventActionCode.Create,
-                        EventId.of("eventIdCode", "eventIdCodeSystem", "Event Id Code"),
-                        EventType.of("eventTypeCode", "eventTypeCodeSystem", "Event Type Code"),
-                        PurposeOfUse.of("purposeOfUseCode", "purposeOfUseCodeSystem", "Purpose of use")
-                ).getMessage()
-        );
-
-        diagnosticReportDao.create(diagnosticReport);
-        auditService.registerCreateResourceSuccessEvent(diagnosticReport);
-
-
-
+        fhirResourceDao.create(diagnosticReport);
 
         logger.info(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT {}", diagnosticReport.getIdentifier().get(0).getValue());
         logger.info(">>>>>>>>>>>>>>>>>> CONTAINED {}", diagnosticReport.getContained().size());
@@ -81,9 +52,7 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveLab(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.DIAGNOSTIC_REPORT_LAB);
-                auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", diagnosticReport);
             } catch (Exception e) {
-                auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), diagnosticReport);
                 throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
             }
         }
@@ -91,11 +60,6 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
         return new MethodOutcome()
                 .setCreated(true)
                 .setResource(diagnosticReport);
-    }
-
-    @Override
-    public Class<DiagnosticReport> getResourceType() {
-        return DiagnosticReport.class;
     }
 
     @Override

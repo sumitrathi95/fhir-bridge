@@ -1,9 +1,9 @@
-package org.ehrbase.fhirbridge.fhir.audit;
+package org.ehrbase.fhirbridge.audit.internal;
 
 import ca.uhn.fhir.model.api.annotation.DatatypeDef;
 import org.hl7.fhir.r4.model.Coding;
 
-@DatatypeDef(name="Coding")
+@DatatypeDef(name = "Coding")
 public class AuditEventEntityType extends Coding {
 
     public static final AuditEventEntityType CONDITION = new AuditEventEntityType("Condition");
@@ -18,5 +18,22 @@ public class AuditEventEntityType extends Coding {
 
     public AuditEventEntityType(String entityType) {
         super("http://hl7.org/fhir/resource-types", entityType, entityType);
+    }
+
+    public static AuditEventEntityType resolve(String auditEventEntityTypeCode) {
+        switch (auditEventEntityTypeCode) {
+            case "Condition":
+                return CONDITION;
+            case "DiagnosticReport":
+                return DIAGNOSTIC_REPORT;
+            case "Observation":
+                return OBSERVATION;
+            case "Procedure":
+                return PROCEDURE;
+            case "QuestionnaireResponse":
+                return QUESTIONNAIRE_RESPONSE;
+            default:
+                throw new IllegalArgumentException("No matching constant for [" + auditEventEntityTypeCode + "]");
+        }
     }
 }
