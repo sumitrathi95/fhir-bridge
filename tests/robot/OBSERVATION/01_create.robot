@@ -1,4 +1,4 @@
-# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH)
+# Copyright (c) 2020 Peter Wohlfarth (Appsfactory GmbH), Wladislaw Wagner (Vitasystems GmbH), Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -67,4 +67,49 @@ Force Tags              create
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create heart rate    observation-example-heart-rate.json
+    observation.validate response - 201
+
+
+005 Create Sofa Score
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create sofa score    observation-sofa-score-example.json
+    observation.validate response - 201
+
+
+006 Create Observation Lab
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation lab    observation-observationlab-example.json
+    observation.validate response - 201
+
+
+007 Create Observation Using Default Profile
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-example.json
+    observation.validate response - 422 (default profile not supported)
+
+
+008 Create Observation Using Unsupported Profile
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-vitalsigns-example.json
+    observation.validate response - 422 (profile not supported)
+
+
+009 Create Coronavirus Lab Result
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation    observation-coronavirusnachweistest-example.json
     observation.validate response - 201
