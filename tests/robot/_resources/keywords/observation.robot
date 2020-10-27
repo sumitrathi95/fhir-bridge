@@ -1,4 +1,5 @@
-# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH), Dave Petzold (Appsfactory GmbH)
+# Copyright (c) 2019 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH),
+# Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -70,7 +71,7 @@ get body temperature
                         String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
-                        # Eventuell mit Array noch resourcetype Observation im entry abfragen
+                        String     response body entry 0 resource resourceType    Observation
                         Output Debug Info To Console
 
 
@@ -80,6 +81,7 @@ get observation lab
                         String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
+                        String     response body entry 0 resource resourceType    Observation
                         Output Debug Info To Console
 
 
@@ -89,6 +91,7 @@ get coronavirus lab results
                         String     request method    GET
                         String     response body id
                         String     response body resourceType    Bundle
+                        String     response body entry 0 resource resourceType    Observation
                         Output Debug Info To Console
 
 
