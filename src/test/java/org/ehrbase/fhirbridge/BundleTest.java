@@ -7,17 +7,22 @@ import ca.uhn.fhir.util.OperationOutcomeUtil;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class BundleTest extends FhirBridgeApplicationTestFactory {
     @Test
     public void createBloodGasPanel() throws IOException {
 
         String resource = getContent("classpath:/Bundle/BloodGas.json");
-        resource = resource.replaceAll(
-                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "Patient/" + subjectIdValue);
+
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -32,9 +37,8 @@ public class BundleTest extends FhirBridgeApplicationTestFactory {
     public void createBloodGasPanelOnlyPH() throws IOException {
 
         String resource = getContent("classpath:/Bundle/OnlyWithPH.json");
-        resource = resource.replaceAll(
-                "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-                "Patient/" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
@@ -57,12 +61,12 @@ public class BundleTest extends FhirBridgeApplicationTestFactory {
 
     @Test
     public void createBloodGasPanelIncludingInvalidProfile() throws IOException {
-        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+        InternalErrorException exception = Assertions.assertThrows(InternalErrorException.class,
                 () -> client.create().resource(getContent(
-                        "classpath:/Bundle/ToManyProfiles.json"))
+                        "classpath:/Bundle/AdditionalInvalidProfile.json"))
                         .execute());
 
-        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Make sure only the for Blood Gas Panel supported Profiles are contained in the Bundle these are: blood gas panel, oxygen saturation, carbon dioxide saturation, ph, oxygen partaial pressure");
+        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Blood gas panel bundle needs to contain only the profiles for the blood gas panel. Please delete profile https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration from the Bundle.");
     }
 
     @Test
@@ -85,6 +89,25 @@ public class BundleTest extends FhirBridgeApplicationTestFactory {
         Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Bundle Blood gas panel needs to contain at least one of the following profiles: oxygen partial pressure, carbon dioxide partial pressure, ph or oxygen saturation");
     }
 
+    @Test
+    public void createBloodGasWithDuplicatedProfile() throws IOException {
+        InternalErrorException exception = Assertions.assertThrows(InternalErrorException.class,
+                () -> client.create().resource(getContent(
+                        "classpath:/Bundle/DuplicateProfile.json"))
+                        .execute());
 
+        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Oxygen partial pressure profile is duplicated within the bundle, please delete one of them");
+    }
+
+
+    @Test
+    public void createBloodGasWithDuplicatedProfile2() throws IOException {
+        InternalErrorException exception = Assertions.assertThrows(InternalErrorException.class,
+                () -> client.create().resource(getContent(
+                        "classpath:/Bundle/DuplicateProfile2.json"))
+                        .execute());
+
+        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Oxygen saturation profile is duplicated within the bundle, please delete one of them");
+    }
 
 }

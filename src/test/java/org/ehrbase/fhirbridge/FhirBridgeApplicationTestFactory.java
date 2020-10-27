@@ -28,36 +28,36 @@ import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FhirBridgeApplicationTestFactory {
+public abstract class FhirBridgeApplicationTestFactory {
 
     final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
 
-    private static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
+    static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
 
     @LocalServerPort
-     int port;
+    int port;
 
     @Autowired
-     FhirContext context;
+    FhirContext context;
 
     @Autowired
-     FhirConfiguration config;
+    private FhirConfiguration config;
 
     @Autowired
-     ResourceLoader resourceLoader;
+    ResourceLoader resourceLoader;
 
-     IGenericClient client;
+    IGenericClient client;
 
     @Autowired
-     EhrbaseService service;
+    EhrbaseService service;
 
-     UUID ehrId;
-     String subjectIdValue;
+    UUID ehrId;
+    String subjectIdValue;
 
-     String patientReference;
+    String patientReference;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
 
@@ -79,7 +79,7 @@ public class FhirBridgeApplicationTestFactory {
         this.patientReference = "urn:uuid:" + subjectIdValue;
     }
 
-     String getContent(String location) throws IOException {
+    String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
             return IOUtils.toString(input, StandardCharsets.UTF_8);

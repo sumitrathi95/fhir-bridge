@@ -285,7 +285,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(
                 "Default profile is not supported for Observation. One of the following profiles is expected: " +
                         "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate, " +
                         "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
@@ -307,7 +307,7 @@ public class FhirBridgeApplicationIT {
                 "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
                         "One of the following profiles is expected: " +
                         "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate," +
                         " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
@@ -363,40 +363,40 @@ public class FhirBridgeApplicationIT {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
 
-//    @Test
-//    public void searchBodyTemp() throws IOException {
-//
-//        // Needs at least one temp, can't rely on the test execution order to create a
-//        // body temp in the server
-//        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
-//        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-//
-//        client.create().resource(resource).execute();
-//
-//        Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
-//                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-//                .returnBundle(Bundle.class).execute();
-//
-//        Assertions.assertTrue(bundle.getTotal() > 0);
-//    }
+    @Test
+    public void searchBodyTemp() throws IOException {
 
-//    @Test
-//    public void searchCoronavirusLabResults() throws IOException {
-//
-//        // Needs at least one lab result, can't rely on the test execution order
-//        // WARNING: this will fail if terminology validation is turned on
-//        String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
-//        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
-//
-//        MethodOutcome outcome = client.create().resource(resource).execute();
-//
-//        Bundle bundle = client.search().forResource(Observation.class)
-//                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
-//                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
-//                .returnBundle(Bundle.class).execute();
-//
-//        Assertions.assertTrue(bundle.getTotal() > 0);
-//    }
+        // Needs at least one temp, can't rely on the test execution order to create a
+        // body temp in the server
+        String resource = getContent("classpath:/Observation/observation-bodytemp-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        client.create().resource(resource).execute();
+
+        Bundle bundle = client.search().forResource(Observation.class).withProfile(Profile.BODY_TEMP.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertFalse(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void searchCoronavirusLabResults() throws IOException {
+
+        // Needs at least one lab result, can't rely on the test execution order
+        // WARNING: this will fail if terminology validation is turned on
+        String resource = getContent("classpath:/Observation/observation-coronavirusnachweistest-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Bundle bundle = client.search().forResource(Observation.class)
+                .withProfile(Profile.CORONARIRUS_NACHWEIS_TEST.getUrl())
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
+
+        Assertions.assertFalse(bundle.getTotal() > 0);
+    }
 
     @Test
     public void searchObservationLab() throws IOException {
@@ -485,4 +485,5 @@ public class FhirBridgeApplicationIT {
             return IOUtils.toString(input, StandardCharsets.UTF_8);
         }
     }
+
 }

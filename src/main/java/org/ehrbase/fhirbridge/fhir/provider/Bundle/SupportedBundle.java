@@ -34,14 +34,14 @@ public abstract class SupportedBundle extends Bundle {
 
    private String getEntryEhrUID(String ehrUID, Observation observation){
       if (ehrUID.equals("") ||  referencesSameEhrUID(ehrUID, observation)) {
-         return observation.getSubject().getReference().split("/")[1];
+         return observation.getSubject().getReference().split(":")[2];
       }
       throw new InternalErrorException("The subject Ids of the profile within the Bundle reference different Patient. A Blood Gas Panel must refer to one identical Patient!");
 
    }
 
    private boolean referencesSameEhrUID(String ehrUID, Observation observation){
-      return ehrUID.equals(observation.getSubject().getReference().split("/")[1]);
+      return ehrUID.equals(observation.getSubject().getReference().split(":")[2]);
    }
 
    private boolean checkIfPatientRessourceNotPresent(BundleEntryComponent bundle) {

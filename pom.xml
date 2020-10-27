@@ -26,7 +26,7 @@
         <spring.version>5.2.9.RELEASE</spring.version>
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
         <woodstox.version>6.1.1</woodstox.version>
-        <ehrbase-sdk.version>v0.3.7</ehrbase-sdk.version>
+        <ehrbase-sdk.version>0.3.7</ehrbase-sdk.version>
     </properties>
 
     <build>
@@ -101,7 +101,7 @@
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
                                             <!--TODO change back to 0.50 -->
-                                            <minimum>0.40</minimum>
+                                            <minimum>0.50</minimum>
                                         </limit>
                                         <!-- <limit>
                                             <counter>CLASS</counter>
