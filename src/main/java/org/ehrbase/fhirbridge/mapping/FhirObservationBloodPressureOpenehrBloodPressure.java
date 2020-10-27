@@ -1,7 +1,9 @@
 package org.ehrbase.fhirbridge.mapping;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.RMObject;
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datavalues.DataValue;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.definition.BlutdruckObservation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
@@ -30,6 +32,12 @@ public class FhirObservationBloodPressureOpenehrBloodPressure {
     public static BlutdruckComposition map(Observation observation) {
 
         BlutdruckComposition bloodPressureComposition = new BlutdruckComposition();
+
+        // set feeder audit
+        FeederAudit fa = CommonData.constructFeederAudit(observation);
+        bloodPressureComposition.setFeederAudit(fa);
+
+
         BlutdruckObservation bloodPressure = new BlutdruckObservation();
 
         DateTimeType fhirEffectiveDateTime = observation.getEffectiveDateTimeType();

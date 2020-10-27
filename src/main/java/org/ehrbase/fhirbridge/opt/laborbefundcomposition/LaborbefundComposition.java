@@ -27,7 +27,6 @@ public class LaborbefundComposition {
   @Id
   private VersionUid versionUid;
 
-  // test
   @Path("/feeder_audit")
   private FeederAudit feederAudit;
 
@@ -76,7 +75,6 @@ public class LaborbefundComposition {
   @Path("/content[openEHR-EHR-OBSERVATION.laboratory_test_result.v1]")
   private List<LaborergebnisObservation> laborergebnis;
 
-  // test
   public void setFeederAudit(FeederAudit feederAudit)
   {
      this.feederAudit = feederAudit;

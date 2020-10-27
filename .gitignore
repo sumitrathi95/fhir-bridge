@@ -13,3 +13,15 @@ lucene
 .project
 .settings
 org.eclipse*
+
+
+# Python
+venv
+*.venv
+
+# Robot Framework
+tests/results
+
+
+# unknown
+lucene
