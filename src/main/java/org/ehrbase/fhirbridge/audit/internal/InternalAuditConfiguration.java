@@ -23,7 +23,12 @@ public class InternalAuditConfiguration {
     }
 
     @Bean
-    public CreateOperationInterceptor createOperationInternalAuditInterceptor(InternalAuditContext internalAuditContext) {
-        return new CreateOperationInterceptor(internalAuditContext);
+    public RestOperationCreateAuditInterceptor createOperationInternalAuditInterceptor(InternalAuditContext internalAuditContext) {
+        return new RestOperationCreateAuditInterceptor(internalAuditContext);
+    }
+
+    @Bean
+    public StoreResourceAuditInterceptor storeResourceAuditInterceptor(InternalAuditContext internalAuditContext) {
+        return new StoreResourceAuditInterceptor(internalAuditContext);
     }
 }

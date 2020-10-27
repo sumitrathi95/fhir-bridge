@@ -7,12 +7,18 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import org.openehealth.ipf.commons.audit.AuditContext;
 import org.openehealth.ipf.commons.audit.codes.EventOutcomeIndicator;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 @Interceptor
-public class RestOperationAtnaInterceptor {
+public class RestOperationAtnaInterceptor implements MessageSourceAware {
 
     private final AuditContext auditContext;
+
+    private MessageSourceAccessor messages;
 
     public RestOperationAtnaInterceptor(AuditContext auditContext) {
         Assert.notNull(auditContext, "AuditContext must not be null");
@@ -24,7 +30,7 @@ public class RestOperationAtnaInterceptor {
         auditContext.audit(
                 new RestOperationAuditMessageBuilder(
                         EventOutcomeIndicator.Success,
-                        "Success",
+                        messages.getMessage("audit.restOperationExecuted", new Object[]{requestDetails.getRestOperationType()}),
                         requestDetails.getRestOperationType())
                         .getMessage());
     }
@@ -34,8 +40,13 @@ public class RestOperationAtnaInterceptor {
         auditContext.audit(
                 new RestOperationAuditMessageBuilder(
                         EventOutcomeIndicator.MajorFailure,
-                        "Error",
+                        exception.getMessage(),
                         requestDetails.getRestOperationType())
                         .getMessage());
+    }
+
+    @Override
+    public void setMessageSource(@NonNull MessageSource messageSource) {
+        messages = new MessageSourceAccessor(messageSource);
     }
 }

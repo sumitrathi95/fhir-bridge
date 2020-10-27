@@ -7,22 +7,22 @@ import org.hl7.fhir.r4.model.Coding;
 public class AuditEventType extends Coding {
 
     /**
+     * Application Activity has taken place.
+     */
+    public static final AuditEventType APPLICATION_ACTIVITY = new AuditEventType(
+            "http://dicom.nema.org/resources/ontology/DCM",
+            "110100",
+            "Application Activity");
+
+    public AuditEventType(String system, String code, String display) {
+        super(system, code, display);
+    }
+
+    /**
      * Execution of a RESTful operation as defined by FHIR.
      */
     public static final AuditEventType REST = new AuditEventType(
             "http://terminology.hl7.org/CodeSystem/audit-event-type",
             "rest",
             "RESTful Operation");
-
-    /**
-     * Occurs when an agent causes the system to change the form, language or code system used to represent record entry content.
-     */
-    public static final AuditEventType TRANSFORM = new AuditEventType(
-            "http://terminology.hl7.org/CodeSystem/iso-21089-lifecycle",
-            "transform",
-            "Transform/Translate Record Lifecycle Event");
-
-    public AuditEventType(String system, String code, String display) {
-        super(system, code, display);
-    }
 }

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -44,8 +45,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
 
     @Read()
     @SuppressWarnings("unused")
-    public Procedure getProcedureById(@IdParam IdType identifier)
-    {
+    public Procedure getProcedureById(@IdParam IdType identifier) {
         Procedure result = new Procedure();
 
         // identifier.getValue() is the Resource/theId
@@ -61,25 +61,22 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
         //        "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
 
         // Workaround: ignores anatomical location while the issue is reviewed
-        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time "+
-                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] "+
-                "WHERE c/uid/value = '"+ identifier.getIdPart() +"'";
-
+        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time " +
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] " +
+                "WHERE c/uid/value = '" + identifier.getIdPart() + "'";
 
 
         // uid. procedure name, procedure description, procedure time, anatomical location (removed because the empty results issue)
         Query<Record4<String, DvText, DvText, DvDateTime>> query = Query.buildNativeQuery(
-            aql, String.class, DvText.class, DvText.class, DvDateTime.class
+                aql, String.class, DvText.class, DvText.class, DvDateTime.class
         );
 
         List<Record4<String, DvText, DvText, DvDateTime>> results = new ArrayList<>();
 
-        try
-        {
+        try {
             results = ehrbaseService.getClient().aqlEndpoint().execute(query);
 
-            if (results.isEmpty())
-            {
+            if (results.isEmpty()) {
                 throw new ResourceNotFoundException("Resource not found"); // causes 404
             }
 
@@ -97,13 +94,9 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
 
             // COMPOSITION => FHIR Procedure
             result = FhirProcedureOpenehrProcedure.map(uid, procedureName, procedureDescription, time, bodyLocation);
-        }
-        catch (ResourceNotFoundException e)
-        {
+        } catch (ResourceNotFoundException e) {
             throw e;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -113,17 +106,16 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
     @Search
     @SuppressWarnings("unused")
     public List<Procedure> getAllProcedures(
-            @OptionalParam(name="_profile") UriParam profile,
-            @RequiredParam(name=Patient.SP_IDENTIFIER) TokenParam subjectId
-    )
-    {
+            @OptionalParam(name = "_profile") UriParam profile,
+            @RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam subjectId
+    ) {
         List<Procedure> result = new ArrayList<>();
 
         // Issue getting results with anatomical location
         // Workaround: ignores anatomical location while the issue is reviewed
-        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time "+
-                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] "+
-                "WHERE e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+        String aql = "SELECT c/uid/value, a/description[at0001]/items[at0002]/value, a/description[at0001]/items[at0049]/value, a/time " +
+                "FROM EHR e CONTAINS COMPOSITION c CONTAINS ACTION a[openEHR-EHR-ACTION.procedure.v1] " +
+                "WHERE e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
 
         // uid. procedure name, procedure description, procedure time, anatomical location (removed because the empty results issue)
         Query<Record4<String, DvText, DvText, DvDateTime>> query = Query.buildNativeQuery(
@@ -132,14 +124,12 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
 
         List<Record4<String, DvText, DvText, DvDateTime>> results = new ArrayList<>();
 
-        try
-        {
+        try {
             results = ehrbaseService.getClient().aqlEndpoint().execute(query);
 
             Procedure procedure;
 
-            for (Record4<String, DvText, DvText, DvDateTime> record: results)
-            {
+            for (Record4<String, DvText, DvText, DvDateTime> record : results) {
                 String uid = record.value1();
                 DvText procedureName = record.value2();
                 DvText procedureDescription = record.value3(); // optional
@@ -152,9 +142,7 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
                 procedure = FhirProcedureOpenehrProcedure.map(uid, procedureName, procedureDescription, time, bodyLocation);
                 result.add(procedure);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new InternalErrorException("There was a problem retrieving the results", e);
         }
@@ -258,8 +246,8 @@ public class ProcedureResourceProvider extends AbstractResourceProvider<Procedur
     }
 */
     @Create
-    public MethodOutcome createProcedure(@ResourceParam Procedure procedure) {
-        fhirResourceDao.create(procedure);
+    public MethodOutcome createProcedure(@ResourceParam Procedure procedure, RequestDetails requestDetails) {
+        fhirResourceDao.create(procedure, requestDetails);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(procedure.getSubject().getReference().split(":")[2]);

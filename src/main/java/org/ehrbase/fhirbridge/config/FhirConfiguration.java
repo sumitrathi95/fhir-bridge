@@ -10,7 +10,12 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import org.ehrbase.fhirbridge.FhirBridgeException;
+import org.ehrbase.fhirbridge.audit.atna.AtnaProperties;
 import org.ehrbase.fhirbridge.audit.atna.RestOperationAtnaInterceptor;
+import org.ehrbase.fhirbridge.audit.internal.AuditEventProvider;
+import org.ehrbase.fhirbridge.audit.internal.InternalAuditProperties;
+import org.ehrbase.fhirbridge.audit.internal.RestOperationCreateAuditInterceptor;
+import org.ehrbase.fhirbridge.audit.internal.StoreResourceAuditInterceptor;
 import org.ehrbase.fhirbridge.fhir.provider.AbstractResourceProvider;
 import org.ehrbase.fhirbridge.fhir.validation.RemoteTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
@@ -23,7 +28,6 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -74,18 +78,20 @@ public class FhirConfiguration {
         return bean;
     }
 
-    // TODO: Improve registration of interceptors
     @Bean
-    public RestfulServer fhirServlet(@Autowired(required = false) RestOperationAtnaInterceptor atnaInterceptor) {
+    public RestfulServer fhirServlet(AtnaProperties atnaProperties, InternalAuditProperties auditProperties) {
         RestfulServer server = new RestfulServer(fhirContext());
-        server.registerProviders(
-                beanFactory.getBeansOfType(AbstractResourceProvider.class)
-                        .values()
-        );
+        server.registerProviders(beanFactory.getBeansOfType(AbstractResourceProvider.class).values());
         server.registerInterceptor(requestValidatingInterceptor());
         server.registerInterceptor(corsValidatingInterceptor());
-        if (atnaInterceptor != null) {
-            server.registerInterceptor(atnaInterceptor);
+
+        if (atnaProperties.isEnabled()) {
+            server.registerInterceptor(beanFactory.getBean(RestOperationAtnaInterceptor.class));
+        }
+        if (auditProperties.isEnabled()) {
+            server.registerInterceptor(beanFactory.getBean(RestOperationCreateAuditInterceptor.class));
+            server.registerInterceptor(beanFactory.getBean(StoreResourceAuditInterceptor.class));
+            server.registerProvider(beanFactory.getBean(AuditEventProvider.class));
         }
         return server;
     }

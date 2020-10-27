@@ -1,14 +1,17 @@
-ehrbase:
-  address: localhost
-  port: 8080
-  path: /ehrbase/rest/openehr/v1/
 fhir-bridge:
+  audit:
+    internal:
+      enabled: true
   fhir:
     narrative-generation: false
     url-mapping: /fhir/*
     validation:
       terminology:
         mode: off
+ehrbase:
+  address: localhost
+  port: 8080
+  path: /ehrbase/rest/openehr/v1/
 logging:
   level:
     ca.uhn.fhir: warn
@@ -22,6 +25,8 @@ server:
     context-path: /fhir-bridge
   port: 8888
 spring:
+  application:
+    name: FHIR Bridge
   batch:
     job:
       enabled: false

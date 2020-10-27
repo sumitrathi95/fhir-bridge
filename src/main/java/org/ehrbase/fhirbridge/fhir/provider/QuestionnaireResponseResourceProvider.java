@@ -5,6 +5,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,8 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
     }
 
     @Create
-    public MethodOutcome createQuestionnaireResponse(@ResourceParam QuestionnaireResponse questionnaireResponse) {
-        fhirResourceDao.create(questionnaireResponse);
+    public MethodOutcome createQuestionnaireResponse(@ResourceParam QuestionnaireResponse questionnaireResponse, RequestDetails requestDetails) {
+        fhirResourceDao.create(questionnaireResponse, requestDetails);
         return new MethodOutcome()
                 .setCreated(true)
                 .setResource(questionnaireResponse);

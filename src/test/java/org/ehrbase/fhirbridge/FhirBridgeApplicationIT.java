@@ -15,7 +15,14 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.AuditEvent;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -328,7 +335,7 @@ public class FhirBridgeApplicationIT {
                 .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
                 .returnBundle(Bundle.class).execute();
 
-        Assertions.assertEquals(1, bundle.getTotal());
+        Assertions.assertEquals(2, bundle.getTotal());
     }
 
     // FIXME: we need to use the status in the create ehr service, we are using null

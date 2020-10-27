@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
@@ -204,8 +205,8 @@ public class ConditionResourceProvider extends AbstractResourceProvider<Conditio
     }
 
     @Create
-    public MethodOutcome createCondition(@ResourceParam Condition condition) {
-        fhirResourceDao.create(condition);
+    public MethodOutcome createCondition(@ResourceParam Condition condition, RequestDetails requestDetails) {
+        fhirResourceDao.create(condition, requestDetails);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(condition.getSubject().getReference().split(":")[2]);

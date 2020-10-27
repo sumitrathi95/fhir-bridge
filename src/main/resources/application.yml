@@ -1,9 +1,9 @@
 fhir-bridge:
   audit:
-    atna:
-      enabled: false
-    #  hostname: localhost
-    #  port: 514
+    #    atna:
+    #      enabled: true
+    #      hostname: localhost
+    #      port: 514
     internal:
       enabled: true
   fhir:
@@ -27,6 +27,8 @@ server:
     context-path: /fhir-bridge
   port: 8888
 spring:
+  application:
+    name: FHIR Bridge
   batch:
     job:
       enabled: false

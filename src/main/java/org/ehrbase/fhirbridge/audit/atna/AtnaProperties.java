@@ -2,10 +2,10 @@ package org.ehrbase.fhirbridge.audit.atna;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "fhir-bridge.audit.atna")
+@ConfigurationProperties(prefix = "fhir-bridge.audit.atna", ignoreUnknownFields = false)
 public class AtnaProperties {
 
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     private String hostname = "localhost";
 

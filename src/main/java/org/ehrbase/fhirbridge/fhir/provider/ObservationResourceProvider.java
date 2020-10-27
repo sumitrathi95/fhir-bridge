@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ParamPrefixEnum;
 import ca.uhn.fhir.rest.param.QuantityParam;
@@ -409,10 +410,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider<Observ
 
     @Create
     @SuppressWarnings("unused")
-    public MethodOutcome createObservation(@ResourceParam Observation observation) {
+    public MethodOutcome createObservation(@ResourceParam Observation observation, RequestDetails requestDetails) {
         checkProfiles(observation);
 
-        fhirResourceDao.create(observation);
+        fhirResourceDao.create(observation, requestDetails);
 
         // will throw exceptions and block the request if the patient doesn't have an EHR
         UUID ehrUid = getEhrUidForSubjectId(observation.getSubject().getReference().split(":")[2]);

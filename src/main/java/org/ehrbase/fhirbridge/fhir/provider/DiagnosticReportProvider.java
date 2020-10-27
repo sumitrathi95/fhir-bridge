@@ -5,6 +5,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
@@ -34,10 +35,10 @@ public class DiagnosticReportProvider extends AbstractResourceProvider<Diagnosti
     }
 
     @Create
-    public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport) {
+    public MethodOutcome createDiagnosticReport(@ResourceParam DiagnosticReport diagnosticReport, RequestDetails requestDetails) {
         checkProfiles(diagnosticReport);
 
-        fhirResourceDao.create(diagnosticReport);
+        fhirResourceDao.create(diagnosticReport, requestDetails);
 
         logger.info(">>>>>>>>>>>>>>>>>> DIAGNOSTIC REPORT {}", diagnosticReport.getIdentifier().get(0).getValue());
         logger.info(">>>>>>>>>>>>>>>>>> CONTAINED {}", diagnosticReport.getContained().size());
