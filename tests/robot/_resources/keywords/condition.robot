@@ -36,7 +36,7 @@ validate response - 201
 validate response - 422 (Unprocessable Entity)
                         Integer    response status    422
                         String     $.issue[0]['diagnostics']
-                        ...        pattern=Angegebener Profiltyp war \  # Angegebener Profiltyp war \"Observation\", aber gefundener Typ \"Condition\".
+                        ...        Specified profile type was 'Observation', but found type 'Condition'
 
 
 get diagnose condition
