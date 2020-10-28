@@ -1,4 +1,5 @@
-# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH)
+# Copyright (c) 2020 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH),
+# Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -31,19 +32,13 @@ Force Tags              create
 
 
 *** Test Cases ***
-001 Create Diagnose Condition
-    [Documentation]     1. create EHR
-    ...                 2. trigger condition endpoint
+001 Create Questionaire Response
+    [Documentation]     1. trigger QuestionaireResponse endpoint
 
-    ehr.create new ehr    000_ehr_status.json
-    condition.create diagnose condition    condition-example.json
-    condition.validate response - 201
+    # comment: # CREATING EHR IS NOT REQUIRED YET
+    # ehr.create new ehr    000_ehr_status.json
+
+    questionaire.create questionnaire response    covapp-response.json
+    questionaire.validate response - 201
 
 
-002 Create Condition Using Invalid Profile
-    [Documentation]     1. create EHR
-    ...                 2. trigger condition endpoint using invalid payload
-
-    ehr.create new ehr    000_ehr_status.json
-    condition.create diagnose condition    condition-invalid-profile-example.json
-    condition.validate response - 422 (Unprocessable Entity)
