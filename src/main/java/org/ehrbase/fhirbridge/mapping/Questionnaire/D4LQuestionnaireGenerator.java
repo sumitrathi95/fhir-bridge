@@ -1,48 +1,50 @@
+/*
 package org.ehrbase.fhirbridge.mapping.Questionnaire;
-package org.ehrbase.fhirbridge.mapping.F2OQuestionnaire;
 
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.D4LQuestionnaireComposition;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
 
-import java.time.OffsetDateTime;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 
 public class D4LQuestionnaireGenerator {
-    QuestionnaireResponseDAO questionnaireResponsePOJO;
-    AdHocUberschriftSection generalInformation = new AdHocUberschriftSection();
+    QuestionnaireResponseDAO questionnaireResponseDAO;
+    AllgemeineAngabenSection generalInformation = new AllgemeineAngabenSection();
 
-    AdHocUberschriftSection2 symptome = new AdHocUberschriftSection2();
+    SymptomeSection symptome = new SymptomeSection();
     List<DiagnoseEvaluation> symptomesList = new ArrayList<DiagnoseEvaluation>();
 
-    AdHocUberschriftSection3 anamnese = new AdHocUberschriftSection3();
-    List<AdHocUberschriftDiagnoseChoice> anamneseList = new ArrayList<AdHocUberschriftDiagnoseChoice>();
+    VorGrunderkrankungenSection anamnese = new VorGrunderkrankungenSection();
+    List<VorGrunderkrankungenSection> anamneseList = new ArrayList<VorGrunderkrankungenSection>();
 
-    AdHocUberschriftSection4 medication = new AdHocUberschriftSection4();
-    List<AdHocUberschriftOrgEhrbaseEhrEncodeWrappersSnakecase25e49cb2ZusammenfassungDerMedikationChoice> summaryMedicationList =
-            new ArrayList<AdHocUberschriftOrgEhrbaseEhrEncodeWrappersSnakecase25e49cb2ZusammenfassungDerMedikationChoice>();
+    MedikamenteImpfungenSection medication = new MedikamenteImpfungenSection();
+ */
+/*   List<ZusammenfassungDerMedikationChoice> summaryMedicationList =
+            new ArrayList<AdHocUberschriftOrgEhrbaseEhrEncodeWrappersSnakecase25e49cb2ZusammenfassungDerMedikationChoice>();*//*
+
     List<ArzneimittelverwaltungAction> medicationManagementList = new ArrayList<>();
 
-    AdHocUberschriftSection5 dataDonation = new AdHocUberschriftSection5();
+    DatenspendeSection dataDonation = new DatenspendeSection();
 
 
     public D4LQuestionnaireComposition parse(QuestionnaireResponseDAO questionnaireResponsePOJO, D4LQuestionnaireComposition d4LQuestionnaireComposition ) {
-        this.questionnaireResponsePOJO = questionnaireResponsePOJO;
+        this.questionnaireResponseDAO = questionnaireResponsePOJO;
         return runMapping(d4LQuestionnaireComposition);
     }
 
     private D4LQuestionnaireComposition runMapping(D4LQuestionnaireComposition d4LQuestionnaireComposition) {
 
-        mapAge();
-        mapLivingSituation();
+    //    mapAge();
+*/
+/*        mapLivingSituation();
         mapPrivateCaregiver();
         mapSmoker();
         mapNurse();
         mapPregnant();
-        mapContactWithInfected();
+        mapContactWithInfected();*//*
+
 
 //        mapNameDesProblems();
 //        mapSinceWhenSymptoms();
@@ -74,7 +76,7 @@ public class D4LQuestionnaireGenerator {
 //        medication.setZusammenfassungDerMedikation(summaryMedicationList);
 //        medication.setArzneimittelverwaltung(medicationManagementList);
 
-        d4LQuestionnaireComposition.setAdHocUberschrift(generalInformation);
+        d4LQuestionnaireComposition.setAllgemeineAngaben(generalInformation);
 //        d4LQuestionnaireComposition.setAdHocUberschrift(symptome);
         // d4LQuestionnaireComposition.setAdHocUberschrift(medication);
         //  d4LQuestionnaireComposition.setAdHocUberschrift(anamnese);
@@ -84,21 +86,10 @@ public class D4LQuestionnaireGenerator {
     }
 
 
-    private void mapAge() {
-        String age = questionnaireResponsePOJO.getAge();
-        AlterObservation alterObservation = new AlterObservation();
 
-        alterObservation.setLanguage(Language.EN);
-        alterObservation.setSubject(new PartySelf());
-        alterObservation.setTimeValue(OffsetDateTime.now()); // mandatory
-        alterObservation.setKommentarValue(age);
-        // alterObservation.setKommentarValueTree("Alterskategorie");
-        generalInformation.setAlter(new ArrayList<>() {{
-            add(alterObservation);
-        }});
-    }
 
-    private void mapLivingSituation() {
+  */
+/*  private void mapLivingSituation() {
         String livingSituation = questionnaireResponsePOJO.getLivingSituation();
         WohnsituationEvaluation wohnsituationEvaluation = new WohnsituationEvaluation();
         wohnsituationEvaluation.setWohnsituationValue(livingSituation);
@@ -203,8 +194,10 @@ public class D4LQuestionnaireGenerator {
             add(umgcovid19KontaktObservation);
         }});
 
-    }
+    }*//*
 
+*/
+/*
     private void mapNameDesProblems() {
         DiagnoseEvaluation diagnoseEvaluation = new DiagnoseEvaluation();
         diagnoseEvaluation.setDerDiagnoseValue("");
@@ -432,7 +425,9 @@ public class D4LQuestionnaireGenerator {
 
     private void mapDataDonation() {
         //TODO currently not in the FHIR file
-    }
+    }*//*
+
 
 
 }
+*/

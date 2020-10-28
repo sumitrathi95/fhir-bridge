@@ -1,9 +1,8 @@
 package org.ehrbase.fhirbridge.mapping.Questionnaire;
-package org.ehrbase.fhirbridge.mapping;
 
 import java.util.HashMap;
 
-public class QuestionnaireUtils {
+public class CodingMapper {
 
     //TODO where do we put this
     private static final HashMap<String, Object> loincCodes = new HashMap<String, Object>(){{
