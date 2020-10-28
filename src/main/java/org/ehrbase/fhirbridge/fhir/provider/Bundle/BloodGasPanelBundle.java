@@ -50,7 +50,6 @@ public class BloodGasPanelBundle extends SupportedBundle {
         SupportedBundle.logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_GAS);
     }
 
-    //TODO check if all profiles are necessary and which one can be left out
     private void setObservations() {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             setProfiles(entry);

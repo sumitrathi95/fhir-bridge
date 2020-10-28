@@ -26,8 +26,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public abstract class FhirBridgeApplicationTestFactory {
 
     final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
@@ -41,7 +39,7 @@ public abstract class FhirBridgeApplicationTestFactory {
     FhirContext context;
 
     @Autowired
-    private FhirConfiguration config;
+    FhirConfiguration config;
 
     @Autowired
     ResourceLoader resourceLoader;
