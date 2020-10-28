@@ -19,6 +19,7 @@ import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseCompositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -163,11 +164,17 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
     public VersionUid saveKorpergrosse(UUID ehrId, KorpergrosseComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
-
 }
 

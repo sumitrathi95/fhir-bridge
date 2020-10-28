@@ -1,4 +1,4 @@
-# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH)
+# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH), Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -40,9 +40,23 @@ Force Tags              search
 	observation.get body temperature
 
 
+002 Search Observation Lab
+    [Documentation]    Search Observation Lab
+
+	observation.get observation lab
+
+
+003 Search Coronavirus Lab Results
+    [Documentation]    Search Coronavirus Lab Results
+
+	observation.get coronavirus lab results
+
 
 *** Keywords ***
 establish preconditions
     generic.prepare new request session    Prefer=return=representation
     ehr.create new ehr    000_ehr_status.json
     observation.create body temperature    observation-bodytemp-example.json
+    observation.create observation lab    observation-observationlab-example.json
+    observation.create coronavirus lab result    observation-coronavirusnachweistest-example.json
+    
