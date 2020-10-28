@@ -9,7 +9,11 @@
 3. execute robot test (s. command below)
 
 ```bash
-robot -d results/ -L TRACE robot/fhirbridge-example.robot
+robot -d results/ -L TRACE  robot/Observation # runs all tests under Observation
+robot -d results/ -L TRACE -i create  robot # runs all tests with the tag "create"
+robot -d results/ -L TRACE -i createANDobservation  robot # runs all tests which have the tag create and observation (test needs both tags)
+robot -d results/ -L TRACE -i createORobservation  robot # runs all tests which have the tag create or observation (test needs at least one of the tag)
+robot -d results/ -L TRACE -i condition -i observation  robot # runs all tests with tag condition and all tests with tag observation (same as OR)
 ```
 
 
@@ -21,4 +25,7 @@ robot -d results/ -L TRACE robot/fhirbridge-example.robot
 
 -L TRACE
 # ensures output log has all available details
+
+-i Observation
+# runs only the tests with the given tag
 ```
