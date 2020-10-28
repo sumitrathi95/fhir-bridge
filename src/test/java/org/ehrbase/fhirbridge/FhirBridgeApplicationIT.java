@@ -119,9 +119,9 @@ public class FhirBridgeApplicationIT {
                         "classpath:/Condition/condition-invalid-profile-example.json"))
                         .execute());
 
-        Assertions.assertTrue("Specified profile type was \"Observation\", but found type \"Condition\"".equals(
+        Assertions.assertTrue("Specified profile type was 'Observation', but found type 'Condition'".equals(
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())) ||
-                "Angegebener Profiltyp war \"Observation\", aber gefundener Typ \"Condition\".".equals(
+                "Angegebener Profiltyp war 'Observation', aber gefundener Typ 'Condition'.".equals(
                         OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())));
     }
 
