@@ -358,7 +358,7 @@ public class FhirBridgeApplicationIT {
     public void testEhrExistsDoesNotExist() {
         Assertions.assertFalse(service.ehrExistsBySubjectId("xxxxx"));
     }
-/*
+
     @Test
     public void searchBodyTemp() throws IOException {
 
@@ -392,7 +392,7 @@ public class FhirBridgeApplicationIT {
                 .returnBundle(Bundle.class).execute();
 
         Assertions.assertTrue(bundle.getTotal() > 0);
-    }*/
+    }
 
     @Test
     public void searchObservationLab() throws IOException {
@@ -512,7 +512,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(procedure);
     }
 
-/*    @Test
+    @Test
     public void searchProcedure() throws IOException {
         // Needs at least one condition, can't rely on the tess execution order
         String resource = getContent("classpath:/Procedure/Procedure-example.json");
@@ -527,7 +527,7 @@ public class FhirBridgeApplicationIT {
         logger.info("PROCEDURES: " + bundle.getTotal());
 
         Assertions.assertTrue(bundle.getTotal() > 0);
-    }*/
+    }
 
     @Test
     public void createPregnancyStatus() throws IOException {
