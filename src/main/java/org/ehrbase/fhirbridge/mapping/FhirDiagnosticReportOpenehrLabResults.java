@@ -4,6 +4,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.datavalues.DvIdentifier;
+import com.nedap.archie.rm.datavalues.DvText;
 import com.nedap.archie.rm.datavalues.quantity.DvInterval;
 import com.nedap.archie.rm.datavalues.quantity.datetime.DvDate;
 import org.ehrbase.fhirbridge.config.util.CommonData;
@@ -106,6 +107,7 @@ public class FhirDiagnosticReportOpenehrLabResults {
         StatusDefiningcode registereintragStatus = StatusDefiningcode.REGISTRIERT;
         ErgebnisStatusDefiningcode laboranalytStatusDefiningcode = ErgebnisStatusDefiningcode.UNVOLLSTANDIG;
 
+        // TODO: Check if corrected=changed and default=registered is correct.
         switch (fhirObservation.getStatus()) {
             case FINAL:
                 registereintragStatus = StatusDefiningcode.FINAL;
@@ -136,7 +138,6 @@ public class FhirDiagnosticReportOpenehrLabResults {
                 laboranalytStatusDefiningcode = ErgebnisStatusDefiningcode.VORLAUFIG;
                 break;
         }
-        // TODO: Check if corrected=changed and default=registered is correct.
 
         composition.setStatusDefiningcode(registereintragStatus);
 
@@ -160,11 +161,6 @@ public class FhirDiagnosticReportOpenehrLabResults {
             throw new UnprocessableEntityException("No LOINC code in observation");
         }
 
-        // Map based-on TODO: Ask & Finish!
-        //Cluster testDetailsCluster = new Cluster();
-        //laborergebnis.getTestDetails().add(testDetailsCluster);
-
-
         // Map performer to health care facility
         if (!fhirObservation.getPerformer().isEmpty()) {
             PartyIdentified healthCareFacility = new PartyIdentified();
@@ -174,8 +170,19 @@ public class FhirDiagnosticReportOpenehrLabResults {
             composition.setHealthCareFacility(healthCareFacility);
         }
 
+        // Map speciment to Probe
         if (!fhirObservation.getSpecimen().isEmpty()) {
             laborergebnis.getProbe().add(mapSpecimen(fhirObservation.getSpecimenTarget()));
+        }
+
+
+        // Map method to Testmethode
+
+        if(!fhirObservation.getMethod().isEmpty() && !fhirObservation.getMethod().getCoding().isEmpty())
+        {
+            DvText testmethode = new DvText();
+            testmethode.setValue(fhirObservation.getMethod().getCoding().get(0).getDisplay());
+            laborergebnis.setValue(testmethode);
         }
 
         laborergebnis.setProLaboranalyt(laboranalyt);
@@ -224,25 +231,32 @@ public class FhirDiagnosticReportOpenehrLabResults {
     public static ProbeCluster mapSpecimen(Specimen specimen) {
         ProbeCluster probe = new ProbeCluster();
 
-        ProbenartDefiningcode probenart = null;
+        // Map to Probenart
+        if(!specimen.getType().getCoding().isEmpty()) {
+            ProbenartDefiningcode probenart = null;
 
-        if (specimen.getType().getCoding().get(0).getSystem().equals("http://terminology.hl7.org/CodeSystem/v2-0487")) {
-            String code = specimen.getType().getCoding().get(0).getCode();
-            probenart = probenartHTTPDefiningcodeMap.get(code);
+            if (specimen.getType().getCoding().get(0).getSystem().equals("http://terminology.hl7.org/CodeSystem/v2-0487")) {
+                String code = specimen.getType().getCoding().get(0).getCode();
+                probenart = probenartHTTPDefiningcodeMap.get(code);
+            }
+
+            if (probenart == null) {
+                throw new UnprocessableEntityException("Probenart not defined in specimen");
+            }
+
+            probe.setProbenartDefiningcode(probenart);
         }
 
-        if (probenart == null) {
-            throw new UnprocessableEntityException("Probenart not defined in specimen");
-        }
 
-        probe.setProbenartDefiningcode(probenart);
-
-
+        // Map Labor/External Identifikator
         probe.setLaborprobenidentifikator(mapIdentifier(specimen.getAccessionIdentifier()));
         probe.setExternerIdentifikator(mapIdentifier(specimen.getIdentifier().get(0)));
 
-        probe.setZeitpunktDesProbeneingangsValue(specimen.getReceivedTime().toInstant());
+        // Map Zeitpunkt des Probeneingangs
+        probe.setZeitpunktDesProbeneingangsValue((new DateTimeType(specimen.getReceivedTime())).getValueAsCalendar().toZonedDateTime());
 
+
+        // Map Zeitpunkt der Probenentnahme (either interval or time instant)
         if (specimen.getCollection().getCollectedPeriod().hasStart() && specimen.getCollection().getCollectedPeriod().hasEnd()) {
             Date start = specimen.getCollection().getCollectedPeriod().getStart();
             Date end = specimen.getCollection().getCollectedPeriod().getEnd();
@@ -251,8 +265,8 @@ public class FhirDiagnosticReportOpenehrLabResults {
 
             DvInterval<DvDate> dateDvInterval = new DvInterval<>();
 
-            dateDvInterval.setLower(new DvDate(start.toInstant()));
-            dateDvInterval.setUpper(new DvDate(end.toInstant()));
+            dateDvInterval.setLower(new DvDate((new DateTimeType(start)).getValueAsCalendar().toZonedDateTime()));
+            dateDvInterval.setUpper(new DvDate((new DateTimeType(end)).getValueAsCalendar().toZonedDateTime()));
 
             interval.setZeitpunktDerProbenentnahme(dateDvInterval);
 
@@ -261,13 +275,15 @@ public class FhirDiagnosticReportOpenehrLabResults {
             DateTimeType date = specimen.getCollection().getCollectedDateTimeType();
 
             ProbeZeitpunktDerProbenentnahmeDvdatetime zeitpunkt = new ProbeZeitpunktDerProbenentnahmeDvdatetime();
-            zeitpunkt.setZeitpunktDerProbenentnahmeValue(date.getValue().toInstant());
+            zeitpunkt.setZeitpunktDerProbenentnahmeValue(date.getValueAsCalendar().toZonedDateTime());
 
             probe.setZeitpunktDerProbenentnahme(zeitpunkt);
         }
 
+        // Map collection->collector to Identifikator des Probenentnehmers
         probe.setIdentifikatorDesProbennehmers(mapIdentifier(specimen.getCollection().getCollector().getIdentifier()));
 
+        // Map parents -> Identifikator der übergeordneten Probe
         for (Reference reference : specimen.getParent()) {
             ProbeIdentifikatorDerUbergeordnetenProbeElement identifikator = new ProbeIdentifikatorDerUbergeordnetenProbeElement();
             identifikator.setValue(mapIdentifier(reference.getIdentifier()));
@@ -275,18 +291,23 @@ public class FhirDiagnosticReportOpenehrLabResults {
             probe.getIdentifikatorDerUbergeordnetenProbe().add(identifikator);
         }
 
+        // Map Condition -> Probenentnahmebedingung
         for (CodeableConcept codeableConcept : specimen.getCondition()) {
-            ProbeProbenentahmebedingungElement bedingung = new ProbeProbenentahmebedingungElement();
-            bedingung.setValue(codeableConcept.getCoding().get(0).getDisplay());
-            probe.getProbenentahmebedingung().add(bedingung);
+            if(!codeableConcept.getCoding().isEmpty())
+            {
+                ProbeProbenentahmebedingungElement bedingung = new ProbeProbenentahmebedingungElement();
+                bedingung.setValue(codeableConcept.getCoding().get(0).getDisplay());
+                probe.getProbenentahmebedingung().add(bedingung);
+            }
         }
 
+        // Map Collection -> Method to Probenentnahmemethode
         probe.setProbenentnahmemethodeValue(specimen.getCollection().getMethod().getText());
 
-        // TODO: What about setProbenentnahmestelle?
+        // TODO: What about setProbenentnahmestelleName?
         probe.setProbenentnahmestelleValue(specimen.getCollection().getBodySite().getText());
 
-
+        // Map Status -> Eignung zum Testen
         EignungZumTestenDefiningcode eignungZumTestenDefiningcode = EignungZumTestenDefiningcode.ZUFRIEDENSTELLEND;
         // TODO: Check if these mappings are correct.
         switch (specimen.getStatus()) {
@@ -304,8 +325,10 @@ public class FhirDiagnosticReportOpenehrLabResults {
         eignungZumTesten.setEignungZumTestenDefiningcode(eignungZumTestenDefiningcode);
         probe.setEignungZumTesten(eignungZumTesten);
 
-
-        probe.setKommentarValue(specimen.getNote().get(0).getText());
+        if(!specimen.getNote().isEmpty())
+        {
+            probe.setKommentarValue(specimen.getNote().get(0).getText());
+        }
 
         return probe;
     }
@@ -371,7 +394,7 @@ public class FhirDiagnosticReportOpenehrLabResults {
         Quantity fhirValue = null;
         BigDecimal fhirValueNumeric = null;
         DateTimeType fhirEffectiveDateTime = null;
-        Date issuedDateTime = null;
+        DateTimeType issuedDateTime = null;
 
         UntersuchterAnalytDefiningcode untersuchterAnalyt = null;
         ReferenzbereichsHinweiseDefiningcode interpretationDefiningcode = null;
@@ -400,7 +423,7 @@ public class FhirDiagnosticReportOpenehrLabResults {
 
 
             fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
-            issuedDateTime = fhirObservation.getIssued();
+            issuedDateTime = new DateTimeType(fhirObservation.getIssued());
         } catch (Exception e) {
             throw new UnprocessableEntityException(e.getMessage());
         }
@@ -439,12 +462,16 @@ public class FhirDiagnosticReportOpenehrLabResults {
         }
 
         laboranalyt.setZeitpunktValidationValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
-        laboranalyt.setZeitpunktErgebnisStatusValue(issuedDateTime.toInstant());
+        laboranalyt.setZeitpunktErgebnisStatusValue(issuedDateTime.getValueAsCalendar().toZonedDateTime());
 
         return laboranalyt;
     }
 
+    // TODO: Is it necessary to implement a map function from Composition -> DiagnosticReport?
+
     public static Observation map(GECCOLaborbefundComposition composition) {
+
+        // TODO: Do we have to map all possible values back to the observation?
         Observation observation = new Observation();
 
         TemporalAccessor temporal;
@@ -473,12 +500,14 @@ public class FhirDiagnosticReportOpenehrLabResults {
 
         // observation . category
         observation.getCategory().add(new CodeableConcept());
-        coding = observation.getCategory().get(0).addCoding();
-        coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
-        coding.setCode("laboratory");
+
         coding = observation.getCategory().get(0).addCoding();
         coding.setSystem("http://loing.org");
         coding.setCode("26436-6");
+
+        coding = observation.getCategory().get(0).addCoding();
+        coding.setSystem("http://terminology.hl7.org/CodeSystem/observation-category");
+        coding.setCode("laboratory");
 
         // observation . code
         coding = observation.getCode().addCoding();
