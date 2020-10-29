@@ -86,11 +86,10 @@ public class FhirBridgeApplicationIT {
         UUID ehrId = service.createEhr(ehrStatus);
 
         logger.info("EHR UID: {}", ehrId);
-        logger.info("Subjed ID: {}", this.subjectIdValue);
+        logger.info("Subject ID: {}", this.subjectIdValue);
 
         this.patientReference = "urn:uuid:" + subjectIdValue;
     }
-
 
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -497,7 +496,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
-
     @Test
     public void getProcedureById() throws IOException {
         // Needs at least one condition, can't rely on the tess execution order
@@ -526,6 +524,22 @@ public class FhirBridgeApplicationIT {
         logger.info("PROCEDURES: " + bundle.getTotal());
 
         Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void createPregnancyStatus() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/PregnancyStatus/pregnancy-status-sample.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertNotNull(outcome.getId());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
     private String getContent(String location) throws IOException {

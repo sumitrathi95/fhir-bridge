@@ -15,6 +15,7 @@ public enum OperationalTemplateData {
     CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
     CORONA_PATIENT_IN_ICU("", "PatientAufICU.opt", "Patient auf ICU"),
+    PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
 
     private final String filename;
