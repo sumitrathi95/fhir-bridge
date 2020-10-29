@@ -49,7 +49,6 @@ public abstract class FhirBridgeApplicationTestFactory {
     @Autowired
     EhrbaseService service;
 
-    UUID ehrId;
     String subjectIdValue;
 
     String patientReference;

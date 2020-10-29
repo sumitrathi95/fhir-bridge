@@ -15,6 +15,7 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hamcrest.Matchers;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +36,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Integration Tests
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
+public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory {
 
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -70,11 +73,10 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
                         "classpath:/Condition/condition-invalid-profile-example.json"))
                         .execute());
 
-        Assertions.assertTrue("Specified profile type was \"Observation\", but found type \"Condition\"".equals(
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())) ||
-                "Angegebener Profiltyp war \"Observation\", aber gefundener Typ \"Condition\".".equals(
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome())));
 
+        assertThat(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()),
+                Matchers.either(Matchers.equalTo("Angegebener Profiltyp war \"Observation\", aber gefundener Typ \"Condition\"."))
+                        .or(Matchers.equalTo("Specified profile type was 'Observation', but found type 'Condition'")));
     }
 
     @Test
@@ -238,8 +240,8 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate, " +
                         "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
-                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
-                "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
+                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
@@ -260,8 +262,8 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate," +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
                         " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
                         "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));

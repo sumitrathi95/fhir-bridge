@@ -48,8 +48,6 @@ public class TransactionProvider extends AbstractResourceProvider {
         bundle.getMeta().setVersionId("1");
         bundle.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
 
-        auditService.registerCreateResourceSuccessEvent(bundle);
-
         return new MethodOutcome()
                 .setCreated(true)
                 .setResource(bundle);
