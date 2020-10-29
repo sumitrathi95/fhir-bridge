@@ -19,8 +19,8 @@ class LaborergebnisBefundMapper {
         LaborergebnisObservation laborergebnisObservation = new LaborergebnisObservation();
         laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanelBundle.getBloodGasPanel()));
 
-        //TODO implement heritage to all classes that extends Composition so we dont need this block
-        laborergebnisObservation.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        //TODO implement heritage to all classes e.g. ObservationAbstract etc. so we dont need this block
+        laborergebnisObservation.setLanguage(Language.DE);
         laborergebnisObservation.setOriginValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
         laborergebnisObservation.setTimeValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
         laborergebnisObservation.setSubject(new PartySelf());

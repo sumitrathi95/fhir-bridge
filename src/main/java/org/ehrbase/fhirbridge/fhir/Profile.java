@@ -30,7 +30,7 @@ public enum Profile {
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
 
-    BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle); //TODO should be threated as observation ?
+    BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle);
 
     private final String url;
 

@@ -36,12 +36,6 @@ public class TransactionProvider extends AbstractResourceProvider {
         super(fhirContext, ehrbaseService, auditService);
     }
 
-    @Transaction
-    public Bundle transaction(@TransactionParam Bundle tx) {
-        logger.info("Bundle.id={}", tx.getId());
-        return tx;
-    }
-
     @Create
     @SuppressWarnings("unused")
     public MethodOutcome create(@ResourceParam Bundle bundle)
@@ -53,6 +47,8 @@ public class TransactionProvider extends AbstractResourceProvider {
         bundle.setId(new IdType(1L));
         bundle.getMeta().setVersionId("1");
         bundle.getMeta().setLastUpdatedElement(InstantType.withCurrentTime());
+
+        auditService.registerCreateResourceSuccessEvent(bundle);
 
         return new MethodOutcome()
                 .setCreated(true)
@@ -68,7 +64,7 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     protected void saveCompositions(MappedBundleComposition composition, SupportedBundle supportedBundle){
         UUID ehrUid = getEhrUidForSubjectId(composition.getSubjectId());
-        VersionUid versionUid = ehrbaseService.save(ehrUid, composition.getComposition());
+        VersionUid versionUid = ehrbaseService.saveComposition(ehrUid, composition.getComposition());
         supportedBundle.createdLog(versionUid);
     }
 
@@ -81,7 +77,7 @@ public class TransactionProvider extends AbstractResourceProvider {
                 return supportedBundle.get();
             }
         }
-        throw new UnprocessableEntityException("The Bundle provided is not supported. Supported is currently only a Bundle containing the profiles for Blood Gas Panel"); //TODO define this in a more generic way!
+        throw new UnprocessableEntityException("The Bundle provided is not supported. Supported is currently only a Bundle containing the profiles for Blood Gas Panel");
     }
 
     private Optional<SupportedBundle> determineBundleType(String profileUrl, Bundle bundle) {

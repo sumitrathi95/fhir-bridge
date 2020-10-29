@@ -16,8 +16,6 @@ abstract class LaboratoryTestAnalyteMapper {
         this.fhirObservation = fhirObservation;
     }
 
-    //TODO a String is required instead of StatusCode
-    //TODO dupliacte
     protected String mapErgebnisStatus() {
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":
@@ -35,13 +33,9 @@ abstract class LaboratoryTestAnalyteMapper {
     }
 
     protected Double mapValue() {
-        // FIXME in the profile it is Observation.value[x]:valueQuantity.value and NOT Observation.:valueQuantity.value
-        //return fhirObservation.getValue().getValueQuantity().getValue();
         return fhirObservation.getValueQuantity().getValue().doubleValue();
     }
     abstract EnumValueSet mapUntersuchterAnalyt();
-
-    //TODO introduce CLUSTER and Composition as classes in opt for return types
 
     //  protected abstract Cluster map();
 

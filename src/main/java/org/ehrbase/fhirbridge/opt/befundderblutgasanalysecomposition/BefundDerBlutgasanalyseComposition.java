@@ -14,6 +14,7 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
+import org.ehrbase.fhirbridge.opt.CompositionAbstract;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.LaborergebnisObservation;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
@@ -24,7 +25,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
 @Template("Befund der Blutgasanalyse")
-public class BefundDerBlutgasanalyseComposition extends Composition{
+public class BefundDerBlutgasanalyseComposition extends CompositionAbstract {
   @Id
   private VersionUid versionUid;
 

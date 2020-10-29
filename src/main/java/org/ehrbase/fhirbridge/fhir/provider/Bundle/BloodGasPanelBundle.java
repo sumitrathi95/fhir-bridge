@@ -11,7 +11,6 @@ import org.hl7.fhir.r4.model.Resource;
 
 import java.util.Optional;
 
-//TODO refactor this class since its also used as a POJO which is not very clean since providing functionality access at wrong places
 public class BloodGasPanelBundle extends SupportedBundle {
     private final String bloodGasUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel";
     private final String pHUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pH";
@@ -19,7 +18,6 @@ public class BloodGasPanelBundle extends SupportedBundle {
     private final String oxygenPartialPressureUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/oxygen-partial-pressure";
     private final String oxygenSaturationUrl = "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/oxygen-saturation";
 
-    //TODO find a better solution as this
     private Optional<Observation> bloodGasPanel = Optional.empty();
     private Optional<Observation> pH = Optional.empty();
     private Optional<Observation> carbonDioxidePartialPressure = Optional.empty();

@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition;
+package org.ehrbase.fhirbridge.opt;
 
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyProxy;
@@ -14,9 +14,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
 
-//TODO define generic Composition more precise this is a bold example
-// and move to opt
-public abstract class Composition {
+public abstract class CompositionAbstract {
 
     @Id
     private VersionUid versionUid;
@@ -47,8 +45,6 @@ public abstract class Composition {
 
     @Path("/context/start_time|value")
     private TemporalAccessor startTimeValue;
-
-    //TODO actually implement them since unecessary in other composites (if deleted in pto script)
 
     public VersionUid getVersionUid() {
         return this.versionUid ;

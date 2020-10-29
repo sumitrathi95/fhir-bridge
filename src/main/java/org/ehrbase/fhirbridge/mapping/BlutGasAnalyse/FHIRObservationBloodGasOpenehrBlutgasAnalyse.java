@@ -8,15 +8,12 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
 
 import java.util.Optional;
-//TODO correct openEHRSDK version from POM
-//TODO fix Tests
-//TODO
+
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
     private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
     }
 
-    //TODO match codes not strings
     private static StatusDefiningcode mapStatus(Observation fhirObservation) {
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":

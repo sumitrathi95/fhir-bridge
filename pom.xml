@@ -100,7 +100,6 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!--TODO change back to 0.50 -->
                                             <minimum>0.50</minimum>
                                         </limit>
                                         <!-- <limit>
