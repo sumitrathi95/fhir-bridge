@@ -285,7 +285,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         String aql =
             "SELECT c "+
             "FROM EHR e CONTAINS COMPOSITION c "+
-            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
+            "WHERE c/archetype_details/template_id/value = 'GECCO_Laborbefund' AND "+
             "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
 
 
