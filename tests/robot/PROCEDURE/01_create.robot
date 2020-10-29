@@ -1,4 +1,5 @@
-# Copyright (c) 2020 P. Wohlfarth (Appsfactory), Wladislaw Wagner (Vitasystems GmbH)
+# Copyright (c) 2020 Wladislaw Wagner (Vitasystems GmbH), Peter Wohlfarth (Appsfactory GmbH),
+# Dave Petzold (Appsfactory GmbH)
 #
 # This file is part of Project EHRbase
 #
@@ -19,9 +20,9 @@
 *** Settings ***
 Resource                ${EXECDIR}/robot/_resources/suite_settings.robot
 
-Test Setup              establish preconditions
+Test Setup              generic.prepare new request session    Prefer=return=representation
 
-Force Tags              search
+Force Tags              create
 
 
 
@@ -29,16 +30,14 @@ Force Tags              search
 
 
 
+
 *** Test Cases ***
-001 Search Diagnose Condition
-    [Documentation]     Search Diagnose Condition
+001 Create Procedure
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
 
-    condition.get diagnose condition
+	ehr.create new ehr    000_ehr_status.json
+	procedure.create procedure    Procedure-example.json
+    procedure.validate response - 201
 
 
-
-*** Keywords ***
-establish preconditions
-    generic.prepare new request session    Prefer=return=representation
-    ehr.create new ehr    000_ehr_status.json
-    condition.create diagnose condition    condition-example.json

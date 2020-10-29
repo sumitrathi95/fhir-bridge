@@ -41,14 +41,9 @@ Force Tags              create
 
 
 002 Create Condition Using Invalid Profile
-    [Tags]              xxx
     [Documentation]     1. create EHR
     ...                 2. trigger condition endpoint using invalid payload
 
     ehr.create new ehr    000_ehr_status.json
     condition.create diagnose condition    condition-invalid-profile-example.json
     condition.validate response - 422 (Unprocessable Entity)
-
-
-003 Create Bar Condition
-    Pass Execution      dummy

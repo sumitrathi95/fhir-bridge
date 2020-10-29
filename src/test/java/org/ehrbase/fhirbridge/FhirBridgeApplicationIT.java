@@ -1,8 +1,8 @@
 package org.ehrbase.fhirbridge;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
 import com.nedap.archie.rm.datavalues.DvText;
@@ -238,7 +238,8 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate, " +
                         "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
-                        "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
+                "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
@@ -259,6 +260,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
                         "http://hl7.org/fhir/StructureDefinition/heartrate," +
+                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
                         " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
                         "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
@@ -365,7 +367,6 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
 
     @Test
     public void searchDiagnoseCondition() throws IOException {
-
         // Needs at least one condition, can't rely on the tess execution order
         String resource = getContent("classpath:/Condition/condition-example.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
@@ -399,8 +400,20 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
-        // Change patients id to test patient id
-        resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createSofaScore() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create()
                 .resource(resource)
@@ -414,17 +427,76 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory{
 
     @Test
     public void createFIO2() throws IOException {
-
         String resource = getContent("classpath:/Observation/observation-example-fiO2.json");
-        resource = resource.replaceAll(
-            "Patient/([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})",
-            "Patient/" + this.subjectIdValue);
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
 
         Assertions.assertEquals(true, outcome.getCreated());
         Assertions.assertTrue(outcome.getResource() instanceof Observation);
         Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createProcedure() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertNotNull(outcome.getId());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void getProcedureById() throws IOException {
+        // Needs at least one condition, can't rely on the tess execution order
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Procedure procedure = client.read().resource(Procedure.class).withId(outcome.getId()).execute();
+
+        Assertions.assertNotNull(procedure);
+    }
+
+    @Test
+    public void searchProcedure() throws IOException {
+        // Needs at least one condition, can't rely on the tess execution order
+        String resource = getContent("classpath:/Procedure/Procedure-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Bundle bundle = client.search().forResource(Procedure.class)
+                .where(Patient.IDENTIFIER.exactly().identifier(this.subjectIdValue))
+                .returnBundle(Bundle.class).execute();
+
+        logger.info("PROCEDURES: " + bundle.getTotal());
+
+        Assertions.assertTrue(bundle.getTotal() > 0);
+    }
+
+    @Test
+    public void createPregnancyStatus() throws IOException {
+        Date now = new Date();
+
+        String resource = getContent("classpath:/PregnancyStatus/pregnancy-status-sample.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertNotNull(outcome.getId());
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertTrue(outcome.getResource().getMeta().getLastUpdated().after(now));
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 

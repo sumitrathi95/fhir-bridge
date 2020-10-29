@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
+import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
 import org.ehrbase.fhirbridge.opt.CompositionAbstract;
@@ -18,8 +19,10 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -146,7 +149,6 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-
     public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
         // TODO invoke post processing
 
@@ -162,11 +164,17 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
     public VersionUid saveComposition(UUID ehrId, CompositionAbstract composition) {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
-
 
 }
 
