@@ -339,7 +339,7 @@ commands:
     save-fhirbridge-robot-test-results:
         steps:
             - store_test_results:
-                path: ~/projects/tests/results/1
+                path: ~/projects/tests/results/0
             - store_artifacts:
                 path: 00_robot_results/
 
