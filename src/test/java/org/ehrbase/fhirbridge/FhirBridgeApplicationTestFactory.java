@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public abstract class FhirBridgeApplicationTestFactory {
 
-    final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
+    final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationTestFactory.class);
 
     static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
 
