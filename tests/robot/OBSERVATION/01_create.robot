@@ -115,7 +115,7 @@ Force Tags              create
     observation.validate response - 201
 
 010 Create Body Height
-    [Tags]    todo
+    [Tags]    not-ready
 	[Documentation]    1. create EHR
 	...                2. trigger observation endpoint
     
