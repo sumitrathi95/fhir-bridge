@@ -122,3 +122,13 @@ Force Tags              create
 	ehr.create new ehr    000_ehr_status.json
 	observation.create pregnancy status    observation-pregnancy-status-example.json
     observation.validate response - 201
+
+
+011 Create Frailty Scale Score
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+	[Tags]             not-ready
+
+	ehr.create new ehr    000_ehr_status.json
+	observation.create pregnancy status    observation-frailty-scale-score-example.json
+    observation.validate response - 201
