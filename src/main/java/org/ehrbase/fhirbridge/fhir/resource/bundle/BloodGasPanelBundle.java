@@ -1,10 +1,10 @@
-package org.ehrbase.fhirbridge.fhir.provider.Bundle;
+package org.ehrbase.fhirbridge.fhir.resource.bundle;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.FHIRObservationBloodGasOpenehrBlutgasAnalyse;
+import org.ehrbase.fhirbridge.mapping.blutgasanalyse.FHIRObservationBloodGasOpenehrBlutgasAnalyse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Resource;

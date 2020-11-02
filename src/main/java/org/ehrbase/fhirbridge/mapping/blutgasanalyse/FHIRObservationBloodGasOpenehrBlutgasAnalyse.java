@@ -1,6 +1,6 @@
-package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
+package org.ehrbase.fhirbridge.mapping.blutgasanalyse;
 
-import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
+import org.ehrbase.fhirbridge.fhir.resource.bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
 import org.hl7.fhir.r4.model.CodeableConcept;

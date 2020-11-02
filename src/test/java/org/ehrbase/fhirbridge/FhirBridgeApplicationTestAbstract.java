@@ -11,24 +11,21 @@ import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public abstract class FhirBridgeApplicationTestFactory {
+public abstract class FhirBridgeApplicationTestAbstract {
 
-    final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationTestFactory.class);
+    final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationTestAbstract.class);
 
     static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
 

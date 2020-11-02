@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers;
+package org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.KohlendioxidpartialdruckCluster;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.UntersuchterAnalytDefiningcode3;

@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.fhir.provider.Bundle;
+package org.ehrbase.fhirbridge.fhir.resource.bundle;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.ehrbase.client.openehrclient.VersionUid;

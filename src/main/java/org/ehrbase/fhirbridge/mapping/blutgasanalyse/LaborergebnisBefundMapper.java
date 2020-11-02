@@ -1,11 +1,11 @@
-package org.ehrbase.fhirbridge.mapping.BlutGasAnalyse;
+package org.ehrbase.fhirbridge.mapping.blutgasanalyse;
 
 import com.nedap.archie.rm.generic.PartySelf;
-import org.ehrbase.fhirbridge.fhir.provider.Bundle.BloodGasPanelBundle;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.PhWertMapper;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffpartialdruckMapper;
-import org.ehrbase.fhirbridge.mapping.BlutGasAnalyse.LaboratoryAnalyteMappers.SauerstoffsaettigungMapper;
+import org.ehrbase.fhirbridge.fhir.resource.bundle.BloodGasPanelBundle;
+import org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers.KohlendioxidpartialdruckMapper;
+import org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers.PhWertMapper;
+import org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers.SauerstoffpartialdruckMapper;
+import org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers.SauerstoffsaettigungMapper;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.hl7.fhir.r4.model.Coding;
