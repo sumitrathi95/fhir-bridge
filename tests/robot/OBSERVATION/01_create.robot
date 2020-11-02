@@ -130,5 +130,5 @@ Force Tags              create
 	[Tags]             not-ready
 
 	ehr.create new ehr    000_ehr_status.json
-	observation.create pregnancy status    observation-frailty-scale-score-example.json
+	observation.create frailty scale score    observation-frailty-scale-score-example.json
     observation.validate response - 201
