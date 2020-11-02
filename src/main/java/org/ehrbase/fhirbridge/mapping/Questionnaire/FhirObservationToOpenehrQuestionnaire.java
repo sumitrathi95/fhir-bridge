@@ -15,10 +15,10 @@ public class FhirObservationToOpenehrQuestionnaire {
     private static final String D = "D";
     private static final String M = "M";
 
-    GeneralInformation generalInformation;
-    Symptoms symptoms;
-    Anamnesis anamnesis;
-    Medication medication;
+    GeneralInformation generalInformation = new GeneralInformation();
+    Symptoms symptoms = new Symptoms();
+    Anamnesis anamnesis = new Anamnesis();
+    Medication medication = new Medication();
 
     public D4LQuestionnaireComposition map( QuestionnaireResponse questionnaireResponse) {
         D4LQuestionnaireComposition d4LQuestionnaireComposition = new D4LQuestionnaireComposition();

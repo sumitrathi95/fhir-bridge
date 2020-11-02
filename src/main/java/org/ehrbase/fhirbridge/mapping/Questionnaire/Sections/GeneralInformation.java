@@ -67,6 +67,7 @@ public class GeneralInformation extends QuestionnaireSection{
 
 
     protected void mapAge(String age) {
+        alterObservation = new AlterObservation();
         alterObservation.setLanguage(Language.EN);
         alterObservation.setSubject(new PartySelf());
         alterObservation.setTimeValue(OffsetDateTime.now());

@@ -47,8 +47,10 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
                 .setResource(questionnaireResponse);
     }
 
+
     private void mapD4LQuestionnaire(QuestionnaireResponse questionnaireResponse) {
-        UUID ehrUid = getEhrUidForSubjectId(questionnaireResponse.getSubject().getReference().split(":")[2]); //TODO no subject id in questionnaire
+        // UUID ehrUid = getEhrUidForSubjectId(questionnaireResponse.getSubject().getReference().split(":")[2]); //TODO no subject id in questionnaire
+        UUID ehrUid = UUID.fromString("07f602e0-579e-4fe3-95af-381728bf0d49");
         D4LQuestionnaireComposition d4LQuestionnaireComposition = new FhirObservationToOpenehrQuestionnaire().map(questionnaireResponse);
         VersionUid versionUid = ehrbaseService.saveQuestionnaire(ehrUid, d4LQuestionnaireComposition);
         logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.D4L_Questionnaire);
