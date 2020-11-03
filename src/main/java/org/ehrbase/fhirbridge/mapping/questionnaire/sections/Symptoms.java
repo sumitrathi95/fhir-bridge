@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.mapping.Questionnaire.Sections;
+package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.SymptomeSection;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
@@ -36,14 +36,14 @@ public class Symptoms extends QuestionnaireSection {
     private Boolean tasteSmellLoss;
     private TemporalAccessor sinceWhenSymptoms;
 
-    public Symptoms(Date authored) {
+    public Symptoms(TemporalAccessor authored) {
         super(authored);
     }
 
     @Override
     public void map(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
-            switch (question.getLinkId()) {
+           /* switch (question.getLinkId()) {
                 case S0:
                     this.mapFewer24h(getBooleanValueCode(question));
                     break;
@@ -85,7 +85,7 @@ public class Symptoms extends QuestionnaireSection {
                     break;
                 default:
                     throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
-            }
+            }*/
         }
     }
 

@@ -1,8 +1,9 @@
-package org.ehrbase.fhirbridge.mapping.Questionnaire.Sections;
+package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.VorGrunderkrankungenSection;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Anamnesis extends QuestionnaireSection {
     private static final String D2 = "D2";
     private static final String D3 = "D3";
 
-    public Anamnesis(Date authored) {
+    public Anamnesis(TemporalAccessor authored) {
         super(authored);
     }
 
@@ -40,7 +41,7 @@ public class Anamnesis extends QuestionnaireSection {
 
     private void extractAnamnesis(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
-            switch (question.getLinkId()) {
+          /*  switch (question.getLinkId()) {
                 case D0:
                     this.mapChronicLungDisease((String) getValueCode(question));
                     break;
@@ -55,7 +56,7 @@ public class Anamnesis extends QuestionnaireSection {
                     break;
                 default:
                     throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
-            }
+            }*/
         }
     }
 

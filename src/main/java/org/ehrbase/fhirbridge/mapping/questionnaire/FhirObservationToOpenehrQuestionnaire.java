@@ -1,11 +1,13 @@
-package org.ehrbase.fhirbridge.mapping.Questionnaire;
+package org.ehrbase.fhirbridge.mapping.questionnaire;
 
-import org.ehrbase.fhirbridge.mapping.Questionnaire.Sections.Anamnesis;
-import org.ehrbase.fhirbridge.mapping.Questionnaire.Sections.GeneralInformation;
-import org.ehrbase.fhirbridge.mapping.Questionnaire.Sections.Medication;
-import org.ehrbase.fhirbridge.mapping.Questionnaire.Sections.Symptoms;
+import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Anamnesis;
+import org.ehrbase.fhirbridge.mapping.questionnaire.sections.GeneralInformation;
+import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Medication;
+import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Symptoms;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.D4LQuestionnaireComposition;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
+
+import java.time.temporal.TemporalAccessor;
 
 public class FhirObservationToOpenehrQuestionnaire {
     // eigene ehrId
@@ -22,18 +24,22 @@ public class FhirObservationToOpenehrQuestionnaire {
 
     public D4LQuestionnaireComposition map( QuestionnaireResponse questionnaireResponse) {
         D4LQuestionnaireComposition d4LQuestionnaireComposition = new D4LQuestionnaireComposition();
+        initialiseSections(questionnaireResponse);
+        mapSections(questionnaireResponse);
+        d4LQuestionnaireComposition.setStartTimeValue(questionnaireResponse.getAuthoredElement().getValueAsCalendar().toZonedDateTime());
 
-        this.generalInformation = new GeneralInformation(questionnaireResponse.getAuthored());
-        this.symptoms = new Symptoms(questionnaireResponse.getAuthored());
-        this.anamnesis = new Anamnesis(questionnaireResponse.getAuthored());
-        this.medication = new Medication(questionnaireResponse.getAuthored());
-
-        mapSections(questionnaireResponse, d4LQuestionnaireComposition);
-
-        return d4LQuestionnaireComposition;
+        return populateD4lQuestionnaireComposition(d4LQuestionnaireComposition);
     }
 
-    protected D4LQuestionnaireComposition mapSections(QuestionnaireResponse questionnaireResponse, D4LQuestionnaireComposition d4LQuestionnaireComposition) {
+    private void initialiseSections(QuestionnaireResponse questionnaireResponse){
+        TemporalAccessor authored = questionnaireResponse.getAuthoredElement().getValueAsCalendar().toZonedDateTime();
+        this.generalInformation = new GeneralInformation(authored);
+        this.symptoms = new Symptoms(authored);
+        this.anamnesis = new Anamnesis(authored);
+        this.medication = new Medication(authored);
+    }
+
+    private void mapSections(QuestionnaireResponse questionnaireResponse) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent item : questionnaireResponse.getItem()) {
             switch (item.getLinkId()) {
                 case P:
@@ -55,8 +61,6 @@ public class FhirObservationToOpenehrQuestionnaire {
                     throw new IllegalArgumentException("LinkId " + item.getLinkId() + " undefined");
             }
         }
-        return populateD4lQuestionnaireComposition(d4LQuestionnaireComposition);
-
     }
 
     private D4LQuestionnaireComposition populateD4lQuestionnaireComposition(D4LQuestionnaireComposition d4LQuestionnaireComposition) {

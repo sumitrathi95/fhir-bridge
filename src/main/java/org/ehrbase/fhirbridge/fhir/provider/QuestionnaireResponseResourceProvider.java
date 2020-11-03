@@ -8,10 +8,8 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
-import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
-import org.ehrbase.fhirbridge.mapping.Questionnaire.FhirObservationToOpenehrQuestionnaire;
+import org.ehrbase.fhirbridge.mapping.questionnaire.FhirObservationToOpenehrQuestionnaire;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.D4LQuestionnaireComposition;
-import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.AuditEvent;
@@ -50,7 +48,7 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
 
     private void mapD4LQuestionnaire(QuestionnaireResponse questionnaireResponse) {
         // UUID ehrUid = getEhrUidForSubjectId(questionnaireResponse.getSubject().getReference().split(":")[2]); //TODO no subject id in questionnaire
-        UUID ehrUid = UUID.fromString("07f602e0-579e-4fe3-95af-381728bf0d49");
+        UUID ehrUid = UUID.fromString("b169e38c-3e08-4745-92df-da4903e1bd56");
         D4LQuestionnaireComposition d4LQuestionnaireComposition = new FhirObservationToOpenehrQuestionnaire().map(questionnaireResponse);
         VersionUid versionUid = ehrbaseService.saveQuestionnaire(ehrUid, d4LQuestionnaireComposition);
         logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.D4L_Questionnaire);

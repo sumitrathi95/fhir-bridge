@@ -1,8 +1,9 @@
-package org.ehrbase.fhirbridge.mapping.Questionnaire.Sections;
+package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.MedikamenteImpfungenSection;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 
@@ -17,14 +18,14 @@ public class Medication extends QuestionnaireSection {
     private Boolean immunosuppressants;
     private Boolean vaccinatedFlu;
 
-    public Medication(Date authored) {
+    public Medication(TemporalAccessor authored) {
         super(authored);
     }
 
 
     private void extractMedication(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
-            switch (question.getLinkId()) {
+       /*     switch (question.getLinkId()) {
                 case M0:
                     this.mapSteroids(getBooleanValueCode(question));
                     break;
@@ -36,7 +37,7 @@ public class Medication extends QuestionnaireSection {
                     break;
                 default:
                     throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
-            }
+            }*/
         }
     }
 

@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.mapping.Questionnaire;
+package org.ehrbase.fhirbridge.mapping.questionnaire;
 
 import java.util.HashMap;
 
@@ -6,8 +6,6 @@ public class CodingMapper {
 
     //TODO where do we put this
     private static final HashMap<String, Object> loincCodes = new HashMap<String, Object>(){{
-        put("LA6255-9", "Allein wohnend");
-        put("LA9996-5", "Wohnt mit anderen zusammen");
         put("LA33-6", "Ja");
         put("LA32-8", "Nein");
         put("LA46-8", "Other");
@@ -52,9 +50,13 @@ public class CodingMapper {
         return fhirCodes.get(code);
     }
 
+
+
     public static Boolean parseStringToBoolean(String code){
-        if(stringToBooleanMap.containsKey(code))
+        if(stringToBooleanMap.containsKey(code)){
             return stringToBooleanMap.get(code);
+        }
+
         throw new ClassCastException( "\""+ code + "\" cannot be mapped to boolean, mapping not defined");
 /*        if(code.equals("Ja") || code.equals("Yes") || code.equals("Pregnant")){
             return Boolean.TRUE;
