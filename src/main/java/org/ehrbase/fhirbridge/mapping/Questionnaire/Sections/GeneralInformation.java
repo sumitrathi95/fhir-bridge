@@ -8,6 +8,8 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.List;
 
 public class GeneralInformation extends QuestionnaireSection{
@@ -28,6 +30,10 @@ public class GeneralInformation extends QuestionnaireSection{
     private Boolean pregnant;
     private String nurse;
     private Boolean contactWithInfected;
+
+    public GeneralInformation(Date authored) {
+        super(authored);
+    }
 
 
     @Override
@@ -71,6 +77,7 @@ public class GeneralInformation extends QuestionnaireSection{
         alterObservation.setLanguage(Language.EN);
         alterObservation.setSubject(new PartySelf());
         alterObservation.setTimeValue(OffsetDateTime.now());
+        alterObservation.setTimeValue((TemporalAccessor) super.authored);
 
         if(age.equals(AlterskategorieDefiningcode.JUNGER_ALS40.getCode())){
             this.alterObservation.setAlterskategorieDefiningcode(AlterskategorieDefiningcode.JUNGER_ALS40);

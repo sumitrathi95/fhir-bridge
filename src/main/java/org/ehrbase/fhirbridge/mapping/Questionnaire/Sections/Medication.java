@@ -3,6 +3,7 @@ package org.ehrbase.fhirbridge.mapping.Questionnaire.Sections;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.MedikamenteImpfungenSection;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public class Medication extends QuestionnaireSection {
@@ -15,6 +16,10 @@ public class Medication extends QuestionnaireSection {
     private Boolean steroids;
     private Boolean immunosuppressants;
     private Boolean vaccinatedFlu;
+
+    public Medication(Date authored) {
+        super(authored);
+    }
 
 
     private void extractMedication(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {

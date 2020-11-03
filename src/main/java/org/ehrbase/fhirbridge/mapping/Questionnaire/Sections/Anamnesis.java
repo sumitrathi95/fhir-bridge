@@ -3,6 +3,7 @@ package org.ehrbase.fhirbridge.mapping.Questionnaire.Sections;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.VorGrunderkrankungenSection;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public class Anamnesis extends QuestionnaireSection {
@@ -15,6 +16,10 @@ public class Anamnesis extends QuestionnaireSection {
     private static final String D1 = "D1";
     private static final String D2 = "D2";
     private static final String D3 = "D3";
+
+    public Anamnesis(Date authored) {
+        super(authored);
+    }
 
     protected void mapChronicLungDisease(String chronicLungDisease) {
         this.chronicLungDisease = chronicLungDisease;

@@ -15,7 +15,7 @@ public enum OperationalTemplateData {
     CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
     PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
-    QUESTIONNAIRE("", "D4L_Questionnaire.opt", "Questionnaire"),
+    D4L_QUESTIONNAIRE("", "D4L_Questionnaire.opt", "D4L_questionnaire"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
 
 

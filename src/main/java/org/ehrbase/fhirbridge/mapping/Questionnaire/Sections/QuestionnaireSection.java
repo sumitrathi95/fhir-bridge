@@ -6,9 +6,17 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public abstract class QuestionnaireSection {
+
+
+    protected final Date authored;
+
+    public QuestionnaireSection(Date authored) {
+        this.authored = authored;
+    }
 
     Object getValueCode(QuestionnaireResponse.QuestionnaireResponseItemComponent value) {
         try {

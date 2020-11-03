@@ -15,13 +15,18 @@ public class FhirObservationToOpenehrQuestionnaire {
     private static final String D = "D";
     private static final String M = "M";
 
-    GeneralInformation generalInformation = new GeneralInformation();
-    Symptoms symptoms = new Symptoms();
-    Anamnesis anamnesis = new Anamnesis();
-    Medication medication = new Medication();
+    GeneralInformation generalInformation;
+    Symptoms symptoms;
+    Anamnesis anamnesis;
+    Medication medication;
 
     public D4LQuestionnaireComposition map( QuestionnaireResponse questionnaireResponse) {
         D4LQuestionnaireComposition d4LQuestionnaireComposition = new D4LQuestionnaireComposition();
+
+        this.generalInformation = new GeneralInformation(questionnaireResponse.getAuthored());
+        this.symptoms = new Symptoms(questionnaireResponse.getAuthored());
+        this.anamnesis = new Anamnesis(questionnaireResponse.getAuthored());
+        this.medication = new Medication(questionnaireResponse.getAuthored());
 
         mapSections(questionnaireResponse, d4LQuestionnaireComposition);
 

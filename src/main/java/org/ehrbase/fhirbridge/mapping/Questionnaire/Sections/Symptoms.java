@@ -4,6 +4,7 @@ import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.Symptom
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.List;
 
 public class Symptoms extends QuestionnaireSection {
@@ -34,6 +35,10 @@ public class Symptoms extends QuestionnaireSection {
     private Boolean outOfBreath;
     private Boolean tasteSmellLoss;
     private TemporalAccessor sinceWhenSymptoms;
+
+    public Symptoms(Date authored) {
+        super(authored);
+    }
 
     @Override
     public void map(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
