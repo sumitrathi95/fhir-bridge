@@ -31,3 +31,4 @@ spring:
       hibernate.search.lucene_version: LUCENE_CURRENT
       hibernate.search.default.indexBase: ./lucene
       hibernate.search.model_mapping: ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory
+      hibernate.default_schema: num
