@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers;
+package org.ehrbase.fhirbridge.mapping.blutgasanalyse.laboratoryanalytemappers;
 
 import org.ehrbase.client.classgenerator.EnumValueSet;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;

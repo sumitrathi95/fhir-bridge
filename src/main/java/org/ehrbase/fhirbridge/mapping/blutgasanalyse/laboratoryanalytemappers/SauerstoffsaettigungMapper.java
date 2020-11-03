@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.mapping.blutgasanalyse.LaboratoryAnalyteMappers;
+package org.ehrbase.fhirbridge.mapping.blutgasanalyse.laboratoryanalytemappers;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.*;
 import org.hl7.fhir.r4.model.Coding;
