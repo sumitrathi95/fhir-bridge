@@ -53,8 +53,6 @@ public class QuestionnaireResponseResourceProvider extends AbstractResourceProvi
         VersionUid versionUid = ehrbaseService.saveQuestionnaire(ehrUid, d4LQuestionnaireComposition);
         logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.D4L_Questionnaire);
         auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", questionnaireResponse);
-
-
     }
 
     @Override

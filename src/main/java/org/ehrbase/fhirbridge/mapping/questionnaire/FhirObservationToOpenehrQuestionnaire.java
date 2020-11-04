@@ -46,7 +46,7 @@ public class FhirObservationToOpenehrQuestionnaire {
                     generalInformation.map(item.getItem());
                     break;
                 case C:
-                    generalInformation.mapContactWithInfected(item.getItem());
+                    generalInformation.mapContactWithInfectedQuestion(item.getItem());
                     break;
                 case S:
                     symptoms.map(item.getItem());

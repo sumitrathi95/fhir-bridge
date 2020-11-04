@@ -12,14 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class GeneralInformation extends QuestionnaireSection {
-    private final String P0 = "P0";
-    private final String P2 = "P2";
-    private final String P3 = "P3";
-    private final String P4 = "P4";
-    private final String P5 = "P5";
-    private final String P6 = "P6";
-
-    private final String C0 = "C0";
+    private static final String P0 = "P0";
+    private static final String P2 = "P2";
+    private static final String P3 = "P3";
+    private static final String P4 = "P4";
+    private static final String P5 = "P5";
+    private static final String P6 = "P6";
+    private static final String C0 = "C0";
 
 
     private Optional<AlterObservation> alterObservationQuestion = Optional.empty();
@@ -29,7 +28,7 @@ public class GeneralInformation extends QuestionnaireSection {
     private Optional<AusschlussRauchenEvaluation> ausschlussRauchen = Optional.empty();
     private Optional<ZusammenfassungRauchverhaltenEvaluation> zusammenfassungRauchverhaltenEvaluationQuestion = Optional.empty();
     private Optional<StatusSchwangerschaftStillzeitEvaluation> statusSchwangerschaftStillzeitEvaluationQuestion = Optional.empty();
-    private Boolean contactWithInfected;
+    private Optional<UmgCovid19KontaktObservation> contactWithInfectedQuestion = Optional.empty();
 
     public GeneralInformation(TemporalAccessor authored) {
         super(authored);
@@ -59,13 +58,13 @@ public class GeneralInformation extends QuestionnaireSection {
                 mapWohnsituationEvaluation(questionValueCodeToString(question));
                 break;
             case P3:
-                mapPrivateCaregiver(getQuestionLoincToBoolean(question));
+                mapPrivateCaregiver(getQuestionLoincYesNoToBoolean(question));
                 break;
             case P4:
-                mapNurse(getQuestionLoincToBoolean(question));
+                mapNurse(getQuestionLoincYesNoToBoolean(question));
                 break;
             case P5:
-                mapSmoker(getQuestionLoincToBoolean(question));
+                mapSmoker(getQuestionLoincYesNoToBoolean(question));
                 break;
             case P6:
                 mapPregnant(questionValueCodeToString(question));
@@ -74,12 +73,6 @@ public class GeneralInformation extends QuestionnaireSection {
                 throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
 
         }
-    }
-
-
-
-    public void mapContactWithInfected(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
-
     }
 
 
@@ -210,30 +203,43 @@ public class GeneralInformation extends QuestionnaireSection {
         statusSchwangerschaftStillzeitEvaluationQuestion = Optional.of(stillzeitEvaluation);
     }
 
-    protected void mapContactWithInfected(Boolean contactWithInfected) {
-        this.contactWithInfected = contactWithInfected;
-    }
 
-
-    private void extractContactWithInfected(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
+    public void mapContactWithInfectedQuestion(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
-            switch (question.getLinkId()) {
-                case C0:
-                    Object value = getValueCode(question); //TODO workaround since unknown can be an answer
-                    if (value instanceof String)
-                        value = Boolean.FALSE;
-                    this.mapContactWithInfected((Boolean) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
+            if (question.getLinkId().equals(C0) && getValueCode(question).isPresent()) {
+                    mapContactWithInfected(getContactWithInfectedBoolean(question));
+            } else {
+                throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
             }
         }
     }
 
-    public Boolean getContactWithInfected() {
-        return contactWithInfected;
+
+    public void mapContactWithInfected(Boolean item) {
+        UmgCovid19KontaktObservation umgcovid19KontaktObservation = new UmgCovid19KontaktObservation();
+        umgcovid19KontaktObservation.setKontaktZurCovid19PatientValue(item);
+        umgcovid19KontaktObservation.setLanguage(Language.DE);
+        umgcovid19KontaktObservation.setSubject(new PartySelf());
+        umgcovid19KontaktObservation.setOriginValue(this.authored);
+        umgcovid19KontaktObservation.setTimeValue(this.authored);
+        contactWithInfectedQuestion = Optional.of(umgcovid19KontaktObservation);
     }
 
+
+
+    private Boolean getContactWithInfectedBoolean(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {
+        return contactWithInfectedToBoolean(getValueCode(question).get().toString());
+    }
+
+    private Boolean contactWithInfectedToBoolean(String code) {
+        if (code.equals("LA33-6")) {
+            return true;
+        } else if (code.equals("LA32-8") || code.equals("LA12688-0")) {
+            return false;
+        } else {
+            throw new UnprocessableEntityException("\"" + code + "\" cannot be mapped to boolean, has to be either LA33-6, LA33-8 or LA12688-0");
+        }
+    }
 
     @Override
     public AllgemeineAngabenSection toComposition() {
@@ -246,6 +252,7 @@ public class GeneralInformation extends QuestionnaireSection {
         zusammenfassungRauchverhaltenEvaluationQuestion.ifPresent(allgemeineAngabenSection::setZusammenfassungRauchverhalten);
         ausschlussRauchen.ifPresent(allgemeineAngabenSection::setAusschlussRauchen);
         statusSchwangerschaftStillzeitEvaluationQuestion.ifPresent(allgemeineAngabenSection::setStatusSchwangerschaftStillzeit);
+        contactWithInfectedQuestion.ifPresent(allgemeineAngabenSection::setUmgCovid19Kontakt);
         return allgemeineAngabenSection;
     }
 

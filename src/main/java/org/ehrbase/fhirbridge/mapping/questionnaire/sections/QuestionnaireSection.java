@@ -32,9 +32,10 @@ public abstract class QuestionnaireSection {
         return getValueCode(question).get().toString();
     }
 
-     Boolean getQuestionLoincToBoolean(QuestionnaireResponse.QuestionnaireResponseItemComponent question){
+     Boolean getQuestionLoincYesNoToBoolean(QuestionnaireResponse.QuestionnaireResponseItemComponent question){
          return yesNoLoincCodeToBoolean(getValueCode(question).get().toString());
     }
+
 
    private Boolean yesNoLoincCodeToBoolean(String code){
         if (code.equals("LA33-6")){
@@ -44,7 +45,6 @@ public abstract class QuestionnaireSection {
         }else{
             throw new UnprocessableEntityException( "\""+ code + "\" cannot be mapped to boolean, has to be either LA33-6 or LA33-8");
         }
-
     }
 
 /*    LocalDate getValueDate(QuestionnaireResponse.QuestionnaireResponseItemComponent value) {
