@@ -1,15 +1,17 @@
-package org.ehrbase.fhirbridge.opt.shareddefinition;
+package org.ehrbase.fhirbridge.opt.patientauficucomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  EVENT("event", "event", "openehr", "433"),
+public enum StatusDefiningcode implements EnumValueSet {
+  FINAL("final", "*", "local", "at0012"),
 
-  EPISODIC("episodic", "episodic", "openehr", "435"),
+  GEANDERT("geändert", "*", "local", "at0013"),
 
-  PERSISTENT("persistent", "persistent", "openehr", "431");
-  
+  REGISTRIERT("registriert", "*", "local", "at0010"),
+
+  VORLAUFIG("vorläufig", "*", "local", "at0011");
+
   private String value;
 
   private String description;
@@ -18,7 +20,7 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  StatusDefiningcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;

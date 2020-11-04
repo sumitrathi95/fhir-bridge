@@ -3,13 +3,17 @@ package org.ehrbase.fhirbridge.opt.shareddefinition;
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum CategoryDefiningcode implements EnumValueSet {
-  EVENT("event", "event", "openehr", "433"),
+public enum WurdeDieAktivitatDurchgefuhrtDefiningcode implements EnumValueSet {
+  N74964007("74964007", "74964007", "SNOMED Clinical Terms", "74964007"),
 
-  EPISODIC("episodic", "episodic", "openehr", "435"),
+  N373066001("373066001", "373066001", "SNOMED Clinical Terms", "373066001"),
 
-  PERSISTENT("persistent", "persistent", "openehr", "431");
-  
+  N261665006("261665006", "261665006", "SNOMED Clinical Terms", "261665006"),
+
+  N385432009("385432009", "385432009", "SNOMED Clinical Terms", "385432009"),
+
+  N373067005("373067005", "373067005", "SNOMED Clinical Terms", "373067005");
+
   private String value;
 
   private String description;
@@ -18,7 +22,8 @@ public enum CategoryDefiningcode implements EnumValueSet {
 
   private String code;
 
-  CategoryDefiningcode(String value, String description, String terminologyId, String code) {
+  WurdeDieAktivitatDurchgefuhrtDefiningcode(String value, String description, String terminologyId,
+      String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;

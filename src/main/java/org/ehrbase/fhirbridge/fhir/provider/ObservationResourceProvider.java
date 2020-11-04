@@ -26,22 +26,20 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
-import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
-import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
-import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
-import org.ehrbase.fhirbridge.mapping.FhirObservationPregnancyStatusOpenehrPregnancyStatus;
-import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
-import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
-import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
+import org.ehrbase.fhirbridge.mapping.*;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
+import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
+import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.IdType;
@@ -462,6 +460,19 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveSOFAScore(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SOFA_SCORE);
 
+            } else if (ProfileUtils.hasProfile(observation, Profile.PATIENT_IN_ICU)) {
+                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION PATIENT IN ICU");
+
+                // Map Patient in ICU to openEHR
+
+
+                // test map FHIR to openEHR
+                PatientAufICUComposition composition = FhirObservationPatientAufICUOpenehrPatientAufICU.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.savePatientInICU(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.PATIENT_IN_ICU);
+
             } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION TEMP");
@@ -493,7 +504,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
 
-            } else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION CLINICAL_FRAILTY_SCALE");
+
+                KlinischeFrailtySkalaComposition composition = FhirObservationClinicalFrailtyScaleOpenehrClinicalFrailtyScale.map(observation);
+
+                VersionUid versionUid = ehrbaseService.saveClinicalFrailtyScale(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CLINICAL_FRAILTY_SCALE);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
@@ -507,6 +528,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             {
                 SchwangerschaftsstatusComposition composition = FhirObservationPregnancyStatusOpenehrPregnancyStatus.map(observation);
                 VersionUid versionUid = ehrbaseService.savePregnancyStatus(ehrUid, composition);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BODY_HEIGHT");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                KorpergrosseComposition composition = FhirObservationKorpergrosseOpenehrKorpergrosse.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveKorpergrosse(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_HEIGHT);
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
