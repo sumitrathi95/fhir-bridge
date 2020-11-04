@@ -277,19 +277,18 @@ public class FhirBridgeApplicationIT {
                         .execute());
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
-        Assertions.assertEquals(
-                "Default profile is not supported for Observation. One of the following profiles is expected: " +
-                        "[http://hl7.org/fhir/StructureDefinition/bodytemp" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure" +
-                        ", " + "http://hl7.org/fhir/StructureDefinition/heartrate" +
-                        ", " + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status" +
-                        ", " + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score" +
-                        "]",
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+        Assertions.assertEquals("Default profile is not supported for Observation. One of the following profiles is expected: " +
+            "[http://hl7.org/fhir/StructureDefinition/bodytemp" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure" +
+            ", " + "http://hl7.org/fhir/StructureDefinition/heartrate" +
+            ", " + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status" +
+            ", " + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score" +
+            "]",
+            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -301,22 +300,19 @@ public class FhirBridgeApplicationIT {
 
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
-        Assertions.assertEquals(
-
-
-                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
-                        "One of the following profiles is expected: " +
-                        "[http://hl7.org/fhir/StructureDefinition/bodytemp" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure" +
-                        ", " + "http://hl7.org/fhir/StructureDefinition/heartrate" +
-                        ", " + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status" +
-                        ", " + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score" +
-                        ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score" +
-                        "]",
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+        Assertions.assertEquals("Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
+            "One of the following profiles is expected: " +
+            "[http://hl7.org/fhir/StructureDefinition/bodytemp" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure" +
+            ", " + "http://hl7.org/fhir/StructureDefinition/heartrate" +
+            ", " + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status" +
+            ", " + "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score" +
+            ", " + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score" +
+            "]",
+            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
