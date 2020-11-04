@@ -1,3 +1,7 @@
+ehrbase:
+  address: localhost
+  port: 8080
+  path: /ehrbase/rest/openehr/v1/
 fhir-bridge:
   fhir:
     narrative-generation: false

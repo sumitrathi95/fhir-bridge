@@ -34,6 +34,7 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
@@ -455,6 +456,19 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveSOFAScore(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SOFA_SCORE);
+
+            } else if (ProfileUtils.hasProfile(observation, Profile.PATIENT_IN_ICU)) {
+                logger.info(">>>>>>>>>>>>>>>>>>>> OBSERVATION PATIENT IN ICU");
+
+                // Map Patient in ICU to openEHR
+
+
+                // test map FHIR to openEHR
+                PatientAufICUComposition composition = FhirObservationPatientAufICUOpenehrPatientAufICU.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.savePatientInICU(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.PATIENT_IN_ICU);
 
             } else if (ProfileUtils.hasProfile(observation, Profile.BODY_TEMP)) {
 
