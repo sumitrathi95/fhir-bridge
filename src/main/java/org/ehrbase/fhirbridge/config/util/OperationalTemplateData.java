@@ -16,7 +16,8 @@ public enum OperationalTemplateData {
     CORONA_BLOOD_PRESSURE("", "Blutdruck.opt", "Blutdruck"),
     CORONA_PATIENT_IN_ICU("", "PatientAufICU.opt", "Patient auf ICU"),
     PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
-    HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz");
+    HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
+    BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße");
 
     private final String filename;
     private final String templateId;

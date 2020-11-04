@@ -278,16 +278,18 @@ public class FhirBridgeApplicationIT {
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                "Default profile is not supported for Observation. One of the following profiles is expected: [http://hl7.org/fhir/StructureDefinition/bodytemp," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
-                        "http://hl7.org/fhir/StructureDefinition/heartrate," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu," +
-                        " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status," +
-                        " https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
-                        "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+            "Default profile is not supported for Observation. One of the following profiles is expected: " +
+            "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
+            "http://hl7.org/fhir/StructureDefinition/heartrate, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
+            "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
+            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -300,16 +302,19 @@ public class FhirBridgeApplicationIT {
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
         Assertions.assertEquals(
-                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected:" +
-                        " [http://hl7.org/fhir/StructureDefinition/bodytemp, https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
-                        "http://hl7.org/fhir/StructureDefinition/heartrate," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu," +
-                        " https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status," +
-                        " https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab," +
-                        " https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score]",
-                OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+           "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
+           "One of the following profiles is expected: " +
+           "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
+           "http://hl7.org/fhir/StructureDefinition/heartrate, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
+           "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
+           "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+           OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
@@ -563,5 +568,20 @@ public class FhirBridgeApplicationIT {
         try (InputStream input = resource.getInputStream()) {
             return IOUtils.toString(input, StandardCharsets.UTF_8);
         }
+    }
+
+    @Test
+    public void createBodyHeight() throws IOException {
+        String resource = getContent("classpath:/Observation/Observation-example-body-height.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 }

@@ -15,6 +15,7 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.PatientAufDerIntensivstationObservation;
@@ -189,5 +190,10 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid saveKorpergrosse(UUID ehrId, KorpergrosseComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 }
 

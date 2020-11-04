@@ -32,6 +32,7 @@ import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
@@ -514,6 +515,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             {
                 SchwangerschaftsstatusComposition composition = FhirObservationPregnancyStatusOpenehrPregnancyStatus.map(observation);
                 VersionUid versionUid = ehrbaseService.savePregnancyStatus(ehrUid, composition);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BODY_HEIGHT");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                KorpergrosseComposition composition = FhirObservationKorpergrosseOpenehrKorpergrosse.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveKorpergrosse(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_HEIGHT);
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
