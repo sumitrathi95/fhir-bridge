@@ -16,7 +16,10 @@ import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzCompositio
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.PatientAufDerIntensivstationObservation;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
@@ -122,6 +125,7 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+
     public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
 
         try
@@ -136,6 +140,22 @@ public class EhrbaseService {
 
         return composition.getVersionUid();
     }
+
+    public VersionUid savePatientInICU(UUID ehrId, PatientAufICUComposition composition) {
+
+        try
+        {
+            client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new UnprocessableEntityException("There was a Error in savePatientAufICU", e);
+        }
+
+        return composition.getVersionUid();
+    }
+
 
     public VersionUid saveTest(UUID ehrId, KennzeichnungErregernachweisSARSCoV2Composition composition) {
 
@@ -176,5 +196,10 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid saveKorpergrosse(UUID ehrId, KorpergrosseComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 }
 
