@@ -23,6 +23,8 @@ public enum Profile {
 
     HEART_RATE("http://hl7.org/fhir/StructureDefinition/heartrate", ResourceType.Observation),
 
+    PATIENT_IN_ICU("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu", ResourceType.Observation),
+
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
     PREGNANCY_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status", ResourceType.Observation),
@@ -30,6 +32,7 @@ public enum Profile {
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation);
+
 
 
     private final String url;
