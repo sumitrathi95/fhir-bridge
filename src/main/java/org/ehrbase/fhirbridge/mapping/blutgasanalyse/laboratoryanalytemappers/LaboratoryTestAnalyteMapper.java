@@ -32,7 +32,5 @@ abstract class LaboratoryTestAnalyteMapper {
     }
     abstract EnumValueSet mapUntersuchterAnalyt();
 
-    //  protected abstract Cluster map();
-
 }
 

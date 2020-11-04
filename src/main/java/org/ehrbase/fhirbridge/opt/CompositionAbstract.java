@@ -131,11 +131,11 @@ public abstract class CompositionAbstract {
 
     public void setMandatoryFields(){
         //Mandatory Stuff
-        setLanguage(Language.DE); // FIXME: we need to grab the language from the template
-        setLocation("test"); //FIXME: sensible value
+        setLanguage(Language.DE);
+        setLocation("test");
         setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
         setTerritory(Territory.DE);
         setCategoryDefiningcode(CategoryDefiningcode.EVENT);
-        setComposer(new PartySelf()); //FIXME: sensible value
+        setComposer(new PartySelf());
     }
 }

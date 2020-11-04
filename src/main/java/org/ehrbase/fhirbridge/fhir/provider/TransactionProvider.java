@@ -54,8 +54,7 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     private void createBundle( Bundle bundle){
         SupportedBundle supportedBundle = getBundleType(bundle);
-        MappedBundleComposition composition = supportedBundle.processBundle();
-        saveCompositions(composition, supportedBundle);
+        saveCompositions(supportedBundle.processBundle(), supportedBundle);
     }
 
     protected void saveCompositions(MappedBundleComposition composition, SupportedBundle supportedBundle){
@@ -67,8 +66,7 @@ public class TransactionProvider extends AbstractResourceProvider {
     private SupportedBundle getBundleType(Bundle bundle){
         Optional<SupportedBundle> supportedBundle;
         for (Bundle.BundleEntryComponent bundleEntryComponent:bundle.getEntry()) {
-            String profileUrl = bundleEntryComponent.getResource().getMeta().getProfile().get(0).getValueAsString();
-            supportedBundle = determineBundleType(profileUrl, bundle);
+            supportedBundle = determineBundleType(bundleEntryComponent.getResource().getMeta().getProfile().get(0).getValueAsString(), bundle);
             if(supportedBundle.isPresent()){
                 return supportedBundle.get();
             }

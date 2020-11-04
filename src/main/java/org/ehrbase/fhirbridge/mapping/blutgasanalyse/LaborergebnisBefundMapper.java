@@ -15,11 +15,12 @@ import java.util.*;
 
 class LaborergebnisBefundMapper {
 
+    private LaborergebnisBefundMapper() {
+    }
+
     public static LaborergebnisObservation map(BloodGasPanelBundle bloodGasPanelBundle) {
         LaborergebnisObservation laborergebnisObservation = new LaborergebnisObservation();
         laborergebnisObservation.setLabortestBezeichnungDefiningcode(mapLabortestBezeichnung(bloodGasPanelBundle.getBloodGasPanel()));
-
-        //TODO implement heritage to all classes e.g. ObservationAbstract etc. so we dont need this block
         laborergebnisObservation.setLanguage(Language.DE);
         laborergebnisObservation.setOriginValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
         laborergebnisObservation.setTimeValue(bloodGasPanelBundle.getBloodGasPanel().getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
@@ -37,48 +38,32 @@ class LaborergebnisBefundMapper {
     }
 
     private static void mapOxygenPartialPressureIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> oxygenPartialPressure) {
-        if(oxygenPartialPressure.isPresent()){
-            SauerstoffpartialdruckMapper sauerstoffpartialdruckMapper = new SauerstoffpartialdruckMapper(oxygenPartialPressure.get());
-            laborergebnisObservation.setSauerstoffpartialdruck(sauerstoffpartialdruckMapper.map());
-        }
+        oxygenPartialPressure.ifPresent(observation -> laborergebnisObservation.setSauerstoffpartialdruck(new SauerstoffpartialdruckMapper(observation).map()));
 
     }
 
     private static void mapCarbonDioxidePartialPressureIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> carbonDioxidePartialPressure) {
-        if(carbonDioxidePartialPressure.isPresent()){
-            KohlendioxidpartialdruckMapper kohlendioxidpartialdruckMapper = new KohlendioxidpartialdruckMapper(carbonDioxidePartialPressure.get());
-            laborergebnisObservation.setKohlendioxidpartialdruck(kohlendioxidpartialdruckMapper.map());
-        }
+        carbonDioxidePartialPressure.ifPresent(observation -> laborergebnisObservation.setKohlendioxidpartialdruck(new KohlendioxidpartialdruckMapper(observation).map()));
     }
 
     private static void mapPhIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> pH) {
-        if(pH.isPresent()){
-            PhWertMapper phWertMapper = new PhWertMapper(pH.get());
-            laborergebnisObservation.setPhWert(phWertMapper.map());
-        }
+        pH.ifPresent(observation -> laborergebnisObservation.setPhWert(new PhWertMapper(observation).map()));
     }
 
     private static void mapOxygenSaturationIfPresent(LaborergebnisObservation laborergebnisObservation, Optional<Observation> oxygenSaturation){
-        if(oxygenSaturation.isPresent()){
-            SauerstoffsaettigungMapper sauerstoffsaettigungMapper = new SauerstoffsaettigungMapper(oxygenSaturation.get());
-            laborergebnisObservation.setSauerstoffsattigung(sauerstoffsaettigungMapper.map());
-        }
+        oxygenSaturation.ifPresent(observation -> laborergebnisObservation.setSauerstoffsattigung(new SauerstoffsaettigungMapper(observation).map()));
     }
 
 
     private static LabortestBezeichnungDefiningcode mapLabortestBezeichnung(Observation fhirObservation){
-        LabortestBezeichnungDefiningcode gasPanelBlood = LabortestBezeichnungDefiningcode.GAS_PANEL_BLOOD;
-        LabortestBezeichnungDefiningcode gasPanelArterial = LabortestBezeichnungDefiningcode.GAS_PANEL_ARTERIAL_BLOOD;
-        LabortestBezeichnungDefiningcode gasPanelCapillary = LabortestBezeichnungDefiningcode.GAS_PANEL_CAPILLARY_BLOOD;
-
         for (Coding coding:fhirObservation.getCode().getCoding()) {
             String code = coding.getCode();
-            if(code.equals(gasPanelBlood.getCode())){
-                return gasPanelBlood;
-            }else if(code.equals(gasPanelArterial.getCode())){
-                return gasPanelArterial;
-            }else if(code.equals(gasPanelCapillary.getCode())){
-                return gasPanelCapillary;
+            if(code.equals(LabortestBezeichnungDefiningcode.GAS_PANEL_BLOOD.getCode())){
+                return LabortestBezeichnungDefiningcode.GAS_PANEL_BLOOD;
+            }else if(code.equals( LabortestBezeichnungDefiningcode.GAS_PANEL_ARTERIAL_BLOOD.getCode())){
+                return  LabortestBezeichnungDefiningcode.GAS_PANEL_ARTERIAL_BLOOD;
+            }else if(code.equals( LabortestBezeichnungDefiningcode.GAS_PANEL_CAPILLARY_BLOOD.getCode())){
+                return  LabortestBezeichnungDefiningcode.GAS_PANEL_CAPILLARY_BLOOD;
             }
         }
         throw new IllegalArgumentException("The coding of the LabortestBezeichnung: "+fhirObservation.getCode().getCoding()+" cannot be mapped, needs to be either blood (LOINC code 24338-6)" +
