@@ -288,6 +288,7 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
             "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
@@ -313,6 +314,7 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
@@ -563,13 +565,6 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
-    private String getContent(String location) throws IOException {
-        Resource resource = resourceLoader.getResource(location);
-        try (InputStream input = resource.getInputStream()) {
-            return IOUtils.toString(input, StandardCharsets.UTF_8);
-        }
-    }
-
     @Test
     public void createBodyHeight() throws IOException {
         String resource = getContent("classpath:/Observation/Observation-example-body-height.json");
@@ -584,4 +579,26 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
+
+    @Test
+    public void createClinicalFrailtyScale() throws IOException {
+
+        String resource = getContent("classpath:/Observation/Observation-example-frailty-scale-score.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+  
+    private String getContent(String location) throws IOException {
+        Resource resource = resourceLoader.getResource(location);
+        try (InputStream input = resource.getInputStream()) {
+            return IOUtils.toString(input, StandardCharsets.UTF_8);
+        }
+    }
 }
+

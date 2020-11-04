@@ -33,9 +33,9 @@ public enum Profile {
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
 
+    CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
+
     BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation);
-
-
 
     private final String url;
 
