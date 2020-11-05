@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class BundleIT extends FhirBridgeApplicationTestFactory {
+public class BundleIT extends FhirBridgeApplicationTestAbstract {
     @Test
     public void createBloodGasPanel() throws IOException {
 
