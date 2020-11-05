@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.fhir.provider.Bundle;
+package org.ehrbase.fhirbridge.fhir.resource.bundle;
 
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 

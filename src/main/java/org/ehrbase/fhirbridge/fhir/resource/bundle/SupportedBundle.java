@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.fhir.provider.Bundle;
+package org.ehrbase.fhirbridge.fhir.resource.bundle;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.ehrbase.client.openehrclient.VersionUid;
@@ -23,11 +23,11 @@ public abstract class SupportedBundle extends Bundle {
 
    String getEhrUID() {
       String ehrUID = "";
-      for (Bundle.BundleEntryComponent bundle : bundle.getEntry()) {
-         if (checkIfPatientRessourceNotPresent(bundle)) {
-            Observation observation = (Observation) bundle.getResource();
+      for (Bundle.BundleEntryComponent bundleEntry : bundle.getEntry()) {
+            checkIfPatientRessourceNotPresent(bundleEntry);
+            Observation observation = (Observation) bundleEntry.getResource();
             ehrUID = getEntryEhrUID(ehrUID, observation);
-         }
+
       }
       return ehrUID;
    }
@@ -44,10 +44,9 @@ public abstract class SupportedBundle extends Bundle {
       return ehrUID.equals(observation.getSubject().getReference().split(":")[2]);
    }
 
-   private boolean checkIfPatientRessourceNotPresent(BundleEntryComponent bundle) {
-      if (!bundle.getResource().getResourceType().toString().equals("Patient")) {
-         return true;
+   private void checkIfPatientRessourceNotPresent(BundleEntryComponent bundle) {
+      if (bundle.getResource().getResourceType().toString().equals("Patient")) {
+         throw new InternalErrorException("Patient as a resource is not allowed to be contained !");
       }
-      throw new InternalErrorException("Patient as a resource is not allowed to be contained !");
    }
 }

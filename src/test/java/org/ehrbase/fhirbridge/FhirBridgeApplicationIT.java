@@ -1,8 +1,6 @@
 package org.ehrbase.fhirbridge;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
 import com.nedap.archie.rm.datavalues.DvText;
@@ -10,29 +8,17 @@ import com.nedap.archie.rm.ehr.EhrStatus;
 import com.nedap.archie.rm.generic.PartySelf;
 import com.nedap.archie.rm.support.identification.HierObjectId;
 import com.nedap.archie.rm.support.identification.PartyRef;
-import org.apache.commons.io.IOUtils;
-import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
-import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hamcrest.Matchers;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
@@ -43,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory {
+public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
 
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -233,8 +219,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory {
                         .execute());
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
-        Assertions.assertEquals(
-                "Default profile is not supported for Observation. One of the following profiles is expected: " +
+        Assertions.assertEquals("Default profile is not supported for Observation. One of the following profiles is expected: " +
                         "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
@@ -255,8 +240,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestFactory {
 
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
-        Assertions.assertEquals(
-                "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
+        Assertions.assertEquals("Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
                         "One of the following profiles is expected: " +
                         "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
                         "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
