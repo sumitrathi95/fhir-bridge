@@ -1,6 +1,8 @@
 package org.ehrbase.fhirbridge.opt.shareddefinition;
 
 import java.lang.String;
+
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum BundeslandRegionDefiningcode implements EnumValueSet {
@@ -66,5 +68,25 @@ public enum BundeslandRegionDefiningcode implements EnumValueSet {
 
   public String getCode() {
      return this.code ;
+  }
+
+
+  public static BundeslandRegionDefiningcode createByCode(String input_code) {
+    BundeslandRegionDefiningcode ret = null;
+    int numCoresspondingItems = 0;
+
+    //identify
+    for (BundeslandRegionDefiningcode c : BundeslandRegionDefiningcode.values()) {
+      if (input_code.equals(c.code)) {
+        numCoresspondingItems = numCoresspondingItems + 1;
+        ret = c;
+      }
+    }
+
+    if(numCoresspondingItems != 1)
+    {
+      throw new UnprocessableEntityException("There is no code for '"+input_code+"' defined in BundeslandRegionDefiningcode.java");
+    }
+    return (ret);
   }
 }

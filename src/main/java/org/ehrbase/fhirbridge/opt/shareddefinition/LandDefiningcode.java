@@ -1,6 +1,8 @@
 package org.ehrbase.fhirbridge.opt.shareddefinition;
 
 import java.lang.String;
+
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum LandDefiningcode implements EnumValueSet {
@@ -518,18 +520,38 @@ public enum LandDefiningcode implements EnumValueSet {
   }
 
   public String getValue() {
-     return this.value ;
+    return this.value;
   }
 
   public String getDescription() {
-     return this.description ;
+    return this.description;
   }
 
   public String getTerminologyId() {
-     return this.terminologyId ;
+    return this.terminologyId;
   }
 
   public String getCode() {
-     return this.code ;
+    return this.code;
+  }
+
+  public static LandDefiningcode createByCode(String input_code) {
+    LandDefiningcode ret = null;
+    int numCoresspondingItems = 0;
+
+    //identify
+    for (LandDefiningcode c : LandDefiningcode.values()) {
+      if (input_code.equals(c.code)) {
+        numCoresspondingItems = numCoresspondingItems + 1;
+        ret = c;
+      }
+    }
+
+    if(numCoresspondingItems != 1)
+    {
+      throw new UnprocessableEntityException("There is no code for '"+input_code+"' defined in LandDefiningcode.java");
+    }
+    return (ret);
   }
 }
+

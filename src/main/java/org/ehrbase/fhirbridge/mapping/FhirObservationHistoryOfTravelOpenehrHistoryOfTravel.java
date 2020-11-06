@@ -3,11 +3,9 @@ package org.ehrbase.fhirbridge.mapping;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition.ReiseaktivitatBestimmtesReisezielCluster;
 import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition.ReiseaktivitatObservation;
-import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
-import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
+import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +42,7 @@ public class FhirObservationHistoryOfTravelOpenehrHistoryOfTravel {
             observation.setSubject(new PartySelf());
 
             // special mapping content
-
             // TravelStartDate
-
-            /*
             observation.setAbreisedatumValue(
                     fhirObservation.getComponent().get(0).getValueDateTimeType().getValueAsCalendar().toZonedDateTime()
             );
@@ -56,17 +51,36 @@ public class FhirObservationHistoryOfTravelOpenehrHistoryOfTravel {
             observation.setRuckreisedatumValue(
                     fhirObservation.getComponent().get(4).getValueDateTimeType().getValueAsCalendar().toZonedDateTime()
             );
-*/
+
+            // specific travel destination
+
+
+            // list of destinations
+            List<ReiseaktivitatBestimmtesReisezielCluster> destination = null;
+
+            // first destination
+            {
+                // create destination cluster
+                ReiseaktivitatBestimmtesReisezielCluster cluster = new ReiseaktivitatBestimmtesReisezielCluster();
+
+                //  set land
+                String code = fhirObservation.getComponent().get(1).getValueCodeableConcept().getCoding().get(0).getCode();
+                cluster.setLandDefiningcode(LandDefiningcode.createByCode(code));
+
+                // set bundesland
+                code = fhirObservation.getComponent().get(2).getValueCodeableConcept().getCoding().get(0).getCode();
+                cluster.setBundeslandRegionDefiningcode(BundeslandRegionDefiningcode.createByCode(code));
+
+                // set city
+                cluster.setStadtValue(fhirObservation.getComponent().get(3).getValue().toString());
+
+                // store cluster in the list
+                destination.add(cluster);
+
+            }
+
             // Destination of travel
-            //observation.setBestimmtesReiseziel(
-            //        fhirObservation.getComponent().get(1).getValueCodeableConcept().getText()
-            //);
-
-            // ???
-            //observation.setReiseDefiningcode();
-
-            // travel details
-            //observation.setZusatzlicheReisedetails();
+            observation.setBestimmtesReiseziel(destination); // Why?
 
         } catch (Exception e) {
             e.printStackTrace();
