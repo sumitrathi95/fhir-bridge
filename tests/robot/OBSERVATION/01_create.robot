@@ -115,20 +115,31 @@ Force Tags              create
     observation.validate response - 201
 
 
-010 Create Pregnancy Status
+010 Create Body Height
+    [Tags]    not-ready
+	[Documentation]    1. create EHR
+	...                2. trigger observation endpoint
+    
+	ehr.create new ehr    000_ehr_status.json
+	observation.create observation  observation-example-body-height.json
+	observation.validate response - 201
+
+
+011 Create Pregnancy Status
 	[Documentation]    1. create EHR
 	...                2. trigger observation endpoint
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create pregnancy status    observation-pregnancy-status-example.json
-    observation.validate response - 201
+  observation.validate response - 201
 
 
-011 Create Frailty Scale Score
+012 Create Frailty Scale Score
 	[Documentation]    1. create EHR
 	...                2. trigger observation endpoint
 	[Tags]             not-ready
 
 	ehr.create new ehr    000_ehr_status.json
 	observation.create frailty scale score    observation-frailty-scale-score-example.json
-    observation.validate response - 201
+  observation.validate response - 201
+
