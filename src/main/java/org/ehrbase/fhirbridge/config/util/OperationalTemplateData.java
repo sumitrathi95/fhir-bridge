@@ -18,7 +18,8 @@ public enum OperationalTemplateData {
     CORONA_PATIENT_IN_ICU("", "PatientAufICU.opt", "Patient auf ICU"),
     PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
-    BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße");
+    BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße"),
+    HISTORY_OF_TRAVEL("", "Reiseaktivitaet.opt","Reiseaktivität");
 
     private final String filename;
     private final String templateId;

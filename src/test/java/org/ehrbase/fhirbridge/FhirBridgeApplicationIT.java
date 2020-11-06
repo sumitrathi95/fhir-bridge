@@ -289,7 +289,8 @@ public class FhirBridgeApplicationIT {
             "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/history-of-travel]",
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -315,7 +316,8 @@ public class FhirBridgeApplicationIT {
            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/history-of-travel]",
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -584,6 +586,20 @@ public class FhirBridgeApplicationIT {
     public void createClinicalFrailtyScale() throws IOException {
 
         String resource = getContent("classpath:/Observation/Observation-example-frailty-scale-score.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createHistoryOfTravel() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-example-history-of-travel.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();

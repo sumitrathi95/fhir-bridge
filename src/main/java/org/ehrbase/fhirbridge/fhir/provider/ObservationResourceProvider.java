@@ -36,6 +36,7 @@ import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrai
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
@@ -538,6 +539,13 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveKorpergrosse(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_HEIGHT);
+            }
+            else if (ProfileUtils.hasProfile(observation, Profile.HISTORY_OF_TRAVEL)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HISTORY_OF_TRAVEL");
+                ReiseaktivitatComposition composition = FhirObservationHistoryOfTravelOpenehrHistoryOfTravel.map(observation);
+                VersionUid versionUid = ehrbaseService.saveHistoryOfTravel(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HISTORY_OF_TRAVEL);
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
