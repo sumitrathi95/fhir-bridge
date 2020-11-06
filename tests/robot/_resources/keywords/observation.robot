@@ -76,7 +76,7 @@ get body temperature
 
 
 get observation lab
-    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab
+    &{resp}             GET    ${BASE_URL}/Observation?identifier=${subject_id}&_profile=https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab
                         Integer    response status    200
                         String     request method    GET
                         String     response body id
