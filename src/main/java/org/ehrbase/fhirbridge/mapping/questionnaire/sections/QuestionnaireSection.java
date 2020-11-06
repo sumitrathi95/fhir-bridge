@@ -5,6 +5,7 @@ import org.ehrbase.fhirbridge.mapping.questionnaire.CodingMapper;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
+import java.time.LocalDate;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,10 @@ public abstract class QuestionnaireSection {
        } catch (NullPointerException | FHIRException e) { //TODO fix to support every value (at the moment only codes or empty)
             return Optional.empty();
         }
+    }
+
+    TemporalAccessor getValueAsDate(QuestionnaireResponse.QuestionnaireResponseItemComponent value){
+        return LocalDate.parse(value.getAnswer().get(0).getValueDateType().getValueAsString());
     }
 
     String questionValueCodeToString(QuestionnaireResponse.QuestionnaireResponseItemComponent question){

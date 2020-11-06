@@ -37,10 +37,6 @@ public class GeneralInformation extends QuestionnaireSection {
 
     @Override
     public void map(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
-        extractGeneralInformation(item);
-    }
-
-    private void extractGeneralInformation(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
             if (getValueCode(question).isPresent()) {
                 mapGeneralInformationQuestions(question);
@@ -48,6 +44,7 @@ public class GeneralInformation extends QuestionnaireSection {
 
         }
     }
+
 
     private void mapGeneralInformationQuestions(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {
         switch (question.getLinkId()) {
@@ -207,7 +204,7 @@ public class GeneralInformation extends QuestionnaireSection {
     public void mapContactWithInfectedQuestion(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
             if (question.getLinkId().equals(C0) && getValueCode(question).isPresent()) {
-                    mapContactWithInfected(getContactWithInfectedBoolean(question));
+                mapContactWithInfected(getContactWithInfectedBoolean(question));
             } else {
                 throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
             }
@@ -224,7 +221,6 @@ public class GeneralInformation extends QuestionnaireSection {
         umgcovid19KontaktObservation.setTimeValue(this.authored);
         contactWithInfectedQuestion = Optional.of(umgcovid19KontaktObservation);
     }
-
 
 
     private Boolean getContactWithInfectedBoolean(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {

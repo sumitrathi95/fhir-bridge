@@ -1,11 +1,14 @@
 package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
-import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.SymptomeSection;
+import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Symptoms extends QuestionnaireSection {
     private static final String S0 = "S0";
@@ -22,19 +25,8 @@ public class Symptoms extends QuestionnaireSection {
     private static final String SC = "SC";
     private static final String SZ = "SZ";
 
-    private Boolean fewer24h;
-    private Boolean fewer4days;
-    private Boolean chills;
-    private Boolean tired;
-    private Boolean bodyAches;
-    private Boolean persistentCoughing;
-    private Boolean runningNose;
-    private Boolean diarrhea;
-    private Boolean soreThroat;
-    private Boolean headache;
-    private Boolean outOfBreath;
-    private Boolean tasteSmellLoss;
-    private TemporalAccessor sinceWhenSymptoms;
+    private Optional<FieberInDenLetzten24StundenCluster> fewer24hQuestion = Optional.empty();
+    private Optional<ProblemDiagnoseEvaluation> problemDiagnoseEvaluationQuestion= Optional.empty();
 
     public Symptoms(TemporalAccessor authored) {
         super(authored);
@@ -43,102 +35,209 @@ public class Symptoms extends QuestionnaireSection {
     @Override
     public void map(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
-           /* switch (question.getLinkId()) {
-                case S0:
-                    this.mapFewer24h(getBooleanValueCode(question));
-                    break;
-                case S1:
-                    this.mapFewer4days(getBooleanValueCode(question));
+            if (getValueCode(question).isPresent()) {
+                mapSymptomsQuestions(question);
+            }
+
+        }
+
+    }
+
+    private void mapSymptomsQuestions(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {
+        switch (question.getLinkId()) {
+            case S0:
+                //TODO Strategy Pattern
+                setProblemDiagnoseEvaluationIfNotSet();
+                this.mapFewer24h(getQuestionLoincYesNoToBoolean(question));
+                break;
+               case S1:
+                   setProblemDiagnoseEvaluationIfNotSet();
+                   this.mapFewer4days(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S3:
-                    this.mapChills(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapChills(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S4:
-                    this.mapTired(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapTired(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S5:
-                    this.mapBodyAches(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapBodyAches(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S6:
-                    this.mapPersistentCoughing(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapPersistentCoughing(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S7:
-                    this.mapRunningNose(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapRhinitis(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S8:
-                    this.mapDiarrhea(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapDiarrhea(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S9:
-                    this.mapSoreThroat(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapSoreThroat(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case SA:
-                    this.mapHeadache(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapHeadache(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case SB:
-                    this.mapOutOfBreath(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapProblemsWhenBreathing(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case SC:
-                    this.mapTasteSmellLoss(getBooleanValueCode(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapTasteSmellLoss(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case SZ:
-                    this.mapSinceWhenSymptoms(getValueDate(question));
+                    setProblemDiagnoseEvaluationIfNotSet();
+                    this.mapWhenSymptomsAppear(getValueAsDate(question));
                     break;
-                default:
-                    throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
-            }*/
+            default:
+                throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
         }
     }
 
-    private void mapFewer24h(Boolean fewer24h) {
-        this.fewer24h = fewer24h;
+    private void setProblemDiagnoseEvaluationIfNotSet() {
+        if (problemDiagnoseEvaluationQuestion.isEmpty()) {
+            ProblemDiagnoseEvaluation problemDiagnoseEvaluation = new ProblemDiagnoseEvaluation();
+
+            problemDiagnoseEvaluation.setDatumZeitpunktDesAuftretensDerErstdiagnoseValue(authored);
+
+            problemDiagnoseEvaluation.setNameDesProblemsDerDiagnoseValue("COVID-19 Fragebogen");
+            problemDiagnoseEvaluation.setLanguage(Language.DE);
+            problemDiagnoseEvaluation.setSubject(new PartySelf());
+            problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+        }
+
     }
 
-    private void mapFewer4days(Boolean fewer4days) {
-        this.fewer4days = fewer4days;
+    private void mapFewer24h(Boolean hasFewer24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        FieberInDenLetzten24StundenCluster fieberInDenLetzten24StundenCluster = new FieberInDenLetzten24StundenCluster();
+        if(hasFewer24h){
+            fieberInDenLetzten24StundenCluster.setSchweregradDefiningcode(SchweregradDefiningcode.N39_C);
+        }else {
+            fieberInDenLetzten24StundenCluster.setSchweregradDefiningcode(SchweregradDefiningcode.N38_C);
+        }
+        problemDiagnoseEvaluation.setFieberInDenLetzten24Stunden(fieberInDenLetzten24StundenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapChills(Boolean chills) {
-        this.chills = chills;
+
+    private void mapFewer4days(Boolean hasFewer4Days) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        FieberInDenLetzten4TagenCluster fieberInDenLetzten4TagenCluster = new FieberInDenLetzten4TagenCluster();
+        if(hasFewer4Days) {
+            fieberInDenLetzten4TagenCluster.setSchweregradDefiningcode(SchweregradDefiningcode.N39_C);
+        }else {
+            fieberInDenLetzten4TagenCluster.setSchweregradDefiningcode(SchweregradDefiningcode.N38_C);
+        }
+        problemDiagnoseEvaluation.setFieberInDenLetzten4Tagen(fieberInDenLetzten4TagenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapTired(Boolean tired) {
-        this.tired = tired;
+    private void mapChills(Boolean hasChills24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        SchuttelfrostInDenLetzten24StundenCluster schuttelfrostInDenLetzten24StundenCluster = new SchuttelfrostInDenLetzten24StundenCluster();
+        schuttelfrostInDenLetzten24StundenCluster.setVorhandenValue(hasChills24h);
+        problemDiagnoseEvaluation.setSchuttelfrostInDenLetzten24Stunden(schuttelfrostInDenLetzten24StundenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+
     }
 
-    private void mapBodyAches(Boolean bodyAches) {
-        this.bodyAches = bodyAches;
+    private void mapTired(Boolean isTired) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        SchlappheitAngeschlagenheitCluster schlappheitAngeschlagenheitCluster = new SchlappheitAngeschlagenheitCluster();
+        schlappheitAngeschlagenheitCluster.setVorhandenValue(isTired);
+        problemDiagnoseEvaluation.setSchlappheitAngeschlagenheit(schlappheitAngeschlagenheitCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapPersistentCoughing(Boolean persistentCoughing) {
-        this.persistentCoughing = persistentCoughing;
+    private void mapBodyAches(Boolean hasBodyAches) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        GliederschmerzenCluster gliederschmerzenCluster = new GliederschmerzenCluster();
+        gliederschmerzenCluster.setVorhandenValue(hasBodyAches);
+        problemDiagnoseEvaluation.setGliederschmerzen(gliederschmerzenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapRunningNose(Boolean runningNose) {        this.runningNose = runningNose;    }
-
-    private void mapDiarrhea(Boolean diarrhea) {
-        this.diarrhea = diarrhea;
+    private void mapPersistentCoughing(Boolean hasPersistentCoughing24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        HustenInDenLetzten24StundenCluster hustenInDenLetzten24StundenCluster = new HustenInDenLetzten24StundenCluster();
+        hustenInDenLetzten24StundenCluster.setVorhandenValue(hasPersistentCoughing24h);
+        problemDiagnoseEvaluation.setHustenInDenLetzten24Stunden(hustenInDenLetzten24StundenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapSoreThroat(Boolean soreThroat) {      this.soreThroat = soreThroat;    }
+    private void mapRhinitis(Boolean hasRhinitis24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        SchnupfenInDenLetzten24StundenCluster schnupfenInDenLetzten24StundenCluster = new SchnupfenInDenLetzten24StundenCluster();
+        schnupfenInDenLetzten24StundenCluster.setVorhandenValue(hasRhinitis24h);
+        problemDiagnoseEvaluation.setSchnupfenInDenLetzten24Stunden(schnupfenInDenLetzten24StundenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
 
-    private void mapHeadache(Boolean headache) {
-        this.headache = headache;
     }
 
-    private void mapOutOfBreath(Boolean outOfBreath) {
-        this.outOfBreath = outOfBreath;
+    private void mapDiarrhea(Boolean hasDiarrhea) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        DurchfallCluster durchfallCluster = new DurchfallCluster();
+        durchfallCluster.setVorhandenValue(hasDiarrhea);
+        problemDiagnoseEvaluation.setDurchfall(durchfallCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+
     }
 
-    private void mapTasteSmellLoss(Boolean tasteSmellLoss) {
-        this.tasteSmellLoss = tasteSmellLoss;
+    private void mapSoreThroat(Boolean hasSoreThroat24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        HalsschmerzenInDenLetzten24StundenCluster halsschmerzenInDenLetzten24StundenCluster = new HalsschmerzenInDenLetzten24StundenCluster();
+        halsschmerzenInDenLetzten24StundenCluster.setVorhandenValue(hasSoreThroat24h);
+        problemDiagnoseEvaluation.setHalsschmerzenInDenLetzten24Stunden(halsschmerzenInDenLetzten24StundenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
-    private void mapSinceWhenSymptoms(TemporalAccessor sinceWhenSymptoms) {
-        this.sinceWhenSymptoms = sinceWhenSymptoms;
+    private void mapHeadache(Boolean hasHeadache24h) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        KopfschmerzenCluster kopfschmerzenCluster = new KopfschmerzenCluster();
+        kopfschmerzenCluster.setVorhandenValue(hasHeadache24h);
+        problemDiagnoseEvaluation.setKopfschmerzen(kopfschmerzenCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+    }
+
+    private void mapProblemsWhenBreathing(Boolean hasProblemsBreathing) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        AtemproblemeCluster atemproblemeCluster = new AtemproblemeCluster();
+        atemproblemeCluster.setVorhandenValue(hasProblemsBreathing);
+        problemDiagnoseEvaluation.setAtemprobleme(atemproblemeCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+    }
+
+    private void mapTasteSmellLoss(Boolean hasTasteSmellLoss) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        GeschmacksUndOderGeruchsverlustCluster geschmacksUndOderGeruchsverlustCluster = new GeschmacksUndOderGeruchsverlustCluster();
+        geschmacksUndOderGeruchsverlustCluster.setVorhandenValue(hasTasteSmellLoss);
+        problemDiagnoseEvaluation.setGeschmacksUndOderGeruchsverlust(geschmacksUndOderGeruchsverlustCluster);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
+    }
+
+    private void mapWhenSymptomsAppear(TemporalAccessor sinceWhenSymptoms) {
+        ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
+        problemDiagnoseEvaluation.setDatumZeitpunktDesAuftretensDerErstdiagnoseValue(sinceWhenSymptoms);
+        problemDiagnoseEvaluationQuestion = Optional.of(problemDiagnoseEvaluation);
     }
 
     @Override
     public SymptomeSection toComposition() {
-        return null;
+        SymptomeSection symptomeSection = new SymptomeSection();
+        List<ProblemDiagnoseEvaluation> problemDiagnoseEvaluationList = new ArrayList<>();
+        //fewer24hQuestion.ifPresent(problemDiagnoseEvaluationList::add);
+        problemDiagnoseEvaluationQuestion.ifPresent(problemDiagnoseEvaluationList::add);
+        symptomeSection.setProblemDiagnose(problemDiagnoseEvaluationList);
+        return symptomeSection;
     }
 }
