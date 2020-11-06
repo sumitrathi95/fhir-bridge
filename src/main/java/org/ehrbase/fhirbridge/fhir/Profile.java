@@ -11,7 +11,7 @@ public enum Profile {
 
     // DiagnosticReport Profiles
 
-    DIAGNOSTIC_REPORT_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab", ResourceType.DiagnosticReport),
+    DIAGNOSTIC_REPORT_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/DiagnosticReportLab", ResourceType.DiagnosticReport),
 
     // Observation Profiles
 
@@ -29,7 +29,7 @@ public enum Profile {
 
     PREGNANCY_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status", ResourceType.Observation),
     
-    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
+    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
 

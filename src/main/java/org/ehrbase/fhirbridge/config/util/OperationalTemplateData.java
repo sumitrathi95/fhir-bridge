@@ -9,7 +9,7 @@ public enum OperationalTemplateData {
     CORONA_TEMP("", "Intensivmedizinisches Monitoring Korpertemperatur.opt", "Intensivmedizinisches Monitoring Korpertemperatur"),
     CLINICAL_FRAILTY_SCALE("", "KlinischeFrailty.opt", "Klinische Frailty-Skala"),
     CORONA_TEST("", "Kennzeichnung Erregernachweis SARS-CoV-2.opt", "Kennzeichnung Erregernachweis SARS-CoV-2"),
-    CORONA_LAB("", "Laborbefund.opt", "Laborbefund"),
+    CORONA_LAB("", "GECCO_Laborbefund.opt", "GECCO_Laborbefund"),
 
     PROCEDURE("", "Prozedur.opt", "Prozedur"),
     FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
@@ -19,6 +19,7 @@ public enum OperationalTemplateData {
     PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
     BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße");
+
 
     private final String filename;
     private final String templateId;
