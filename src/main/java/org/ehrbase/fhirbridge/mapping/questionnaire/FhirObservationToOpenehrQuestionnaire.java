@@ -66,9 +66,9 @@ public class FhirObservationToOpenehrQuestionnaire {
     private D4LQuestionnaireComposition populateD4lQuestionnaireComposition(D4LQuestionnaireComposition d4LQuestionnaireComposition) {
         d4LQuestionnaireComposition.setMandatoryFields();
         d4LQuestionnaireComposition.setAllgemeineAngaben(generalInformation.toComposition());
-        d4LQuestionnaireComposition.setMedikamenteImpfungen(medication.toComposition());
         d4LQuestionnaireComposition.setSymptome(symptoms.toComposition());
         d4LQuestionnaireComposition.setVorGrunderkrankungen(anamnesis.toComposition());
+        d4LQuestionnaireComposition.setMedikamenteImpfungen(medication.toComposition());
         return d4LQuestionnaireComposition;
     }
 
