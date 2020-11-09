@@ -27,6 +27,7 @@ import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.*;
+import org.ehrbase.fhirbridge.opt.atemfrequenzcomposition.AtemfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;

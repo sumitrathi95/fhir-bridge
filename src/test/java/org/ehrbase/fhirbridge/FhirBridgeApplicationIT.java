@@ -290,7 +290,8 @@ public class FhirBridgeApplicationIT {
             "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate]",
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -316,7 +317,8 @@ public class FhirBridgeApplicationIT {
            "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate]",
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
