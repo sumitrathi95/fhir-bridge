@@ -27,7 +27,8 @@
           "answer": [
             {
               "valueCoding": {
-                "system": "http://loinc.org"
+                "system": "http://loinc.org",
+                "code": "LA9996-5"
               }
             }
           ]
@@ -74,7 +75,8 @@
           "answer": [
             {
               "valueCoding": {
-                "system": "http://loinc.org"
+                "system": "http://loinc.org",
+                "code": "asas"
               }
             }
           ]

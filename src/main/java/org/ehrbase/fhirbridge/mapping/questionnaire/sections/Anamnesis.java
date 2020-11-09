@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
@@ -42,19 +43,19 @@ public class Anamnesis extends QuestionnaireSection {
         try {
             switch (question.getLinkId()) {
                 case D0:
-                    mapChronicLungDisease(questionValueCodeToString(question));
+                    mapChronicLungDisease(getQuestionValueCodeToString(question));
                     break;
                 case D1:
-                    mapDiabetes(questionValueCodeToString(question));
+                    mapDiabetes(getQuestionValueCodeToString(question));
                     break;
                  case D2:
-                    this.mapHeartDisease(questionValueCodeToString(question));
+                    this.mapHeartDisease(getQuestionValueCodeToString(question));
                     break;
                 case D3:
-                    this.mapObesity(questionValueCodeToString(question));
+                    this.mapObesity(getQuestionValueCodeToString(question));
                     break;
                 default:
-                    throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
+                    throw new UnprocessableEntityException("LinkId " + question.getLinkId() + " undefined");
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -109,7 +110,7 @@ public class Anamnesis extends QuestionnaireSection {
         }else if(code.equals(VorhandenDefiningcode.ICH_WEISS_ES_NICHT.getCode())){
             vorhandenerDefiningCodeSetter.invoke(evaluationObject, VorhandenDefiningcode.ICH_WEISS_ES_NICHT);
         }else{
-            throw new IllegalArgumentException("The code for Question:" + evaluationObject.getClass().getName() + " cannot be mapped, please enter a valid code valid codes are: Yes (LA33-6), No (LA32-8), dont know (LA12688-0)");
+            throw new UnprocessableEntityException("The code " + code + " for Question: " + evaluationObject.getClass().getName().split("\\.")[6].replace("Evaluation", "") + " cannot be mapped, please enter a valid code valid codes are: Yes (LA33-6), No (LA32-8), dont know (LA12688-0)");
         }
 
     }
@@ -124,7 +125,7 @@ public class Anamnesis extends QuestionnaireSection {
         }else if (evaluationObject.getClass() == AdipositasEvaluation.class) {
             return AdipositasEvaluation.class.getDeclaredMethod("setVorhandenDefiningcode", VorhandenDefiningcode.class);
         }else{
-            throw new NoSuchMethodException("Class "+evaluationObject.getClass().getName()+" is not supported for this method, only the classes DiabetesEvaluation, ChronischeLungenkrankheitEvaluation, HerzerkrankungEvaluation and AdipositasEvaluation are");
+            throw new NoSuchMethodException("Class "+evaluationObject.getClass().getCanonicalName()+" is not supported for this method, only the classes DiabetesEvaluation, ChronischeLungenkrankheitEvaluation, HerzerkrankungEvaluation and AdipositasEvaluation are");
         }
     }
 

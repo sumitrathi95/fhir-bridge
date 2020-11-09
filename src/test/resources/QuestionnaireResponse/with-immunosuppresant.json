@@ -336,7 +336,8 @@
           "answer": [
             {
               "valueCoding": {
-                "system": "http://loinc.org"
+                "system": "http://loinc.org",
+                "code": "LA32-8"
               }
             }
           ]

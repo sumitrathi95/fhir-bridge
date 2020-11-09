@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.questionnaire;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Anamnesis;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.GeneralInformation;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Medication;
@@ -10,7 +11,6 @@ import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import java.time.temporal.TemporalAccessor;
 
 public class FhirObservationToOpenehrQuestionnaire {
-    // eigene ehrId
     private static final String P = "P";
     private static final String C = "C";
     private static final String S = "S";
@@ -58,7 +58,7 @@ public class FhirObservationToOpenehrQuestionnaire {
                     medication.map(item.getItem());
                     break;
                 default:
-                    throw new IllegalArgumentException("LinkId " + item.getLinkId() + " undefined");
+                    throw new UnprocessableEntityException("LinkId " + item.getLinkId() + " undefined");
             }
         }
     }

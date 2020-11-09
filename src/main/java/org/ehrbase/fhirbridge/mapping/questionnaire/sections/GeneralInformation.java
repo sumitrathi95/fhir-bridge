@@ -2,6 +2,7 @@ package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
+import net.sf.saxon.functions.Lang;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
@@ -49,10 +50,10 @@ public class GeneralInformation extends QuestionnaireSection {
     private void mapGeneralInformationQuestions(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {
         switch (question.getLinkId()) {
             case P0:
-                mapAge(questionValueCodeToString(question));
+                mapAge(getQuestionValueCodeToString(question));
                 break;
             case P2:
-                mapWohnsituationEvaluation(questionValueCodeToString(question));
+                mapWohnsituationEvaluation(getQuestionValueCodeToString(question));
                 break;
             case P3:
                 mapPrivateCaregiver(getQuestionLoincYesNoToBoolean(question));
@@ -64,10 +65,10 @@ public class GeneralInformation extends QuestionnaireSection {
                 mapSmoker(getQuestionLoincYesNoToBoolean(question));
                 break;
             case P6:
-                mapPregnant(questionValueCodeToString(question));
+                mapPregnant(getQuestionValueCodeToString(question));
                 break;
             default:
-                throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
+                throw new UnprocessableEntityException("LinkId " + question.getLinkId() + " undefined");
 
         }
     }
@@ -92,7 +93,7 @@ public class GeneralInformation extends QuestionnaireSection {
         } else if (age.equals(AlterskategorieDefiningcode.N5160.getCode())) {
             alterObservation.setAlterskategorieDefiningcode(AlterskategorieDefiningcode.N5160);
         } else if (!age.equals("")) {
-            throw new IllegalArgumentException("The code for age:" + age + " cannot be mapped, plese enter a valid code e.g. 61-70");
+            throw new UnprocessableEntityException("The code for age:" + age + " cannot be mapped, plese enter a valid code e.g. 61-70");
         }
         alterObservationQuestion = Optional.of(alterObservation);
     }
@@ -104,8 +105,11 @@ public class GeneralInformation extends QuestionnaireSection {
         } else if (housingSituation.equals(WohnsituationDefiningcode.ALLEIN_WOHNEND.getCode())) {
             wohnsituationEvaluation.setWohnsituationDefiningcode(WohnsituationDefiningcode.ALLEIN_WOHNEND);
         } else if (!housingSituation.equals("")) {
-            throw new IllegalArgumentException("The code for Wohnungsituation:" + housingSituation + " cannot be mapped, please enter a valid code e.g. Wohnt mit anderen zusammen (LOINC: LA9996-5)");
+            throw new UnprocessableEntityException("The code for Wohnungsituation:" + housingSituation + " cannot be mapped, please enter a valid code e.g. Wohnt mit anderen zusammen (LOINC: LA9996-5)");
         }
+        wohnsituationEvaluation.setLanguage(Language.DE);
+        wohnsituationEvaluation.setSubject(new PartySelf());
+
         wohnsituationEvaluationQuestion = Optional.of(wohnsituationEvaluation);
     }
 
@@ -204,9 +208,9 @@ public class GeneralInformation extends QuestionnaireSection {
     public void mapContactWithInfectedQuestion(List<QuestionnaireResponse.QuestionnaireResponseItemComponent> item) {
         for (QuestionnaireResponse.QuestionnaireResponseItemComponent question : item) {
             if (question.getLinkId().equals(C0) && getValueCode(question).isPresent()) {
-                mapContactWithInfected(getContactWithInfectedBoolean(question));
+                mapContactWithInfected(getQuestionLoincYesNoDontKnowToBoolean(question));
             } else {
-                throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
+                throw new UnprocessableEntityException("LinkId " + question.getLinkId() + " undefined");
             }
         }
     }
@@ -220,21 +224,6 @@ public class GeneralInformation extends QuestionnaireSection {
         umgcovid19KontaktObservation.setOriginValue(this.authored);
         umgcovid19KontaktObservation.setTimeValue(this.authored);
         contactWithInfectedQuestion = Optional.of(umgcovid19KontaktObservation);
-    }
-
-
-    private Boolean getContactWithInfectedBoolean(QuestionnaireResponse.QuestionnaireResponseItemComponent question) {
-        return contactWithInfectedToBoolean(getValueCode(question).get().toString());
-    }
-
-    private Boolean contactWithInfectedToBoolean(String code) {
-        if (code.equals("LA33-6")) {
-            return true;
-        } else if (code.equals("LA32-8") || code.equals("LA12688-0")) {
-            return false;
-        } else {
-            throw new UnprocessableEntityException("\"" + code + "\" cannot be mapped to boolean, has to be either LA33-6, LA33-8 or LA12688-0");
-        }
     }
 
     @Override

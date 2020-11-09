@@ -40,56 +40,8 @@ import java.util.UUID;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class FhirBridgeApplicationIT {
+public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract{
 
-    private final Logger logger = LoggerFactory.getLogger(FhirBridgeApplicationIT.class);
-
-    private static final String PATIENT_REFERENCE_REGEXP = "urn:uuid:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})";
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private FhirContext context;
-
-    @Autowired
-    private FhirConfiguration config;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
-
-    private IGenericClient client;
-
-    @Autowired
-    private EhrbaseService service;
-
-    private String subjectIdValue;
-
-    private String patientReference;
-
-
-    @BeforeEach
-    public void setUp() {
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-        client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
-
-        // Create EHR for the rests of the tests to run on this
-        EhrStatus ehrStatus = new EhrStatus();
-
-        this.subjectIdValue = UUID.randomUUID().toString();
-        HierObjectId subjectId = new HierObjectId(subjectIdValue);
-        ehrStatus.setSubject(new PartySelf(new PartyRef(subjectId, "demographic", "PERSON")));
-
-        ehrStatus.setArchetypeNodeId("openEHR-EHR-EHR_STATUS.generic.v1");
-        ehrStatus.setName(new DvText("test status"));
-
-        UUID ehrId = service.createEhr(ehrStatus);
-
-        logger.info("EHR UID: {}", ehrId);
-        logger.info("Subject ID: {}", this.subjectIdValue);
-
-        this.patientReference = "urn:uuid:" + subjectIdValue;
-    }
 
     @Test
     public void createDiagnoseCondition() throws IOException {
@@ -545,10 +497,4 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
-    private String getContent(String location) throws IOException {
-        Resource resource = resourceLoader.getResource(location);
-        try (InputStream input = resource.getInputStream()) {
-            return IOUtils.toString(input, StandardCharsets.UTF_8);
-        }
-    }
 }

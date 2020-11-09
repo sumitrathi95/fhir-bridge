@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
@@ -9,6 +10,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 public class Symptoms extends QuestionnaireSection {
     private static final String S0 = "S0";
@@ -25,7 +27,7 @@ public class Symptoms extends QuestionnaireSection {
     private static final String SC = "SC";
     private static final String SZ = "SZ";
 
-    private Optional<FieberInDenLetzten24StundenCluster> fewer24hQuestion = Optional.empty();
+    private Optional<FieberInDenLetzten24StundenCluster> fever24hQuestion = Optional.empty();
     private Optional<ProblemDiagnoseEvaluation> problemDiagnoseEvaluationQuestion= Optional.empty();
 
     public Symptoms(TemporalAccessor authored) {
@@ -48,11 +50,11 @@ public class Symptoms extends QuestionnaireSection {
             case S0:
                 //TODO Strategy Pattern
                 setProblemDiagnoseEvaluationIfNotSet();
-                this.mapFewer24h(getQuestionLoincYesNoToBoolean(question));
+                this.mapFever24h(getQuestionLoincYesNoToBoolean(question));
                 break;
                case S1:
                    setProblemDiagnoseEvaluationIfNotSet();
-                   this.mapFewer4days(getQuestionLoincYesNoToBoolean(question));
+                   this.mapFever4days(getQuestionLoincYesNoToBoolean(question));
                     break;
                 case S3:
                     setProblemDiagnoseEvaluationIfNotSet();
@@ -99,7 +101,7 @@ public class Symptoms extends QuestionnaireSection {
                     this.mapWhenSymptomsAppear(getValueAsDate(question));
                     break;
             default:
-                throw new IllegalArgumentException("LinkId " + question.getLinkId() + " undefined");
+                throw new UnprocessableEntityException("LinkId " + question.getLinkId() + " undefined");
         }
     }
 
@@ -117,7 +119,7 @@ public class Symptoms extends QuestionnaireSection {
 
     }
 
-    private void mapFewer24h(Boolean hasFewer24h) {
+    private void mapFever24h(Boolean hasFewer24h) {
         ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
         FieberInDenLetzten24StundenCluster fieberInDenLetzten24StundenCluster = new FieberInDenLetzten24StundenCluster();
         if(hasFewer24h){
@@ -130,7 +132,7 @@ public class Symptoms extends QuestionnaireSection {
     }
 
 
-    private void mapFewer4days(Boolean hasFewer4Days) {
+    private void mapFever4days(Boolean hasFewer4Days) {
         ProblemDiagnoseEvaluation problemDiagnoseEvaluation = problemDiagnoseEvaluationQuestion.get();
         FieberInDenLetzten4TagenCluster fieberInDenLetzten4TagenCluster = new FieberInDenLetzten4TagenCluster();
         if(hasFewer4Days) {
@@ -235,7 +237,6 @@ public class Symptoms extends QuestionnaireSection {
     public SymptomeSection toComposition() {
         SymptomeSection symptomeSection = new SymptomeSection();
         List<ProblemDiagnoseEvaluation> problemDiagnoseEvaluationList = new ArrayList<>();
-        //fewer24hQuestion.ifPresent(problemDiagnoseEvaluationList::add);
         problemDiagnoseEvaluationQuestion.ifPresent(problemDiagnoseEvaluationList::add);
         symptomeSection.setProblemDiagnose(problemDiagnoseEvaluationList);
         return symptomeSection;

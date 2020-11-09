@@ -27,7 +27,8 @@
           "answer": [
             {
               "valueCoding": {
-                "system": "http://loinc.org"
+                "system": "http://loinc.org",
+                "code": "12213213"
               }
             }
           ]
@@ -57,6 +58,17 @@
           ]
         },
         {
+          "linkId": "P123",
+          "text": "Do you smoke?",
+          "answer": [
+            {
+              "valueCoding": {
+                "system": "http://loinc.org",
+                "code": "LA32-8"
+              }
+            }
+          ]
+        },        {
           "linkId": "P5",
           "text": "Do you smoke?",
           "answer": [
