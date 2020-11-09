@@ -44,7 +44,6 @@ import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundCo
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
