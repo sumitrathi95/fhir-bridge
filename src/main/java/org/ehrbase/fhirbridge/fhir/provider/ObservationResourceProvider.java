@@ -57,6 +57,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -289,10 +290,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         List<Observation> result = new ArrayList<>();
 
         String aql =
-            "SELECT c "+
-            "FROM EHR e CONTAINS COMPOSITION c "+
-            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
-            "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
+                "SELECT c " +
+                        "FROM EHR e CONTAINS COMPOSITION c " +
+                        "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND " +
+                        "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
 
 
         /* getting 400 from this query, tried to get the cluster to compare with the date range param since that is the real effectiveTime of the resource, not the compo time.
@@ -361,10 +362,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             */
 
         String aql =
-            "SELECT c " +
-            "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] " +
-            "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND " +
-            "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
+                "SELECT c " +
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] " +
+                        "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND " +
+                        "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
 
         if (dateRange != null) {
             // with date range we can also receive just one bound
@@ -512,8 +513,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
 
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
+            } else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION CLINICAL_FRAILTY_SCALE");
 
@@ -521,8 +521,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 VersionUid versionUid = ehrbaseService.saveClinicalFrailtyScale(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CLINICAL_FRAILTY_SCALE);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+            } else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
@@ -538,13 +537,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 KorpergewichtComposition composition = FHIRObservationBodyWeightOpenehrBodyWeight.map(observation);
 
                 VersionUid versionUid = ehrbaseService.saveBodyWeight(ehrUid, composition);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.PREGNANCY_STATUS))
-            {
+            } else if (ProfileUtils.hasProfile(observation, Profile.PREGNANCY_STATUS)) {
                 SchwangerschaftsstatusComposition composition = FhirObservationPregnancyStatusOpenehrPregnancyStatus.map(observation);
                 VersionUid versionUid = ehrbaseService.savePregnancyStatus(ehrUid, composition);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
+            } else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BODY_HEIGHT");
 
@@ -557,15 +553,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
-            }
         } catch (Exception e) {
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), observation);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
         return new MethodOutcome()
-            .setCreated(true)
-            .setResource(observation);
+                .setCreated(true)
+                .setResource(observation);
     }
 
     @Override

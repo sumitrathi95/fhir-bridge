@@ -17,12 +17,13 @@ import com.nedap.archie.rm.generic.PartySelf;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 public class FHIRObservationBodyWeightOpenehrBodyWeight {
-    private FHIRObservationBodyWeightOpenehrBodyWeight() {}
+    private FHIRObservationBodyWeightOpenehrBodyWeight() {
+    }
 
     public static KorpergewichtComposition map(Observation fhirObservation) {
 
         //create composition and observation objects
-    	KorpergewichtComposition composition = new KorpergewichtComposition();
+        KorpergewichtComposition composition = new KorpergewichtComposition();
 
         // set feeder audit
         FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);

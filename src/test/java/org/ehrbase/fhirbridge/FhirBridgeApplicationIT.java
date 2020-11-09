@@ -288,6 +288,7 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
             "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
@@ -314,6 +315,7 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
