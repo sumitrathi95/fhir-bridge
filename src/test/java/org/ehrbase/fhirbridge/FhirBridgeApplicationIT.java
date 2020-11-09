@@ -173,7 +173,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, outcome.getIssue().size());
         Assertions.assertEquals(
                 "Default profile is not supported for DiagnosticReport. One of the following profiles is expected: "
-                        + "[https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                        + "[https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/DiagnosticReportLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -188,7 +188,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(1, outcome.getIssue().size());
         Assertions.assertEquals(
                 "Profile http://hl7.org/fhir/StructureDefinition/hlaresult is not supported for DiagnosticReport. "
-                        + "One of the following profiles is expected: [https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab]",
+                        + "One of the following profiles is expected: [https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/DiagnosticReportLab]",
                 OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -277,6 +277,7 @@ public class FhirBridgeApplicationIT {
                         .execute());
         OperationOutcome operationOutcome = (OperationOutcome) exception.getOperationOutcome();
         Assertions.assertEquals(1, operationOutcome.getIssue().size());
+
         Assertions.assertEquals(
             "Default profile is not supported for Observation. One of the following profiles is expected: " +
             "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
@@ -286,7 +287,7 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
             "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
-            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+            "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
@@ -313,7 +314,7 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
            "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
-           "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab, " +
+           "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+

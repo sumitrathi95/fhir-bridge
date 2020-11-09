@@ -37,18 +37,21 @@ Force Tags              search
 001 Search Body Temperature
     [Documentation]    Search Body Temperature
 
+    observation.create body temperature    observation-bodytemp-example.json
 	observation.get body temperature
 
 
 002 Search Observation Lab
     [Documentation]    Search Observation Lab
 
+    observation.create observation lab    observation-observationlab-example.json
 	observation.get observation lab
 
 
 003 Search Coronavirus Lab Results
     [Documentation]    Search Coronavirus Lab Results
 
+    observation.create coronavirus lab result    observation-coronavirusnachweistest-example.json
 	observation.get coronavirus lab results
 
 
@@ -56,7 +59,3 @@ Force Tags              search
 establish preconditions
     generic.prepare new request session    Prefer=return=representation
     ehr.create new ehr    000_ehr_status.json
-    observation.create body temperature    observation-bodytemp-example.json
-    observation.create observation lab    observation-observationlab-example.json
-    observation.create coronavirus lab result    observation-coronavirusnachweistest-example.json
-    
