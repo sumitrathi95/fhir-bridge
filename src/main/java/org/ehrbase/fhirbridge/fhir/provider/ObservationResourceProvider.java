@@ -41,18 +41,15 @@ import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.raucherstatuscomposition.RaucherstatusComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
-import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
@@ -294,7 +291,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
         String aql =
             "SELECT c "+
             "FROM EHR e CONTAINS COMPOSITION c "+
-            "WHERE c/archetype_details/template_id/value = 'Laborbefund' AND "+
+            "WHERE c/archetype_details/template_id/value = 'GECCO_Laborbefund' AND "+
             "e/ehr_status/subject/external_ref/id/value = '"+ subjectId.getValue() +"'";
 
 
@@ -320,18 +317,18 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
         }
 
-        Query<Record1<LaborbefundComposition>> query =
-                Query.buildNativeQuery(aql, LaborbefundComposition.class);
+        Query<Record1<GECCOLaborbefundComposition>> query =
+                Query.buildNativeQuery(aql, GECCOLaborbefundComposition.class);
 
-        List<Record1<LaborbefundComposition>> results = new ArrayList<>();
+        List<Record1<GECCOLaborbefundComposition>> results = new ArrayList<>();
 
         try {
             results = ehrbaseService.getClient().aqlEndpoint().execute(query);
 
-            LaborbefundComposition compo;
+            GECCOLaborbefundComposition compo;
             Observation observation;
 
-            for (Record1<LaborbefundComposition> record : results) {
+            for (Record1<GECCOLaborbefundComposition> record : results) {
                 compo = record.value1();
 
                 // Lab Results COMPOSITION => FHIR Observation
@@ -439,7 +436,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 logger.info(">>>>>>>>>>>>>>>>>>> OBSERVATION LAB {}", observation.getIdentifier().get(0).getValue());
 
                 // test map FHIR to openEHR
-                LaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(observation);
+                GECCOLaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(observation);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveLab(ehrUid, composition);
