@@ -150,8 +150,8 @@ Force Tags              create
     ...                4. validate outcome
     [Tags]             todo    valid
     [Template]         create heart rate from data table (valid)
-    #|ressourceType  |  ID  |  profile  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
-    #|               |      |           |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
+    #|ressourceType  |  ID  |  profile  |  status  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
+    #|               |      |           |          |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
 
 
 014 Create Heart Rate (invalid variants)
@@ -161,5 +161,5 @@ Force Tags              create
     ...                4. validate outcome
     [Tags]             todo    invalid
     [Template]         create heart rate from data table (invalid)
-    #|ressourceType  |  ID  |  profile  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
-    #|               |      |           |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
+    #|ressourceType  |  ID  |  profile  |  status  |                      Identifier                     |     category      |                      code                     |   Subject   |  DateTime  |             valueQuantity            |  R.-Code  |
+    #|               |      |           |          |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |  reference  |            |  value  |  unit  |  system  |  code  |           |
