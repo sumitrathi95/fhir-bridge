@@ -16,16 +16,11 @@
 
 
 
-*** Variables ***
-${DATA_SET_PATH}        ${EXECDIR}/robot/_resources/test_data/Condition
-
-
-
 *** Keywords ***
 create diagnose condition
     [Arguments]         ${fhir_resource}
 
-    ${payload}          Load JSON From File    ${DATA_SET_PATH}/${fhir_resource}
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_CONDITION}/${fhir_resource}
                         # Output    ${payload}
                         Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
@@ -36,6 +31,12 @@ create diagnose condition
 validate response - 201
     [Documentation]     Validates response of POST to /Condition endpoint
                         Integer    response status    201
+
+
+validate response - 422 (Unprocessable Entity)
+                        Integer    response status    422
+                        String     $.issue[0]['diagnostics']
+                        ...        Specified profile type was 'Observation', but found type 'Condition'
 
 
 get diagnose condition
