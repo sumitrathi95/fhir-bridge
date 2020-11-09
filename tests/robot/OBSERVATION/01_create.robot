@@ -141,3 +141,25 @@ Force Tags              create
 	ehr.create new ehr    000_ehr_status.json
 	observation.create frailty scale score    observation-frailty-scale-score-example.json
   	observation.validate response - 201
+
+
+013 Create Heart Rate (valid variants)
+    [Documentation]    1. create EHR
+    ...                2. fill json with table values
+    ...                3. trigger observation endpoint
+    ...                4. validate outcome
+    [Tags]             todo    valid
+    [Template]         create heart rate from data table (valid)
+    #|ressourceType  |  ID  |  profile  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
+    #|               |      |           |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
+
+
+014 Create Heart Rate (invalid variants)
+    [Documentation]    1. create EHR
+    ...                2. fill json with table values
+    ...                3. trigger observation endpoint
+    ...                4. validate outcome
+    [Tags]             todo    invalid
+    [Template]         create heart rate from data table (invalid)
+    #|ressourceType  |  ID  |  profile  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
+    #|               |      |           |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
