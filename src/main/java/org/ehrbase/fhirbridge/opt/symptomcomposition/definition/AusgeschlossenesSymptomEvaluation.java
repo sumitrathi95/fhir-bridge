@@ -6,7 +6,6 @@ import java.util.List;
 import org.ehrbase.client.annotations.Archetype;
 import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
-import org.ehrbase.fhirbridge.opt.shareddefinition.AussageUberDenAusschlussDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
 @Entity
@@ -16,7 +15,7 @@ public class AusgeschlossenesSymptomEvaluation {
   private List<Cluster> erweiterung;
 
   @Path("/data[at0001]/items[at0003]/value|defining_code")
-  private org.ehrbase.fhirbridge.opt.shareddefinition.DiagnoseDefiningcode diagnoseDefiningcode;
+  private ProblemDiagnoseDefiningcode problemDiagnoseDefiningcode;
 
   @Path("/subject")
   private PartyProxy subject;
@@ -27,9 +26,6 @@ public class AusgeschlossenesSymptomEvaluation {
   @Path("/language")
   private Language language;
 
-  @Path("/data[at0001]/items[at0003]/name|defining_code")
-  private DiagnoseDefiningcode diagnoseDefiningcodeProblem;
-
   public void setErweiterung(List<Cluster> erweiterung) {
      this.erweiterung = erweiterung;
   }
@@ -38,14 +34,13 @@ public class AusgeschlossenesSymptomEvaluation {
      return this.erweiterung ;
   }
 
-  public void setDiagnoseDefiningcode(
-      org.ehrbase.fhirbridge.opt.shareddefinition.DiagnoseDefiningcode diagnoseDefiningcode) {
-     this.diagnoseDefiningcode = diagnoseDefiningcode;
+  public void setProblemDiagnoseDefiningcode(
+      ProblemDiagnoseDefiningcode problemDiagnoseDefiningcode) {
+     this.problemDiagnoseDefiningcode = problemDiagnoseDefiningcode;
   }
 
-  public org.ehrbase.fhirbridge.opt.shareddefinition.DiagnoseDefiningcode getDiagnoseDefiningcode(
-      ) {
-     return this.diagnoseDefiningcode ;
+  public ProblemDiagnoseDefiningcode getProblemDiagnoseDefiningcode() {
+     return this.problemDiagnoseDefiningcode ;
   }
 
   public void setSubject(PartyProxy subject) {
@@ -71,13 +66,5 @@ public class AusgeschlossenesSymptomEvaluation {
 
   public Language getLanguage() {
      return this.language ;
-  }
-
-  public void setDiagnoseDefiningcodeProblem(DiagnoseDefiningcode diagnoseDefiningcodeProblem) {
-     this.diagnoseDefiningcodeProblem = diagnoseDefiningcodeProblem;
-  }
-
-  public DiagnoseDefiningcode getDiagnoseDefiningcodeProblem() {
-     return this.diagnoseDefiningcodeProblem ;
   }
 }

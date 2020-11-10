@@ -1,21 +1,20 @@
 package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
-import com.nedap.archie.rm.datatypes.CodePhrase;
 import com.nedap.archie.rm.generic.PartyProxy;
+import java.lang.String;
 import java.time.temporal.TemporalAccessor;
 import org.ehrbase.client.aql.containment.Containment;
 import org.ehrbase.client.aql.field.AqlFieldImp;
 import org.ehrbase.client.aql.field.ListAqlFieldImp;
 import org.ehrbase.client.aql.field.ListSelectAqlField;
 import org.ehrbase.client.aql.field.SelectAqlField;
-import org.ehrbase.fhirbridge.opt.shareddefinition.KrankheitsanzeichensDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
 public class VorliegendesSymptomObservationContainment extends Containment {
   public SelectAqlField<VorliegendesSymptomObservation> VORLIEGENDES_SYMPTOM_OBSERVATION = new AqlFieldImp<VorliegendesSymptomObservation>(VorliegendesSymptomObservation.class, "", "VorliegendesSymptomObservation", VorliegendesSymptomObservation.class, this);
 
-  public SelectAqlField<CodePhrase> SCHWEREGRAD_DEFININGCODE = new AqlFieldImp<CodePhrase>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|defining_code", "schweregradDefiningcode", CodePhrase.class, this);
+  public SelectAqlField<String> SCHWEREGRAD_VALUE = new AqlFieldImp<String>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|value", "schweregradValue", String.class, this);
 
   public ListSelectAqlField<Cluster> SPEZIFISCHE_ANATOMISCHE_LOKALISATION = new ListAqlFieldImp<Cluster>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0147]", "spezifischeAnatomischeLokalisation", Cluster.class, this);
 
@@ -27,7 +26,7 @@ public class VorliegendesSymptomObservationContainment extends Containment {
 
   public ListSelectAqlField<Cluster> EXTENSION_EN = new ListAqlFieldImp<Cluster>(VorliegendesSymptomObservation.class, "/protocol[at0193]/items[at0194]", "extensionEn", Cluster.class, this);
 
-  public SelectAqlField<KrankheitsanzeichensDefiningcode> KRANKHEITSANZEICHENS_DEFININGCODE = new AqlFieldImp<KrankheitsanzeichensDefiningcode>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0001]/value|defining_code", "krankheitsanzeichensDefiningcode", KrankheitsanzeichensDefiningcode.class, this);
+  public SelectAqlField<ProblemDiagnoseDefiningcode> NAME_DES_SYMPTOMS_KRANKHEITSANZEICHENS_DEFININGCODE = new AqlFieldImp<ProblemDiagnoseDefiningcode>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0001]/value|defining_code", "nameDesSymptomsKrankheitsanzeichensDefiningcode", ProblemDiagnoseDefiningcode.class, this);
 
   public SelectAqlField<TemporalAccessor> TIME_VALUE = new AqlFieldImp<TemporalAccessor>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/time|value", "timeValue", TemporalAccessor.class, this);
 
@@ -41,7 +40,7 @@ public class VorliegendesSymptomObservationContainment extends Containment {
 
   public SelectAqlField<TemporalAccessor> BEGINN_DER_EPISODE_VALUE = new AqlFieldImp<TemporalAccessor>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0152]/value|value", "beginnDerEpisodeValue", TemporalAccessor.class, this);
 
-  public SelectAqlField<TemporalAccessor> UHRZEIT_DES_RUCKGANGS_VALUE = new AqlFieldImp<TemporalAccessor>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0161]/value|value", "uhrzeitDesRuckgangsValue", TemporalAccessor.class, this);
+  public SelectAqlField<TemporalAccessor> DATUM_UHRZEIT_DES_RUCKGANGS_VALUE = new AqlFieldImp<TemporalAccessor>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0161]/value|value", "datumUhrzeitDesRuckgangsValue", TemporalAccessor.class, this);
 
   private VorliegendesSymptomObservationContainment() {
     super("openEHR-EHR-OBSERVATION.symptom_sign.v0");

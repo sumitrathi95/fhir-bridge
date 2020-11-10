@@ -1,49 +1,47 @@
 {
-	"resourceType": "Condition",
-	"id": "7ad815a3-240e-4315-8d4d-a2b05f6baad7",
+	"id": "74962b89-f656-4f05-83af-2356667b45e4",
 	"meta": {
-		"profile": [
-			"https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-absent"
+		"profile":  [
+			"https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19"
 		]
 	},
-	"extension": [
+	"category":  [
 		{
-			"url": "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/certainty-of-absence",
-			"valueCodeableConcept": {
-				"coding": [
-					{
-						"system": "http://snomed.info/sct",
-						"code": "410594000",
-						"display": "Definitely NOT present (qualifier value)"
-					}
-				],
-				"text": "Symptom is confirmed absent."
-			}
-		}
-	],
-	"category": [
-		{
-			"coding": [
+			"coding":  [
 				{
-					"system": "http://loinc.org",
 					"code": "75325-1",
-					"display": "Symptom"
+					"display": "Symptom",
+					"system": "http://loinc.org"
 				}
 			]
 		}
 	],
 	"code": {
-		"coding": [
+		"coding":  [
 			{
-				"system": "http://snomed.info/sct",
 				"code": "40917007",
-				"display": "Clouded consciousness"
+				"display": "Clouded consciousness",
+				"system": "http://snomed.info/sct"
 			}
 		]
 	},
+	"recordedDate": "2020-10-05",
 	"subject": {
 		"reference": "Patient/example"
 	},
-	"recordedDate": "2020-10-05",
-	"onsetDateTime": "2020-10-05"
+	"verificationStatus": {
+		"coding":  [
+			{
+				"code": "refuted",
+				"display": "Refuted",
+				"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+			},
+			{
+				"code": "410594000",
+				"display": "Definitely NOT present (qualifier value)",
+				"system": "http://snomed.info/sct"
+			}
+		]
+	},
+	"resourceType": "Condition"
 }

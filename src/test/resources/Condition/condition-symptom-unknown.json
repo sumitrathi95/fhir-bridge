@@ -1,48 +1,48 @@
 {
-	"resourceType": "Condition",
-	"id": "25400bf3-40e3-42bc-b3fd-2e5bbaa29dde",
+	"id": "8cb12ab0-3563-4154-bfeb-25aa897c2105",
 	"meta": {
-		"profile": [
-			"https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-unknown"
+		"profile":  [
+			"https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19"
 		]
 	},
-	"extension": [
+	"extension":  [
 		{
 			"url": "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/uncertainty-of-presence",
 			"valueCodeableConcept": {
-				"coding": [
+				"coding":  [
 					{
-						"system": "http://snomed.info/sct",
 						"code": "261665006",
-						"display": "Unknown (qualifier value)"
+						"display": "Unknown (qualifier value)",
+						"system": "http://snomed.info/sct"
 					}
 				],
 				"text": "Presence of symptom is unknown."
 			}
 		}
 	],
-	"category": [
+	"category":  [
 		{
-			"coding": [
+			"coding":  [
 				{
-					"system": "http://loinc.org",
 					"code": "75325-1",
-					"display": "Symptom"
+					"display": "Symptom",
+					"system": "http://loinc.org"
 				}
 			]
 		}
 	],
 	"code": {
-		"coding": [
+		"coding":  [
 			{
-				"system": "http://snomed.info/sct",
 				"code": "36955009",
-				"display": "Loss of taste"
+				"display": "Loss of taste",
+				"system": "http://snomed.info/sct"
 			}
 		]
 	},
+	"recordedDate": "2020-10-05",
 	"subject": {
 		"reference": "Patient/example"
 	},
-	"recordedDate": "2020-10-05"
+	"resourceType": "Condition"
 }

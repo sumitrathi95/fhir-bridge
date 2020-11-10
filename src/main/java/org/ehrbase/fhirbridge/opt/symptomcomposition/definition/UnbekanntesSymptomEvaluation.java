@@ -2,13 +2,11 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartyProxy;
-import java.lang.String;
 import java.util.List;
 import org.ehrbase.client.annotations.Archetype;
 import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
-import org.ehrbase.fhirbridge.opt.shareddefinition.UnbekanntesSymptomDefiningcode;
 
 @Entity
 @Archetype("openEHR-EHR-EVALUATION.absence.v2")
@@ -17,16 +15,13 @@ public class UnbekanntesSymptomEvaluation {
   private PartyProxy subject;
 
   @Path("/data[at0001]/items[at0002]/value|defining_code")
-  private UnbekanntesSymptomDefiningcode unbekanntesSymptomDefiningcode;
+  private ProblemDiagnoseDefiningcode unbekanntesSymptomDefiningcode;
 
   @Path("/protocol[at0003]/items[at0006]")
   private List<Cluster> erweiterung;
 
   @Path("/language")
   private Language language;
-
-  @Path("/data[at0001]/items[at0002]/name|value")
-  private String unbekanntesSymptomValue;
 
   @Path("/data[at0001]/items[at0005]")
   private List<UnbekanntesSymptomAussageUberDieFehlendeInformationElement> aussageUberDieFehlendeInformation;
@@ -40,11 +35,11 @@ public class UnbekanntesSymptomEvaluation {
   }
 
   public void setUnbekanntesSymptomDefiningcode(
-      UnbekanntesSymptomDefiningcode unbekanntesSymptomDefiningcode) {
+      ProblemDiagnoseDefiningcode unbekanntesSymptomDefiningcode) {
      this.unbekanntesSymptomDefiningcode = unbekanntesSymptomDefiningcode;
   }
 
-  public UnbekanntesSymptomDefiningcode getUnbekanntesSymptomDefiningcode() {
+  public ProblemDiagnoseDefiningcode getUnbekanntesSymptomDefiningcode() {
      return this.unbekanntesSymptomDefiningcode ;
   }
 
@@ -62,14 +57,6 @@ public class UnbekanntesSymptomEvaluation {
 
   public Language getLanguage() {
      return this.language ;
-  }
-
-  public void setUnbekanntesSymptomValue(String unbekanntesSymptomValue) {
-     this.unbekanntesSymptomValue = unbekanntesSymptomValue;
-  }
-
-  public String getUnbekanntesSymptomValue() {
-     return this.unbekanntesSymptomValue ;
   }
 
   public void setAussageUberDieFehlendeInformation(

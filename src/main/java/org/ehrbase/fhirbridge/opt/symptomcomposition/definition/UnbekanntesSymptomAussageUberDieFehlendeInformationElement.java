@@ -2,7 +2,6 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
-import org.ehrbase.fhirbridge.opt.shareddefinition.Definingcode;
 
 @Entity
 public class UnbekanntesSymptomAussageUberDieFehlendeInformationElement {

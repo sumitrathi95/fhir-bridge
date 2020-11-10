@@ -1,21 +1,20 @@
 package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
-import com.nedap.archie.rm.datatypes.CodePhrase;
 import com.nedap.archie.rm.generic.PartyProxy;
+import java.lang.String;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import org.ehrbase.client.annotations.Archetype;
 import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
-import org.ehrbase.fhirbridge.opt.shareddefinition.KrankheitsanzeichensDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 
 @Entity
 @Archetype("openEHR-EHR-OBSERVATION.symptom_sign.v0")
 public class VorliegendesSymptomObservation {
-  @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|defining_code")
-  private CodePhrase schweregradDefiningcode;
+  @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|value")
+  private String schweregradValue;
 
   @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0147]")
   private List<Cluster> spezifischeAnatomischeLokalisation;
@@ -33,7 +32,7 @@ public class VorliegendesSymptomObservation {
   private List<Cluster> extensionEn;
 
   @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0001]/value|defining_code")
-  private KrankheitsanzeichensDefiningcode krankheitsanzeichensDefiningcode;
+  private ProblemDiagnoseDefiningcode nameDesSymptomsKrankheitsanzeichensDefiningcode;
 
   @Path("/data[at0190]/events[at0191]/time|value")
   private TemporalAccessor timeValue;
@@ -54,14 +53,14 @@ public class VorliegendesSymptomObservation {
   private TemporalAccessor beginnDerEpisodeValue;
 
   @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0161]/value|value")
-  private TemporalAccessor uhrzeitDesRuckgangsValue;
+  private TemporalAccessor datumUhrzeitDesRuckgangsValue;
 
-  public void setSchweregradDefiningcode(CodePhrase schweregradDefiningcode) {
-     this.schweregradDefiningcode = schweregradDefiningcode;
+  public void setSchweregradValue(String schweregradValue) {
+     this.schweregradValue = schweregradValue;
   }
 
-  public CodePhrase getSchweregradDefiningcode() {
-     return this.schweregradDefiningcode ;
+  public String getSchweregradValue() {
+     return this.schweregradValue ;
   }
 
   public void setSpezifischeAnatomischeLokalisation(
@@ -105,13 +104,13 @@ public class VorliegendesSymptomObservation {
      return this.extensionEn ;
   }
 
-  public void setKrankheitsanzeichensDefiningcode(
-      KrankheitsanzeichensDefiningcode krankheitsanzeichensDefiningcode) {
-     this.krankheitsanzeichensDefiningcode = krankheitsanzeichensDefiningcode;
+  public void setNameDesSymptomsKrankheitsanzeichensDefiningcode(
+      ProblemDiagnoseDefiningcode nameDesSymptomsKrankheitsanzeichensDefiningcode) {
+     this.nameDesSymptomsKrankheitsanzeichensDefiningcode = nameDesSymptomsKrankheitsanzeichensDefiningcode;
   }
 
-  public KrankheitsanzeichensDefiningcode getKrankheitsanzeichensDefiningcode() {
-     return this.krankheitsanzeichensDefiningcode ;
+  public ProblemDiagnoseDefiningcode getNameDesSymptomsKrankheitsanzeichensDefiningcode() {
+     return this.nameDesSymptomsKrankheitsanzeichensDefiningcode ;
   }
 
   public void setTimeValue(TemporalAccessor timeValue) {
@@ -163,11 +162,11 @@ public class VorliegendesSymptomObservation {
      return this.beginnDerEpisodeValue ;
   }
 
-  public void setUhrzeitDesRuckgangsValue(TemporalAccessor uhrzeitDesRuckgangsValue) {
-     this.uhrzeitDesRuckgangsValue = uhrzeitDesRuckgangsValue;
+  public void setDatumUhrzeitDesRuckgangsValue(TemporalAccessor datumUhrzeitDesRuckgangsValue) {
+     this.datumUhrzeitDesRuckgangsValue = datumUhrzeitDesRuckgangsValue;
   }
 
-  public TemporalAccessor getUhrzeitDesRuckgangsValue() {
-     return this.uhrzeitDesRuckgangsValue ;
+  public TemporalAccessor getDatumUhrzeitDesRuckgangsValue() {
+     return this.datumUhrzeitDesRuckgangsValue ;
   }
 }

@@ -509,13 +509,14 @@ public class FhirBridgeApplicationIT {
 
         String[] resources = {
                 getContent("classpath:/Condition/condition-symptom-absent.json"),
-                getContent("classpath:/Condition/condition-symptom-present.json")
+                getContent("classpath:/Condition/condition-symptom-present.json"),
+                getContent("classpath:/Condition/condition-symptom-unknown.json")
         };
 
         for(String resource: resources)
         {
             // Change patients id to test patient id
-            resource = resource.replaceAll("Patient/example", "Patient/" + this.subjectIdValue);
+            resource = resource.replaceAll("Patient/example", this.patientReference);
 
             MethodOutcome outcome = client.create()
                     .resource(resource)

@@ -3,8 +3,8 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum DiagnoseDefiningcode implements EnumValueSet {
-  DIAGNOSE("Problem/Diagnose", "Das Problem oder die Diagnose, auf die sich die Ausschlussaussage bezieht. Zum Beispiel: \"Diabetes\", \"COPD\" oder \"Asthma\".", "local", "at0004");
+public enum Definingcode implements EnumValueSet {
+  UNKNOWN_QUALIFIER_VALUE("Unknown (qualifier value)", null, "SNOMED Clinical Terms", "261665006");
 
   private String value;
 
@@ -14,7 +14,7 @@ public enum DiagnoseDefiningcode implements EnumValueSet {
 
   private String code;
 
-  DiagnoseDefiningcode(String value, String description, String terminologyId, String code) {
+  Definingcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;

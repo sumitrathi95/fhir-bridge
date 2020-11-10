@@ -22,9 +22,8 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
+import org.ehrbase.fhirbridge.mapping.FHIRConditionSymptomOpenehrSymptom;
 import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
-import org.ehrbase.fhirbridge.mapping.FhirConditionSymptomAbsentOpenehrSymptom;
-import org.ehrbase.fhirbridge.mapping.FhirConditionSymptomPresentOpenehrSymptom;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.shareddefinition.DerDiagnoseDefiningcode;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.SymptomComposition;
@@ -228,26 +227,16 @@ public class ConditionResourceProvider extends AbstractResourceProvider {
         // *************************************************************************************
 
         try {
-            if (ProfileUtils.hasProfile(condition, Profile.SYMPTOM_PRESENT)) {
+            if (ProfileUtils.hasProfile(condition, Profile.SYMPTOM)) {
 
-                logger.info(">>>>>>>>>>>>>>>>>> CONDITION SYMPTOM PRESENT");
+                logger.info(">>>>>>>>>>>>>>>>>> CONDITION SYMPTOM");
 
                 // FHIR Observation Symptoms => openEHR COMPOSITION
-                SymptomComposition composition = FhirConditionSymptomPresentOpenehrSymptom.map(condition);
+                SymptomComposition composition = FHIRConditionSymptomOpenehrSymptom.map(condition);
 
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveSymptom(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM_PRESENT);
-            } else if (ProfileUtils.hasProfile(condition, Profile.SYMPTOM_ABSENT)) {
-
-                logger.info(">>>>>>>>>>>>>>>>>> CONDITION SYMPTOM ABSENT");
-
-                // FHIR Observation Symptoms => openEHR COMPOSITION
-                SymptomComposition composition = FhirConditionSymptomAbsentOpenehrSymptom.map(condition);
-
-                //UUID ehrId = service.createEhr(); // <<< reflections error!
-                VersionUid versionUid = ehrbaseService.saveSymptom(ehrUid, composition);
-                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM_ABSENT);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SYMPTOM);
 
             } else {
                 // FHIR Condition => COMPOSITION

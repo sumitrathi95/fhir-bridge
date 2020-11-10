@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.opt.symptomcomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
@@ -64,6 +65,9 @@ public class SymptomComposition {
 
   @Path("/context/setting|defining_code")
   private SettingDefiningcode settingDefiningcode;
+
+  @Path("/feeder_audit")
+  private FeederAudit feederAudit;
 
   @Path("/context/location")
   private String location;
@@ -180,6 +184,14 @@ public class SymptomComposition {
 
   public SettingDefiningcode getSettingDefiningcode() {
      return this.settingDefiningcode ;
+  }
+
+  public void setFeederAudit(FeederAudit feederAudit) {
+     this.feederAudit = feederAudit;
+  }
+
+  public FeederAudit getFeederAudit() {
+     return this.feederAudit ;
   }
 
   public void setLocation(String location) {

@@ -4,13 +4,13 @@ import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum StatusDefiningcode implements EnumValueSet {
-  FINAL("final", "*", "local", "at0012"),
+  VORLAUFIG("vorläufig", "*", "local", "at0011"),
 
-  GEANDERT("geändert", "*", "local", "at0013"),
+  FINAL("final", "*", "local", "at0012"),
 
   REGISTRIERT("registriert", "*", "local", "at0010"),
 
-  VORLAUFIG("vorläufig", "*", "local", "at0011");
+  GEANDERT("geändert", "*", "local", "at0013");
 
   private String value;
 

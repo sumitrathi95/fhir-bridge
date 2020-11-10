@@ -23,13 +23,7 @@ public enum Profile {
 
     HEART_RATE("http://hl7.org/fhir/StructureDefinition/heartrate", ResourceType.Observation),
 
-    SYMPTOM_PRESENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-present", ResourceType.Condition),
-
-    CERTAINTY_OF_ABSENCE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/certainty-of-absence", ResourceType.Condition),
-
-    CERTAINTY_OF_PRESENCE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/certainty-of-presence", ResourceType.Condition),
-
-    SYMPTOM_ABSENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19-absent", ResourceType.Condition),
+    SYMPTOM("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/symptoms-covid-19", ResourceType.Condition),
 
     PATIENT_IN_ICU("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu", ResourceType.Observation),
 

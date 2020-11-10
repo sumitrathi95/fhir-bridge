@@ -1,5 +1,6 @@
 package org.ehrbase.fhirbridge.opt.symptomcomposition;
 
+import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.Participation;
 import com.nedap.archie.rm.generic.PartyIdentified;
@@ -46,6 +47,8 @@ public class SymptomCompositionContainment extends Containment {
   public SelectAqlField<UnbekanntesSymptomEvaluation> UNBEKANNTES_SYMPTOM = new AqlFieldImp<UnbekanntesSymptomEvaluation>(SymptomComposition.class, "/content[openEHR-EHR-EVALUATION.absence.v2 and name/value='Unbekanntes Symptom']", "unbekanntesSymptom", UnbekanntesSymptomEvaluation.class, this);
 
   public SelectAqlField<SettingDefiningcode> SETTING_DEFININGCODE = new AqlFieldImp<SettingDefiningcode>(SymptomComposition.class, "/context/setting|defining_code", "settingDefiningcode", SettingDefiningcode.class, this);
+
+  public SelectAqlField<FeederAudit> FEEDER_AUDIT = new AqlFieldImp<FeederAudit>(SymptomComposition.class, "/feeder_audit", "feederAudit", FeederAudit.class, this);
 
   public SelectAqlField<String> LOCATION = new AqlFieldImp<String>(SymptomComposition.class, "/context/location", "location", String.class, this);
 
