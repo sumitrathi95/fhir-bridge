@@ -48,16 +48,11 @@ public class FHIRConditionSymptomOpenehrSymptom {
         SymptomComposition composition = new SymptomComposition();
 
         if (condition.getVerificationStatus().isEmpty()) {
-            System.out.println("UNKNOWN");
             mapUnknown(condition, composition);
         } else if (condition.getVerificationStatus().getCoding().get(0).getCode().equals("confirmed")) {
-            System.out.println("PRESENT");
-
             mapPresent(condition, composition);
         } else {
             mapAbsent(condition, composition);
-            System.out.println("ABSENT");
-
         }
 
         composition.setStartTimeValue(condition.getRecordedDateElement().getValueAsCalendar().toZonedDateTime());
@@ -103,8 +98,12 @@ public class FHIRConditionSymptomOpenehrSymptom {
             vorliegendesSymptom.setNameDesSymptomsKrankheitsanzeichensDefiningcode(krankheitszeichen);
 
 
-            vorliegendesSymptom.setBeginnDerEpisodeValue(
-                    condition.getOnsetDateTimeType().getValueAsCalendar().toZonedDateTime());
+            if (condition.getOnset() != null && !condition.getOnset().isEmpty())
+            {
+                vorliegendesSymptom.setBeginnDerEpisodeValue(
+                        condition.getOnsetDateTimeType().getValueAsCalendar().toZonedDateTime());
+            }
+
             vorliegendesSymptom.setTimeValue(condition.getRecordedDateElement().getValueAsCalendar().toZonedDateTime());
 
             if (condition.getAbatement() != null && !condition.getAbatement().isEmpty()) {
@@ -160,7 +159,8 @@ public class FHIRConditionSymptomOpenehrSymptom {
                 throw new UnprocessableEntityException("Unbekanntes Diagnose/Problem.");
             }
 
-            ausgeschlossenesSymptom.setProblemDiagnoseDefiningcode(krankheitszeichen);
+            // TODO: Check why this throws an error
+            //ausgeschlossenesSymptom.setProblemDiagnoseDefiningcode(krankheitszeichen);
 
         } catch (Exception e) {
             throw new UnprocessableEntityException("Some parts of the condition did not contain the required elements. "

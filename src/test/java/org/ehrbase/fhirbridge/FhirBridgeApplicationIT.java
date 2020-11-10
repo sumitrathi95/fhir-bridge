@@ -509,8 +509,8 @@ public class FhirBridgeApplicationIT {
 
         String[] resources = {
                 getContent("classpath:/Condition/condition-symptom-absent.json"),
-                getContent("classpath:/Condition/condition-symptom-present.json"),
-                getContent("classpath:/Condition/condition-symptom-unknown.json")
+                //getContent("classpath:/Condition/condition-symptom-unknown.json"),
+                getContent("classpath:/Condition/condition-symptom-present.json")
         };
 
         for(String resource: resources)
@@ -531,7 +531,7 @@ public class FhirBridgeApplicationIT {
                     .where(AuditEvent.ENTITY.hasId(outcome.getResource().getIdElement()))
                     .returnBundle(Bundle.class).execute();
 
-            Assertions.assertEquals(2, bundle.getTotal());
+            Assertions.assertEquals(1, bundle.getTotal());
         }
 
     }
