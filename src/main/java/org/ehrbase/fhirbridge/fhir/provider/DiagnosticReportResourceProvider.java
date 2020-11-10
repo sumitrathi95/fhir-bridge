@@ -11,7 +11,7 @@ import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
 import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -53,7 +53,7 @@ public class DiagnosticReportResourceProvider extends AbstractResourceProvider {
 
         if (ProfileUtils.hasProfile(diagnosticReport, Profile.DIAGNOSTIC_REPORT_LAB)) {
             try {
-                LaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(diagnosticReport);
+                GECCOLaborbefundComposition composition = FhirDiagnosticReportOpenehrLabResults.map(diagnosticReport);
                 //UUID ehr_id = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveLab(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.DIAGNOSTIC_REPORT_LAB);

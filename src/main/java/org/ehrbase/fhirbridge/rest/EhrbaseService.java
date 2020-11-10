@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
-import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
@@ -15,13 +14,15 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
-import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
+import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
+import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.SymptomComposition;
 import org.springframework.stereotype.Service;
-
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -95,7 +96,7 @@ public class EhrbaseService {
             return null;
     }
 
-    public VersionUid saveLab(UUID ehrId, LaborbefundComposition composition) {
+    public VersionUid saveLab(UUID ehrId, GECCOLaborbefundComposition composition) {
         // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -114,12 +115,13 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
-    
+
     public VersionUid saveFIO2(UUID ehrId, BeatmungswerteComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
 
     public VersionUid saveHeartRate(UUID ehrId, HerzfrequenzComposition composition) {
 
@@ -135,6 +137,22 @@ public class EhrbaseService {
 
         return composition.getVersionUid();
     }
+
+    public VersionUid savePatientInICU(UUID ehrId, PatientAufICUComposition composition) {
+
+        try
+        {
+            client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new UnprocessableEntityException("There was a Error in savePatientAufICU", e);
+        }
+
+        return composition.getVersionUid();
+    }
+
 
     public VersionUid saveTest(UUID ehrId, KennzeichnungErregernachweisSARSCoV2Composition composition) {
 
@@ -169,6 +187,23 @@ public class EhrbaseService {
 
         return composition.getVersionUid();
     }
+    public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveKorpergrosse(UUID ehrId, KorpergrosseComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 }
 

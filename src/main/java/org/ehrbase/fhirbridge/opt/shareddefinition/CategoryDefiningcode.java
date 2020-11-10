@@ -9,7 +9,7 @@ public enum CategoryDefiningcode implements EnumValueSet {
   EPISODIC("episodic", "episodic", "openehr", "435"),
 
   PERSISTENT("persistent", "persistent", "openehr", "431");
-
+  
   private String value;
 
   private String description;
