@@ -226,3 +226,105 @@ create frailty scale score
 
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
+
+
+
+create Observation Heart Rate JSON
+    #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifier.coding.system}    ${Identifier.coding.code}    ${Identifier.system}    ${Identifier.code}    ${category.available}    ${category.system}    ${category.code}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${responsecode}    ${diagnostics}
+
+                        prepare new request session  Prefer=return=representation
+
+    #${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/observation-example-heart-rate.json
+
+    &{resp}             Run Keywords
+                        ...    ehr.create new ehr    000_ehr_status.json    AND
+                        ...    load JSON     observation-example-heart-rate.json     AND
+                        ...    update Resource Type    ${resourceType}    AND
+                        ...    update ID    ${ID}    AND
+                        ...    update Profile    ${profile}    AND
+                        ...    POST    ${BASE_URL}/Observation    body=${payload}    AND
+                        ...    Output Debug Info To Console    AND
+                        ...    validation JSON    ${responsecode}    ${diagnostics}
+
+
+
+
+
+
+#   oooo  .oooooo..o   .oooooo.   ooooo      ooo 
+#   `888 d8P'    `Y8  d8P'  `Y8b  `888b.     `8' 
+#    888 Y88bo.      888      888  8 `88b.    8  
+#    888  `"Y8888o.  888      888  8   `88b.  8  
+#    888      `"Y88b 888      888  8     `88b.8  
+#    888 oo     .d8P `88b    d88'  8       `888  
+#.o. 88P 8""88888P'   `Y8bood8P'  o8o        `8  
+#`Y888P                                        
+#
+# [ UPDATE JSON VALUES ]
+
+load JSON
+    [Arguments]         ${fhir_resource}
+
+    ${payload}         Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+                       Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+                       Set Test Variable  ${payload}  ${payload}
+
+
+validation JSON
+    [Arguments]         ${responsecode}    ${diagnostics}
+
+                        Integer    response status    ${responsecode}
+
+                        Run Keyword And Return If  $responsecode!="201"
+                        ...     String     response body issue 0 diagnostics    pattern=${diagnostics}
+
+
+update Resource Type
+    [Arguments]         ${resourceType}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $resourceType=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.resourceType    ${resourceType}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $resourceType=="missing"
+                        ...    Delete Object From Json  ${payload}  $.resourceType
+
+                        # Run Keyword only when resourcetype is not missing or empty
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.resourceType    ${resourceType}
+
+update ID
+    [Arguments]         ${ID}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $ID=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.id   ${ID}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $ID=="missing"
+                        ...    Delete Object From Json  ${payload}  $.id
+
+                        # Run Keyword only when resourcetype is not missing or empty
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.id   ${ID}
+
+update Profile
+    [Arguments]         ${profile}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $profile=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.meta.profile[0]    ${profile}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $profile=="missing"
+                        ...    Delete Object From Json  ${payload}  $.meta.profile[0]
+
+                        # Run Keyword only when resourcetype is valid
+                        Run Keyword And Return If    $profile=="valid"
+                        ...    Update Value To Json    ${payload}    $.meta.profile[0]    http://hl7.org/fhir/StructureDefinition/heartrate
+
+                        # Run Keyword only when resourcetype is not missing or empty
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.meta.profile[0]    ${profile}

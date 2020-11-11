@@ -148,10 +148,19 @@ Force Tags              create
     ...                2. fill json with table values
     ...                3. trigger observation endpoint
     ...                4. validate outcome
-    [Tags]             todo    valid
-    [Template]         create heart rate from data table (valid)
-    #|ressourceType  |  ID  |  profile  |  status  |                      Identifier                     |     category      |                      code                     |  DateTime  |             valueQuantity            |  R.-Code  |
-    #|               |      |           |          |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |            |  value  |  unit  |  system  |  code  |           |
+    [Tags]             todo    valid    test
+    [Template]         create Observation Heart Rate JSON
+#|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                           |              category           |                             code                            |  reference  |  DateTime  |                      valueQuantity                 |  dataabsentreason  |  R.-Code  |  diagnostics  |
+#|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  code  |  available  |  code  |  system  |  available  |  0.code  |  0.system  |  1.code  |  1.system  |             |            |  available  |  value  |  unit  |  system  |  code  |                    |           |               |
+    Observation    	heart-rate    valid		201    	${EMPTY}
+	test	    	heart-rate    valid		422    	Dies scheint keine FHIR-Ressource zu sein
+	missing     	heart-rate    valid		422    	ResourceType-Property kann nicht gefunden werden
+	${EMPTY}    	heart-rate    valid		422    	Dies scheint keine FHIR-Ressource zu sein
+#	Observation    	test    	  valid		201    	${EMPTY}
+#	Observation    	${123}    	  valid		422    	Fehler beim Parsen von JSON: Der primitive Wert muss ein String sein.
+#   Observation    	${EMPTY}      valid		422    	???
+#	Observation    	missing       valid		201    	${EMPTY}
+    Observation    	heart-rate    abc		422    	Canonical URLs must be absolute URLs if they are not fragment references
 
 
 014 Create Heart Rate (invalid variants)
@@ -160,6 +169,7 @@ Force Tags              create
     ...                3. trigger observation endpoint
     ...                4. validate outcome
     [Tags]             todo    invalid
-    [Template]         create heart rate from data table (invalid)
-    #|ressourceType  |  ID  |  profile  |  status  |                      Identifier                     |     category      |                      code                     |   Subject   |  DateTime  |             valueQuantity            |  R.-Code  |
-    #|               |      |           |          |  coding.system  |  coding.code  |  system  |  code  |  code  |  system  |  0.code  |  0.system  |  1.code  |  1.system  |  reference  |            |  value  |  unit  |  system  |  code  |           |
+    [Template]         create Observation Heart Rate JSON
+    #|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                           |              category           |                             code                            |  reference  |  DateTime  |                      valueQuantity                 |  dataabsentreason  |  R.-Code  |  diagnostics  |
+    #|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  code  |  available  |  code  |  system  |  available  |  0.code  |  0.system  |  1.code  |  1.system  |             |            |  available  |  value  |  unit  |  system  |  code  |                    |           |               |
+

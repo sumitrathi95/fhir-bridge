@@ -435,7 +435,7 @@ content-type: application/json
     "id": "c8079220-594c-42dc-8cea-7a52a6833c2c",
     "meta": {
         "profile":  [
-            "http://hl7.org/fhir/StructureDefinition/heartrate"
+            "abc"
         ]
     },
     "identifier":  [
