@@ -14,6 +14,7 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
@@ -165,6 +166,12 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid saveBodyWeight(UUID ehrId, KorpergewichtComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
     public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
         // TODO invoke post processing
 
@@ -197,5 +204,6 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
 }
 
