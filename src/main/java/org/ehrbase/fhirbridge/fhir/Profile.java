@@ -17,7 +17,7 @@ public enum Profile {
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
 
-    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
+    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration", ResourceType.Observation),
 
     BLOOD_PRESSURE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure", ResourceType.Observation),
 
@@ -32,6 +32,8 @@ public enum Profile {
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
+    
+    BODY_WEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight", ResourceType.Observation),
 
     CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 

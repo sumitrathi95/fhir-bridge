@@ -14,6 +14,7 @@ import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
@@ -167,27 +168,30 @@ public class EhrbaseService {
     }
 
     public VersionUid saveSmokingStatus(UUID ehrId, RaucherstatusComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 
+
+    public VersionUid saveBodyWeight(UUID ehrId, KorpergewichtComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
 
     public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
     public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
+      
     public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -197,7 +201,6 @@ public class EhrbaseService {
     public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
@@ -206,5 +209,6 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
 }
 
