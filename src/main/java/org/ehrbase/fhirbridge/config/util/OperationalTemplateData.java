@@ -18,7 +18,7 @@ public enum OperationalTemplateData {
     PREGNANCY_STATUS("", "Schwangerschaftsstatus.opt", "Schwangerschaftsstatus"),
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
     BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße"),
-    SMOKING_STATUS("", "Raucherstatus.opt", "Raucherstatus").
+    SMOKING_STATUS("", "Raucherstatus.opt", "Raucherstatus"),
     BODY_WEIGHT("", "Körpergewicht.opt", "Körpergewicht");
 
 
