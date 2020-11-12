@@ -231,7 +231,7 @@ create frailty scale score
 
 create Observation Heart Rate JSON
     #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
 
@@ -247,6 +247,7 @@ create Observation Heart Rate JSON
                         ...    update Identifier       ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    AND
                         ...    update Category         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    AND
                         ...    update Code             ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    AND
+                        ...    update Subject          ${subject}          ${reference}    AND
                         ...    POST    ${BASE_URL}/Observation    body=${payload}       AND
                         ...    Output Debug Info To Console                             AND
                         ...    validation JSON    ${responsecode}    ${diagnostics}
@@ -271,7 +272,6 @@ load JSON
     [Arguments]         ${fhir_resource}
 
     ${payload}         Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
-                       Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
                        Set Test Variable  ${payload}  ${payload}
 
 
@@ -582,3 +582,33 @@ update Code 1 Code
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.code.coding[1].code    ${code1code}
+
+update Subject
+    [Arguments]         ${subject}    ${reference}
+
+                        # Run Keyword only if subject is available
+                        Run Keyword And Return If    $subject=="true"
+                        ...    update Reference    ${reference}
+
+                        # Run Keyword only if category is not available
+                        Run Keyword And Return If    $subject=="false"
+                        ...    Delete Object From Json  ${payload}  $.subject
+
+update Reference
+    [Arguments]         ${reference}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $reference=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.subject.reference    ${reference}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $reference=="missing"
+                        ...    Delete Object From Json    ${payload}    $.subject.reference
+
+                        # Run Keyword only when resourcetype is valid
+                        Run Keyword And Return If    $reference=="valid"
+                        ...    Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.subject.reference    ${reference}

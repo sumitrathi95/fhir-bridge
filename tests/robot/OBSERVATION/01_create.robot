@@ -150,10 +150,15 @@ Force Tags              create
     ...                4. validate outcome
     [Tags]             todo    valid    test
     [Template]         create Observation Heart Rate JSON
-#|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                            |                      category                             |                                        code                                      |  reference  |  DateTime  |                      valueQuantity                 |  dataabsentreason  |  R.-Code  |  diagnostics  |
-#|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  value  |  available  |  codingavailable  |  system  |     code     |  available  |  coding available  |  0.system  |  0.code  |  1.system  |  1.code  |             |            |  available  |  value  |  unit  |  system  |  code  |                    |           |               |
-    Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd      	201    	${EMPTY}
-	Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  ${EMPTY}    ${EMPTY}		${EMPTY}      ${EMPTY}      422    	value kann nicht leer sein
+#|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                            |                      category                             |                                        code                                      |         subject           |  DateTime  |                      valueQuantity                 |  dataabsentreason  |ArryNumber  |  R.-Code  |  diagnostics  |
+#|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  value  |  available  |  codingavailable  |  system  |     code     |  available  |  coding available  |  0.system  |  0.code  |  1.system  |  1.code  |  available  |  reference  |            |  available  |  value  |  unit  |  system  |  code  |                    |            |           |               |
+    Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    true    		valid      		201    	${EMPTY}
+#   Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    true    		${{str(uuid.uuid4())}}      		400    	Does not contain resource type 
+#   Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    false    		valid      		422    	Element 'Observation.subject': mindestens erforderlich = 1, aber nur gefunden 0
+#   Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    true    		${12345}     	422    	Fehler beim Parsen von JSON: Der primitive Wert muss ein String sein
+#   Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    true    		missing      	422    	Objekt muss einen Inhalt haben
+#	Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  valid		  8867-4		valid         abcd    true    		${EMPTY}     	422    	Dieses Element stimmt mit keinem bekannten Slice defined in the profile
+#	Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			true			  ${EMPTY}    ${EMPTY}		${EMPTY}      ${EMPTY}      422    	value kann nicht leer sein
 #	Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       true			false			  valid		  8867-4		valid         abcd      	422    	mindestens erforderlich = 1, aber nur gefunden 0
 #	Observation    	 heart-rate    valid		final		true          valid             test         valid      abcd       true             true            valid      vital-signs       false			true			  valid		  8867-4		valid         abcd      	422    	mindestens erforderlich = 1, aber nur gefunden 0
 #   Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       false            true            valid      vital-signs       	422    	mindestens erforderlich = 1, aber nur gefunden 0
@@ -161,15 +166,7 @@ Force Tags              create
 #	Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             true            test       vital-signs       	422    	Dieses Element stimmt mit keinem bekannten Slice defined in the profile
 #	Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             true            valid      test       			422    	Dieses Element stimmt mit keinem bekannten Slice defined in the profile
 #	Observation    	 heart-rate    valid		final		false         valid             abcd          valid      abcd       201    	${EMPTY}
-#	test	    	heart-rate    valid		final		422    	Dies scheint keine FHIR-Ressource zu sein
-#	missing     	heart-rate    valid		final		422    	ResourceType-Property kann nicht gefunden werden
-#	${EMPTY}    	heart-rate    valid		final		422    	Dies scheint keine FHIR-Ressource zu sein
-#	Observation    	test    	  valid		final		201    	${EMPTY}
-#	Observation    	${123}    	  valid		final		422    	Fehler beim Parsen von JSON: Der primitive Wert muss ein String sein.
-#   Observation    	${EMPTY}      valid		final		422    	???
-#	Observation    	missing       valid		final		201    	${EMPTY}
-#   Observation    	heart-rate    abc		final		422    	Canonical URLs must be absolute URLs if they are not fragment references
-#	Observation    	heart-rate    valid		todo		400    	Unknown ObservationStatus code
+
 
 
 014 Create Heart Rate (invalid variants)
