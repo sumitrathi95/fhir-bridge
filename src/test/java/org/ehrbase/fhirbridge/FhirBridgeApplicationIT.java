@@ -281,7 +281,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals(
             "Default profile is not supported for Observation. One of the following profiles is expected: " +
             "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
             "http://hl7.org/fhir/StructureDefinition/heartrate, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
@@ -308,7 +308,7 @@ public class FhirBridgeApplicationIT {
            "Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. " +
            "One of the following profiles is expected: " +
            "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
            "http://hl7.org/fhir/StructureDefinition/heartrate, " +
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
@@ -609,7 +609,7 @@ public class FhirBridgeApplicationIT {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-  
+
     private String getContent(String location) throws IOException {
         Resource resource = resourceLoader.getResource(location);
         try (InputStream input = resource.getInputStream()) {
@@ -617,4 +617,3 @@ public class FhirBridgeApplicationIT {
         }
     }
 }
-
