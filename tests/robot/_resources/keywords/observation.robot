@@ -231,7 +231,7 @@ create frailty scale score
 
 create Observation Heart Rate JSON
     #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
 
@@ -248,6 +248,7 @@ create Observation Heart Rate JSON
                         ...    update Category         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    AND
                         ...    update Code             ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    AND
                         ...    update Subject          ${subject}          ${reference}    AND
+                        ...    update Effective Date Time    ${effectivedatetime}       AND
                         ...    POST    ${BASE_URL}/Observation    body=${payload}       AND
                         ...    Output Debug Info To Console                             AND
                         ...    validation JSON    ${responsecode}    ${diagnostics}
@@ -612,3 +613,18 @@ update Reference
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.subject.reference    ${reference}
+
+update Effective Date Time
+    [Arguments]         ${effectivedatetime}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $effectivedatetime=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.effectiveDateTime   ${effectivedatetime}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $effectivedatetime=="missing"
+                        ...    Delete Object From Json  ${payload}  $.effectiveDateTime
+
+                        # Else
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.effectiveDateTime   ${effectivedatetime}
