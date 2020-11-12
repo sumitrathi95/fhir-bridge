@@ -150,9 +150,13 @@ Force Tags              create
     ...                4. validate outcome
     [Tags]             todo    valid    test
     [Template]         create Observation Heart Rate JSON
-#|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                           |              category           |                             code                            |  reference  |  DateTime  |                      valueQuantity                 |  dataabsentreason  |  R.-Code  |  diagnostics  |
-#|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  code  |  available  |  code  |  system  |  available  |  0.code  |  0.system  |  1.code  |  1.system  |             |            |  available  |  value  |  unit  |  system  |  code  |                    |           |               |
-    Observation    	 heart-rate    valid		final		true          valid             abcd          valid      abcd       201    	${EMPTY}
+#|  ressourceType  |     ID     |  profile  |  status  |                             Identifier                            |                      category                       |                             code                            |  reference  |  DateTime  |                      valueQuantity                 |  dataabsentreason  |  R.-Code  |  diagnostics  |
+#|                 |            |           |          |  avalable  |  coding.system  |  coding.code  |  system  |  value  |  available  |  codingavailable  |  system  |  code  |  available  |  0.code  |  0.system  |  1.code  |  1.system  |             |            |  available  |  value  |  unit  |  system  |  code  |                    |           |               |
+#   Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             true           valid      vital-signs       201    	${EMPTY}
+#   Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       false            true           valid      vital-signs       422    	mindestens erforderlich = 1, aber nur gefunden 0
+#	Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             false          valid      vital-signs       422    	Objekt muss einen Inhalt haben
+#	Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             true           test       vital-signs       422    	Dieses Element stimmt mit keinem bekannten Slice defined in the profile
+	Observation    	 heart-rate    valid		final		true          valid             abcd         valid      abcd       true             true           valid      test       		422    	Dieses Element stimmt mit keinem bekannten Slice defined in the profile
 #	Observation    	 heart-rate    valid		final		false         valid             abcd          valid      abcd       201    	${EMPTY}
 #	test	    	heart-rate    valid		final		422    	Dies scheint keine FHIR-Ressource zu sein
 #	missing     	heart-rate    valid		final		422    	ResourceType-Property kann nicht gefunden werden

@@ -230,8 +230,8 @@ create frailty scale score
 
 
 create Observation Heart Rate JSON
-    #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${category.available}    ${category.system}    ${category.code}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${responsecode}    ${diagnostics}
+    #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
 
@@ -245,6 +245,7 @@ create Observation Heart Rate JSON
                         ...    update Profile          ${profile}                       AND
                         ...    update Status           ${status}                        AND
                         ...    update Identifier       ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    AND
+                        ...    update Category         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    AND
                         ...    POST    ${BASE_URL}/Observation    body=${payload}       AND
                         ...    Output Debug Info To Console                             AND
                         ...    validation JSON    ${responsecode}    ${diagnostics}
@@ -349,7 +350,7 @@ update Status
 update Identifier
     [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keywords only if identifier is available
                         Run Keyword And Return If    $Identifieravailable=="true"
                         ...    Run Keywords
                         ...    update Identifier coding system    ${Identifiercodingsystem}    AND
@@ -357,7 +358,7 @@ update Identifier
                         ...    update Identifier system           ${Identifiersystem}           AND
                         ...    update Identifier value             ${Identifiervalue}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only if Identifier is not available
                         Run Keyword And Return If    $Identifieravailable=="false"
                         ...    Delete Object From Json  ${payload}  $.identifier
 
@@ -428,3 +429,61 @@ update Identifier value
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
+
+update Category
+    [Arguments]         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}
+
+                        # Run Keyword only if category is available
+                        Run Keyword And Return If    $categoryavailable=="true"
+                        ...    update Category Coding    ${categorycodingavailable}    ${categorysystem}    ${categorycode}
+
+                        # Run Keyword only if category is not available
+                        Run Keyword And Return If    $categoryavailable=="false"
+                        ...    Delete Object From Json  ${payload}  $.category
+
+update Category Coding
+    [Arguments]         ${categorycodingavailable}    ${categorysystem}    ${categorycode}
+
+                        # Run Keyword only if Category-Coding is available
+                        Run Keyword And Return If    $categorycodingavailable=="true"
+                        ...    Run Keywords
+                        ...    update Category System           ${categorysystem}          AND
+                        ...    update Category Code             ${categorycode}
+
+                        # Run Keyword only if Category-Coding is not available
+                        Run Keyword And Return If    $categorycodingavailable=="false"
+                        ...    Delete Object From Json  ${payload}  $.category[0].coding
+
+update Category System
+    [Arguments]         ${categorysystem}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $categorysystem=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].system    ${categorysystem}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $categorysystem=="missing"
+                        ...    Delete Object From Json    ${payload}    $.category[0].coding[0].system
+
+                        # Run Keyword only when resourcetype is valid
+                        Run Keyword And Return If    $categorysystem=="valid"
+                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].system    http://terminology.hl7.org/CodeSystem/observation-category
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].system    ${categorysystem}
+
+update Category Code
+    [Arguments]         ${categorycode}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $categorycode=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].code    ${categorycode}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $categorycode=="missing"
+                        ...    Delete Object From Json    ${payload}    $.category[0].coding[0].code
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].code    ${categorycode}
