@@ -230,21 +230,23 @@ create frailty scale score
 
 
 create Observation Heart Rate JSON
-    #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifier.coding.system}    ${Identifier.coding.code}    ${Identifier.system}    ${Identifier.code}    ${category.available}    ${category.system}    ${category.code}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${responsecode}    ${diagnostics}
+    #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${category.available}    ${category.system}    ${category.code}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
 
     #${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/observation-example-heart-rate.json
 
     &{resp}             Run Keywords
-                        ...    ehr.create new ehr    000_ehr_status.json    AND
-                        ...    load JSON     observation-example-heart-rate.json     AND
-                        ...    update Resource Type    ${resourceType}    AND
-                        ...    update ID    ${ID}    AND
-                        ...    update Profile    ${profile}    AND
-                        ...    POST    ${BASE_URL}/Observation    body=${payload}    AND
-                        ...    Output Debug Info To Console    AND
+                        ...    ehr.create new ehr    000_ehr_status.json                AND
+                        ...    load JSON     observation-example-heart-rate.json        AND
+                        ...    update Resource Type    ${resourceType}                  AND
+                        ...    update ID               ${ID}                            AND
+                        ...    update Profile          ${profile}                       AND
+                        ...    update Status           ${status}                        AND
+                        ...    update Identifier       ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    AND
+                        ...    POST    ${BASE_URL}/Observation    body=${payload}       AND
+                        ...    Output Debug Info To Console                             AND
                         ...    validation JSON    ${responsecode}    ${diagnostics}
 
 
@@ -291,7 +293,7 @@ update Resource Type
                         Run Keyword And Return If    $resourceType=="missing"
                         ...    Delete Object From Json  ${payload}  $.resourceType
 
-                        # Run Keyword only when resourcetype is not missing or empty
+                        # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.resourceType    ${resourceType}
 
@@ -306,7 +308,7 @@ update ID
                         Run Keyword And Return If    $ID=="missing"
                         ...    Delete Object From Json  ${payload}  $.id
 
-                        # Run Keyword only when resourcetype is not missing or empty
+                        # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.id   ${ID}
 
@@ -325,6 +327,104 @@ update Profile
                         Run Keyword And Return If    $profile=="valid"
                         ...    Update Value To Json    ${payload}    $.meta.profile[0]    http://hl7.org/fhir/StructureDefinition/heartrate
 
-                        # Run Keyword only when resourcetype is not missing or empty
+                        # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.meta.profile[0]    ${profile}
+
+update Status
+    [Arguments]         ${status}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $status=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.status   ${status}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $status=="missing"
+                        ...    Delete Object From Json  ${payload}  $.status
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.status   ${status}
+
+update Identifier
+    [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $Identifieravailable=="true"
+                        ...    Run Keywords
+                        ...    update Identifier coding system    ${Identifiercodingsystem}    AND
+                        ...    update Identifier coding code      ${Identifiercodingcode}      AND
+                        ...    update Identifier system           ${Identifiersystem}           AND
+                        ...    update Identifier value             ${Identifiervalue}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $Identifieravailable=="false"
+                        ...    Delete Object From Json  ${payload}  $.identifier
+
+update Identifier coding system
+    [Arguments]         ${Identifiercodingsystem}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $Identifiercodingsystem=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   ${Identifiercodingsystem}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $Identifiercodingsystem=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier[0].type.coding[0].system
+
+                        # Run Keyword only when resourcetype is valid
+                        Run Keyword And Return If    $Identifiercodingsystem=="valid"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   http://terminology.hl7.org/CodeSystem/v2-0203
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   ${Identifiercodingsystem}
+
+update Identifier coding code
+    [Arguments]         ${Identifiercodingcode}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $Identifiercodingcode=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].code   ${Identifiercodingcode}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $Identifiercodingcode=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier[0].type.coding[0].code
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].code   ${Identifiercodingcode}
+
+update Identifier system
+    [Arguments]         ${Identifiersystem}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $Identifiersystem=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].system   ${Identifiersystem}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $Identifiersystem=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier[0].system
+
+                        # Run Keyword only when resourcetype is valid
+                        Run Keyword And Return If    $Identifiersystem=="valid"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].system   https://www.charite.de/fhir/CodeSystem/observation-identifiers
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier[0].system   ${Identifiersystem}
+
+update Identifier value
+    [Arguments]         ${Identifiervalue}
+
+                        # Run Keyword only when resourcetype is empty
+                        Run Keyword And Return If    $Identifiervalue=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
+
+                        # Run Keyword only when resourcetype is missing
+                        Run Keyword And Return If    $Identifiervalue=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier[0].value
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
