@@ -291,7 +291,8 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, " +
+                "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -318,7 +319,8 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -465,6 +467,21 @@ public class FhirBridgeApplicationIT {
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
 
+    @Test
+    public void createSmokingStatus() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-example-smoking-status.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create()
+                .resource(resource)
+                .execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+  
     @Test
     public void createBodyWeight() throws IOException {
         String resource = getContent("classpath:/Observation/observation-example-body-weight.json");

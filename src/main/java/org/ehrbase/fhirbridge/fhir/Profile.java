@@ -37,7 +37,9 @@ public enum Profile {
 
     CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 
-    BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation);
+    BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation),
+
+    SMOKING_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status", ResourceType.Observation);
 
     private final String url;
 

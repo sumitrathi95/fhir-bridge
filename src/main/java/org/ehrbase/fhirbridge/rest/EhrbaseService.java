@@ -21,6 +21,7 @@ import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseCompositio
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.raucherstatuscomposition.RaucherstatusComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -166,6 +167,13 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
+    public VersionUid saveSmokingStatus(UUID ehrId, RaucherstatusComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+
     public VersionUid saveBodyWeight(UUID ehrId, KorpergewichtComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -173,19 +181,17 @@ public class EhrbaseService {
     }
 
     public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
-        // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
     public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
+      
     public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -195,7 +201,6 @@ public class EhrbaseService {
     public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
