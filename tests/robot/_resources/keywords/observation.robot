@@ -231,11 +231,9 @@ create frailty scale score
 
 create Observation Heart Rate JSON
     #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
-
-    #${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/observation-example-heart-rate.json
 
     &{resp}             Run Keywords
                         ...    ehr.create new ehr    000_ehr_status.json                AND
@@ -249,6 +247,7 @@ create Observation Heart Rate JSON
                         ...    update Code             ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    AND
                         ...    update Subject          ${subject}          ${reference}    AND
                         ...    update Effective Date Time    ${effectivedatetime}       AND
+                        ...    update Value Quantity   ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}    AND
                         ...    POST    ${BASE_URL}/Observation    body=${payload}       AND
                         ...    Output Debug Info To Console                             AND
                         ...    validation JSON    ${responsecode}    ${diagnostics}
@@ -628,3 +627,82 @@ update Effective Date Time
                         # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.effectiveDateTime   ${effectivedatetime}
+
+update Value Quantity
+    [Arguments]         ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}
+
+                        # Run Keyword only if value quantity is available
+                        Run Keyword And Return If    $vQavailable=="true"
+                        ...    Run Keywords
+                        ...    update Value Quantity Value           ${vQvalue}          AND
+                        ...    update Value Quantity Unit            ${vQunit}           AND
+                        ...    update Value Quantity System          ${vQsystem}         AND
+                        ...    update Value Quantity Code            ${vQcode}
+
+                        # Run Keyword only if value quantity is not available
+                        Run Keyword And Return If    $vQavailable=="false"
+                        ...    Delete Object From Json  ${payload}  $.valueQuantity
+
+update Value Quantity Value
+    [Arguments]         ${vQvalue}
+
+                        # Run Keyword only when value Quantity Value is empty
+                        Run Keyword And Return If    $vQvalue=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.value   ${vQvalue}
+
+                        # Run Keyword only when value Quantity Value is missing
+                        Run Keyword And Return If    $vQvalue=="missing"
+                        ...    Delete Object From Json  ${payload}  $.valueQuantity.value
+
+                        # Else
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.value   ${vQvalue}
+
+update Value Quantity Unit
+    [Arguments]         ${vQunit}
+
+                        # Run Keyword only when value Quantity Code is empty
+                        Run Keyword And Return If    $vQunit=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.unit   ${vQunit}
+
+                        # Run Keyword only when value Quantity Code is missing
+                        Run Keyword And Return If    $vQunit=="missing"
+                        ...    Delete Object From Json  ${payload}  $.valueQuantity.unit
+
+                        # Else
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.unit   ${vQunit}
+
+update Value Quantity System
+    [Arguments]         ${vQsystem}
+
+                        # Run Keyword only when value Quantity System is empty
+                        Run Keyword And Return If    $vQsystem=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.system    ${vQsystem}
+
+                        # Run Keyword only when value Quantity System is missing
+                        Run Keyword And Return If    $vQsystem=="missing"
+                        ...    Delete Object From Json  ${payload}  $.valueQuantity.system
+
+                        # Run Keyword only when value Quantity System is valid
+                        Run Keyword And Return If    $vQsystem=="valid"
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.system    http://unitsofmeasure.org
+
+                        # Else
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.system    ${vQsystem}
+
+update Value Quantity Code
+    [Arguments]         ${vQcode}
+
+                        # Run Keyword only when value Quantity Code is empty
+                        Run Keyword And Return If    $vQcode=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.code   ${vQcode}
+
+                        # Run Keyword only when value Quantity Code is missing
+                        Run Keyword And Return If    $vQcode=="missing"
+                        ...    Delete Object From Json  ${payload}  $.valueQuantity.code
+
+                        # Else
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.valueQuantity.code   ${vQcode}
