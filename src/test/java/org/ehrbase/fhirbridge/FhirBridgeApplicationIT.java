@@ -70,7 +70,7 @@ public class FhirBridgeApplicationIT {
 
     @BeforeEach
     public void setUp() {
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+        context.getRestfulClientFactory().setSocketTimeout(120 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
 
         // Create EHR for the rests of the tests to run on this
@@ -291,8 +291,10 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, " +
-                "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
+
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -319,8 +321,10 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, " +
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
+
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -442,6 +446,19 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createHeartRate() throws IOException {
         String resource = getContent("classpath:/Observation/observation-example-heart-rate.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+    
+    @Test
+    public void createRespRate() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-example-respiratory-rate.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();

@@ -28,7 +28,7 @@ public enum Profile {
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
     PREGNANCY_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status", ResourceType.Observation),
-    
+
     OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
@@ -38,6 +38,8 @@ public enum Profile {
     CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 
     BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation),
+
+    RESP_RATE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate", ResourceType.Observation),
 
     SMOKING_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status", ResourceType.Observation);
 
