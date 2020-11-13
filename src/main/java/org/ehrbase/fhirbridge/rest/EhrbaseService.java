@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
-import org.ehrbase.client.aql.record.Record2;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
 import org.ehrbase.fhirbridge.opt.CompositionAbstract;
@@ -97,7 +96,7 @@ public class EhrbaseService {
             return null;
     }
 
-    public VersionUid saveLab(UUID ehrId, LaborbefundComposition composition) {
+    public VersionUid saveLab(UUID ehrId, GECCOLaborbefundComposition composition) {
         // TODO invoke post processing
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
