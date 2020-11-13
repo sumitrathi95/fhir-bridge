@@ -231,7 +231,7 @@ create frailty scale score
 
 create Observation Heart Rate JSON
     #[Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}    ${Identifier.available}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${code.available}    ${code.0.system}    ${code.0.code}    ${code.1.system}    ${code.1.code}    ${reference}    ${datetime}    ${vQ.available}    ${vQ.value}    ${vQ.unit}    ${vQ.system}    ${vQ.code}    ${dateabsentreason}    ${responsecode}    ${diagnostics}
-    [Arguments]         ${resourceType}    ${ID}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}    ${responsecode}    ${diagnostics}
+    [Arguments]         ${resourceType}    ${ID}    ${meta}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}    ${responsecode}    ${diagnostics}
 
                         prepare new request session  Prefer=return=representation
 
@@ -240,7 +240,7 @@ create Observation Heart Rate JSON
                         ...    load JSON     observation-example-heart-rate.json        AND
                         ...    update Resource Type    ${resourceType}                  AND
                         ...    update ID               ${ID}                            AND
-                        ...    update Profile          ${profile}                       AND
+                        ...    update Meta Profile     ${meta}    ${profile}            AND
                         ...    update Status           ${status}                        AND
                         ...    update Identifier       ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    AND
                         ...    update Category         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    AND
@@ -313,6 +313,17 @@ update ID
                         # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.id   ${ID}
+
+update Meta Profile
+    [Arguments]         ${meta}    ${profile}
+
+                        # Run Keyword only if meta is available
+                        Run Keyword And Return If    $meta=="true"
+                        ...    update Profile    ${profile}
+
+                        # Run Keyword only if meta is not available
+                        Run Keyword And Return If    $meta=="false"
+                        ...    Delete Object From Json  ${payload}  $.meta
 
 update Profile
     [Arguments]         ${profile}
