@@ -70,7 +70,7 @@ public class FhirBridgeApplicationIT {
 
     @BeforeEach
     public void setUp() {
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+        context.getRestfulClientFactory().setSocketTimeout(120 * 1000);
         client = context.newRestfulGenericClient("http://localhost:" + port + "/fhir-bridge/fhir");
 
         // Create EHR for the rests of the tests to run on this
@@ -292,7 +292,7 @@ public class FhirBridgeApplicationIT {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, ",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
 
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
@@ -322,7 +322,7 @@ public class FhirBridgeApplicationIT {
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
-           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, ",
+           "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
 
            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
