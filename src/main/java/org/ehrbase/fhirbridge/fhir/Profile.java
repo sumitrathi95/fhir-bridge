@@ -11,25 +11,31 @@ public enum Profile {
 
     // DiagnosticReport Profiles
 
-    DIAGNOSTIC_REPORT_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/DiagnosticReportLab", ResourceType.DiagnosticReport),
+    DIAGNOSTIC_REPORT_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/DiagnosticReportLab", ResourceType.DiagnosticReport),
 
     // Observation Profiles
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
-    
-    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration", ResourceType.Observation),
+
+    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
 
     BLOOD_PRESSURE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure", ResourceType.Observation),
-    
+
     HEART_RATE("http://hl7.org/fhir/StructureDefinition/heartrate", ResourceType.Observation),
+
+    PATIENT_IN_ICU("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu", ResourceType.Observation),
 
     CORONARIRUS_NACHWEIS_TEST("https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest", ResourceType.Observation),
 
     PREGNANCY_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status", ResourceType.Observation),
     
-    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/ObservationLab", ResourceType.Observation),
+    OBSERVATION_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab", ResourceType.Observation),
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
+
+    CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
+
+    BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation),
 
     BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle);
 

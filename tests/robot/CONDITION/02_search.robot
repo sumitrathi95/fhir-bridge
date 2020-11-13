@@ -33,6 +33,7 @@ Force Tags              search
 001 Search Diagnose Condition
     [Documentation]     Search Diagnose Condition
 
+    condition.create diagnose condition    condition-example.json
     condition.get diagnose condition
 
 
@@ -41,4 +42,3 @@ Force Tags              search
 establish preconditions
     generic.prepare new request session    Prefer=return=representation
     ehr.create new ehr    000_ehr_status.json
-    condition.create diagnose condition    condition-example.json
