@@ -1,19 +1,30 @@
 package org.ehrbase.fhirbridge;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
+import com.nedap.archie.rm.archetyped.FeederAudit;
+import com.nedap.archie.rm.datavalues.DvIdentifier;
 import com.nedap.archie.rm.datavalues.DvText;
 import com.nedap.archie.rm.ehr.EhrStatus;
+import com.nedap.archie.rm.generic.PartyIdentified;
 import com.nedap.archie.rm.generic.PartySelf;
 import com.nedap.archie.rm.support.identification.HierObjectId;
 import com.nedap.archie.rm.support.identification.PartyRef;
 import org.apache.commons.io.IOUtils;
 import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
+import org.ehrbase.fhirbridge.config.util.CommonData;
 import org.ehrbase.fhirbridge.fhir.Profile;
+import org.ehrbase.fhirbridge.mapping.FhirConditionOpenehrDiagnose;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.AtiopathogeneseSchweregradDvcodedtext;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.DiagnoseEvaluation;
+import org.ehrbase.fhirbridge.opt.diagnosecomposition.definition.SchweregradDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +43,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -94,7 +107,7 @@ public class FhirBridgeApplicationIT {
     @Test
     public void createDiagnoseCondition() throws IOException {
         Date now = new Date();
-
+        IParser parser = context.newJsonParser();
         String resource = getContent("classpath:/Condition/condition-example.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
@@ -110,6 +123,78 @@ public class FhirBridgeApplicationIT {
                 .returnBundle(Bundle.class).execute();
 
         Assertions.assertEquals(2, bundle.getTotal());
+    }
+
+    @Test
+    public void createDiagnoseConditionMapping() throws IOException {
+        Date now = new Date();
+        IParser parser = context.newJsonParser();
+        String resource = getContent("classpath:/Condition/condition-example.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+        Condition condition = parser.parseResource(Condition.class, resource);
+
+        DiagnoseComposition diagnoseComposition = FhirConditionOpenehrDiagnose.map(condition);
+        DiagnoseComposition diagnoseCompositionTest = initDiagnoseComposition();
+
+        Assertions.assertEquals(diagnoseComposition.getTerritory(), diagnoseCompositionTest.getTerritory());
+        Assertions.assertEquals(diagnoseComposition.getBerichtIdValue(), diagnoseCompositionTest.getBerichtIdValue());
+        Assertions.assertEquals(diagnoseComposition.getCategoryDefiningcode(), diagnoseCompositionTest.getCategoryDefiningcode());
+        Assertions.assertEquals(diagnoseComposition.getComposer(), diagnoseCompositionTest.getComposer());
+
+        AtiopathogeneseSchweregradDvcodedtext severityCoded = (AtiopathogeneseSchweregradDvcodedtext) diagnoseComposition.getDiagnose().getSchweregrad();
+
+        AtiopathogeneseSchweregradDvcodedtext severityCodedTest = (AtiopathogeneseSchweregradDvcodedtext) diagnoseCompositionTest.getDiagnose().getSchweregrad();
+        Assertions.assertEquals(severityCoded.getSchweregradDefiningcode(), severityCodedTest.getSchweregradDefiningcode());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getAnatomischeLokalisation(), diagnoseCompositionTest.getDiagnose().getAnatomischeLokalisation());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getAtiopathogenese(), diagnoseCompositionTest.getDiagnose().getAtiopathogenese());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getZuletztAktualisiertValue(), diagnoseCompositionTest.getDiagnose().getZuletztAktualisiertValue());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getZuletztAktualisiertValueTree(), diagnoseCompositionTest.getDiagnose().getZuletztAktualisiertValueTree());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getDerDiagnoseDefiningcode(), diagnoseCompositionTest.getDiagnose().getDerDiagnoseDefiningcode());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getKorperstelleValue(), diagnoseCompositionTest.getDiagnose().getKorperstelleValue());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getKorperstelleValueStructure(), diagnoseCompositionTest.getDiagnose().getKorperstelleValueStructure());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getKorperstelleValueStructure(), diagnoseCompositionTest.getDiagnose().getKorperstelleValueStructure());
+        Assertions.assertEquals(diagnoseComposition.getDiagnose().getDerErstdiagnoseValue(), diagnoseCompositionTest.getDiagnose().getDerErstdiagnoseValue());
+
+        Assertions.assertEquals(diagnoseComposition.getSettingDefiningcode(), diagnoseCompositionTest.getSettingDefiningcode());
+        Assertions.assertEquals(diagnoseComposition.getCategoryDefiningcode(), diagnoseCompositionTest.getCategoryDefiningcode());
+        Assertions.assertEquals(diagnoseComposition.getStartTimeValue(), diagnoseCompositionTest.getStartTimeValue());
+        Assertions.assertEquals(diagnoseComposition.getComposer().getExternalRef(), diagnoseCompositionTest.getComposer().getExternalRef());
+
+    }
+
+    private DiagnoseComposition initDiagnoseComposition(){
+        DiagnoseComposition composition = new DiagnoseComposition();
+        DiagnoseEvaluation evaluation = new DiagnoseEvaluation();
+        evaluation.setLanguage(Language.EN);
+        evaluation.setSubject(new PartySelf());
+        evaluation.setZuletztAktualisiertValueTree("last update");
+        evaluation.setZuletztAktualisiertValue(OffsetDateTime.now());
+
+        AtiopathogeneseSchweregradDvcodedtext severityCoded = new AtiopathogeneseSchweregradDvcodedtext();
+        severityCoded.setSchweregradDefiningcode(SchweregradDefiningcode.SCHWER);
+        evaluation.setSchweregrad(severityCoded);
+
+        evaluation.setDerDiagnoseDefiningcode(DerDiagnoseDefiningcode.B972);
+        evaluation.setKorperstelleValue("body site");
+        evaluation.setKorperstelleValueStructure("Left external ear structure");
+        DateTimeType aDate = new DateTimeType("2012-05-24T00:00:00+02:00");
+        aDate.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+        evaluation.setDerErstdiagnoseValue(aDate.getValueAsCalendar().toZonedDateTime());
+
+        composition.setDiagnose(evaluation);
+        composition.setLanguage(Language.EN);
+        composition.setLocation("test");
+        composition.setSettingDefiningcode(SettingDefiningcode.EMERGENCY_CARE);
+        composition.setTerritory(Territory.DE);
+        composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+
+        composition.setStartTimeValue(aDate.getValueAsCalendar().toZonedDateTime());
+        PartyIdentified composer = new PartyIdentified();
+        DvIdentifier identifier = new DvIdentifier();
+        identifier.setId("http://external.fhir.server/Practitioner/f201");
+        composer.addIdentifier(identifier);
+        composition.setComposer(composer);
+        return composition;
     }
 
     @Test
