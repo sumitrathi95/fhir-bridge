@@ -597,9 +597,23 @@ public class FhirBridgeApplicationIT {
     }
 
     @Test
-    public void createHistoryOfTravel() throws IOException {
+    public void createHistoryOfTravel_yes() throws IOException {
 
-        String resource = getContent("classpath:/Observation/observation-example-history-of-travel.json");
+        String resource = getContent("classpath:/Observation/observation-example-history-of-travel_yes.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
+    public void createHistoryOfTravel_no() throws IOException {
+
+        String resource = getContent("classpath:/Observation/observation-example-history-of-travel_no.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
 
         MethodOutcome outcome = client.create().resource(resource).execute();

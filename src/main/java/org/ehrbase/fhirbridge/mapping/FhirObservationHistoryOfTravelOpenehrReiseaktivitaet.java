@@ -3,14 +3,7 @@ package org.ehrbase.fhirbridge.mapping;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.*;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.AussageUberDenAusschlussDefiningcode;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.AussageUberDieFehlendeInformationDefiningcode;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.KeineReiseaktivitatEvaluation;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ProblemDiagnoseDefiningcode;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseaktivitatObservation;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseDefiningcode;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.StatusDefiningcode;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.UnbekannteReiseaktivitatEvaluation;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -27,17 +20,55 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
 
     private FhirObservationHistoryOfTravelOpenehrReiseaktivitaet() {}
 
-    private static String loinc_url = "http://loinc.org";
-    private static String loinc_DateTravelStarted = "82752-7";
-    private static String loinc_DateOfDepartureFromTravelDestination = "91560-3";
-    private static String loinc_CityOfTravel = "94653-3";
-    private static String loinc_StateOfTravel = "82754-3";
-    private static String loinc_CountryOfTravel = "94651-7";
+    private static final String loinc_url = "http://loinc.org";
+    private static final String loinc_DateTravelStarted = "82752-7";
+    private static final String loinc_DateOfDepartureFromTravelDestination = "91560-3";
+    private static final String loinc_CityOfTravel = "94653-3";
+    private static final String loinc_StateOfTravel = "82754-3";
+    private static final String loinc_CountryOfTravel = "94651-7";
 
     //source http://fhir.ch/ig/ch-ems/ValueSet-yes-no-unknown.html
-    private static String snomed_yes = "373066001";
-    private static String snomed_no = "373067005";
-    private static String snomed_unknown = "261665006";
+    private static final String snomed_yes = "373066001";
+    private static final String snomed_no = "373067005";
+    private static final String snomed_unknown = "261665006";
+
+    private static LandDefiningcode getLandByCode(String input_code) {
+        LandDefiningcode ret = null;
+        int numCoresspondingItems = 0;
+
+        //identify
+        for (LandDefiningcode c : LandDefiningcode.values()) {
+            if (input_code.equals(c.getCode())) {
+                numCoresspondingItems = numCoresspondingItems + 1;
+                ret = c;
+            }
+        }
+
+        if(numCoresspondingItems != 1)
+        {
+            throw new UnprocessableEntityException("There is no code for '"+input_code+"' defined in LandDefiningcode.java");
+        }
+        return (ret);
+    }
+
+    private static BundeslandRegionDefiningcode getBundeslandByCode(String input_code) {
+        BundeslandRegionDefiningcode ret = null;
+        int numCoresspondingItems = 0;
+
+        //identify
+        for (BundeslandRegionDefiningcode c : BundeslandRegionDefiningcode.values()) {
+            if (input_code.equals(c.getCode())) {
+                numCoresspondingItems = numCoresspondingItems + 1;
+                ret = c;
+            }
+        }
+
+        if(numCoresspondingItems != 1)
+        {
+            throw new UnprocessableEntityException("There is no code for '"+input_code+"' defined in BundeslandRegionDefiningcode.java");
+        }
+        return (ret);
+    }
 
     private static ReiseaktivitaetComposition setDefaults(ReiseaktivitaetComposition composition)
     {
@@ -51,7 +82,7 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         return composition;
     }
 
-    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation, ReiseDefiningcode reiseCode)
+    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation, org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseDefiningcode reiseCode)
     {
         ReiseaktivitaetComposition composition = new ReiseaktivitaetComposition();
         ReiseaktivitatObservation observation_travel = new ReiseaktivitatObservation();
@@ -107,11 +138,11 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
             }
             else if (codeOfConcept.equals(loinc_StateOfTravel)) {
                 contentString = fhirObservation.getComponent().get(i).getValueCodeableConcept().getCoding().get(0).getCode();
-                observation_travel.setBundeslandRegionDefiningcode(BundeslandRegionDefiningcode.createByCode(contentString));
+                observation_travel.setBundeslandRegionDefiningcode(getBundeslandByCode(contentString));
             }
             else if (codeOfConcept.equals(loinc_CountryOfTravel)) {
                 contentString = fhirObservation.getComponent().get(i).getValueCodeableConcept().getCoding().get(0).getCode();
-                observation_travel.setLandDefiningcode(LandDefiningcode.createByCode(contentString));
+                observation_travel.setLandDefiningcode(getLandByCode(contentString));
             }
             else {
                 throw new UnprocessableEntityException("Expected loinc-code for history of travel, but got '" + codeOfConcept + "' instead ");

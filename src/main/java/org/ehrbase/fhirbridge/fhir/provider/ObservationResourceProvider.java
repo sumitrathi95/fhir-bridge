@@ -540,7 +540,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             else if (ProfileUtils.hasProfile(observation, Profile.HISTORY_OF_TRAVEL)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HISTORY_OF_TRAVEL");
-                ReiseaktivitatComposition composition = FhirObservationHistoryOfTravelOpenehrReiseaktivitaet.map(observation);
+                ReiseaktivitaetComposition composition = FhirObservationHistoryOfTravelOpenehrReiseaktivitaet.map(observation);
                 VersionUid versionUid = ehrbaseService.saveHistoryOfTravel(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HISTORY_OF_TRAVEL);
             }

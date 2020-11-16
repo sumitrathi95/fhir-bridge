@@ -11,8 +11,6 @@ import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.MathFunctionDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.BundeslandRegionDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.LandDefiningcode;
 
 @Entity
 @Archetype("openEHR-EHR-OBSERVATION.travel_event.v0")
