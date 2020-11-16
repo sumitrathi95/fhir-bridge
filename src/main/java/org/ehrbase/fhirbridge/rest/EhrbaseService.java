@@ -20,10 +20,10 @@ import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseCompositio
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.PatientAufDerIntensivstationObservation;
-import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.ReiseaktivitaetComposition;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -203,7 +203,7 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-    public VersionUid saveHistoryOfTravel(UUID ehrId, ReiseaktivitatComposition composition) {
+    public VersionUid saveHistoryOfTravel(UUID ehrId, ReiseaktivitaetComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();

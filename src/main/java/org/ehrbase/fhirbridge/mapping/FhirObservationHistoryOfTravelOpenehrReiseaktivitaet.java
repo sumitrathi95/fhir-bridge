@@ -3,7 +3,14 @@ package org.ehrbase.fhirbridge.mapping;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.*;
-import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.*;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.AussageUberDenAusschlussDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.AussageUberDieFehlendeInformationDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.KeineReiseaktivitatEvaluation;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ProblemDiagnoseDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseaktivitatObservation;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.StatusDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.UnbekannteReiseaktivitatEvaluation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
@@ -44,7 +51,7 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         return composition;
     }
 
-    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation)
+    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation, ReiseDefiningcode reiseCode)
     {
         ReiseaktivitaetComposition composition = new ReiseaktivitaetComposition();
         ReiseaktivitatObservation observation_travel = new ReiseaktivitatObservation();
@@ -60,6 +67,7 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         observation_travel.setSubject(new PartySelf());
 
         // special mapping content
+        observation_travel.setReiseDefiningcode(reiseCode);
 
         // TravelStartDate
         observation_travel.setAbreisedatumValue(
@@ -100,7 +108,6 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
             else if (codeOfConcept.equals(loinc_StateOfTravel)) {
                 contentString = fhirObservation.getComponent().get(i).getValueCodeableConcept().getCoding().get(0).getCode();
                 observation_travel.setBundeslandRegionDefiningcode(BundeslandRegionDefiningcode.createByCode(contentString));
-                Bundesland
             }
             else if (codeOfConcept.equals(loinc_CountryOfTravel)) {
                 contentString = fhirObservation.getComponent().get(i).getValueCodeableConcept().getCoding().get(0).getCode();
@@ -110,27 +117,12 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
                 throw new UnprocessableEntityException("Expected loinc-code for history of travel, but got '" + codeOfConcept + "' instead ");
             }
         }
-
-        // store cluster in the list
-        destination.add(cluster);
-
-        // Destination of travel
-        observation_travel.setBestimmtesReiseziel(destination); // Why?
-
     } catch (Exception e) {
         e.printStackTrace();
         throw new UnprocessableEntityException(e.getMessage());
     }
 
         composition.setReiseaktivitat(observation_travel);
-    // admin entry : travel history
-    // each node needs a value
-
-    //template fields should be optional
-    //null for template for codes without value
-    // ask Julian for mandatory value
-
-    // null favour openEHR in template aktivieren
 
     // Required fields by API
         composition = setDefaults(composition);
@@ -139,32 +131,77 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         return composition;
     }
 
-    private static ReiseaktivitaetComposition mapTravel_no(Observation fhirObservation)
+    private static ReiseaktivitaetComposition mapTravel_no(Observation fhirObservation, AussageUberDenAusschlussDefiningcode reiseCode)
     {
         ReiseaktivitaetComposition composition = new ReiseaktivitaetComposition();
-        KeineReiseaktivitatEvaluation evaulation_noTravel = new KeineReiseaktivitatEvaluation();
+        KeineReiseaktivitatEvaluation evaluation_noTravel = new KeineReiseaktivitatEvaluation();
+
+        DateTimeType  fhirEffectiveDateTime = null;
+        try {
+
+            // default for every observation
+            fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
+            evaluation_noTravel.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+            evaluation_noTravel.setSubject(new PartySelf());
+
+            // special mapping content
+            evaluation_noTravel.setAussageUberDenAusschlussDefiningcode(reiseCode);
+            evaluation_noTravel.setProblemDiagnoseDefiningcode(ProblemDiagnoseDefiningcode.HISTORY_OF_TRAVEL);
+            }
+         catch (Exception e) {
+            e.printStackTrace();
+            throw new UnprocessableEntityException(e.getMessage());
+        }
+        composition.setKeineReiseaktivitat(evaluation_noTravel);
+
+        // Required fields by API
+        composition = setDefaults(composition);
+        composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+
+        return composition;
     }
 
-    private static ReiseaktivitaetComposition mapTravel_unknown(Observation fhirObservation)
+    private static ReiseaktivitaetComposition mapTravel_unknown(Observation fhirObservation, AussageUberDieFehlendeInformationDefiningcode reiseCode)
     {
         ReiseaktivitaetComposition composition = new ReiseaktivitaetComposition();
         UnbekannteReiseaktivitatEvaluation evalution_unknownTravel = new UnbekannteReiseaktivitatEvaluation();
+
+        DateTimeType  fhirEffectiveDateTime = null;
+        try {
+
+            // default for every observation
+            fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
+            evalution_unknownTravel.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+            evalution_unknownTravel.setSubject(new PartySelf());
+
+            // special mapping content
+            evalution_unknownTravel.setAussageUberDieFehlendeInformationDefiningcode(reiseCode);
+            evalution_unknownTravel.setFehlendeInformationDefiningcode(ProblemDiagnoseDefiningcode.HISTORY_OF_TRAVEL);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new UnprocessableEntityException(e.getMessage());
+        }
+        composition.setUnbekannteReiseaktivitat(evalution_unknownTravel);
+
+        // Required fields by API
+        composition = setDefaults(composition);
+        composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+
+        return composition;
     }
 
     public static ReiseaktivitaetComposition map(Observation fhirObservation) {
 
-
+        String code = fhirObservation.getValueCodeableConcept().getCoding().get(0).getCode();
         // check for general travel state
         try {
-            String system = fhirObservation.getValueCodeableConcept().getCoding().get(0).getSystem();
-            String code = fhirObservation.getValueCodeableConcept().getCoding().get(0).getCode();
-
             if (code.equals(snomed_yes)) {
-                return mapTravel_yes(fhirObservation);
+                return mapTravel_yes(fhirObservation, ReiseDefiningcode.YES_QUALIFIER_VALUE);
             } else if (code.equals(snomed_no)) {
-                return mapTravel_no(fhirObservation);
+                return mapTravel_no(fhirObservation, AussageUberDenAusschlussDefiningcode.NO_QUALIFIER_VALUE);
             } else if (code.equals(snomed_unknown)) {
-                return mapTravel_unknown(fhirObservation);
+                return mapTravel_unknown(fhirObservation, AussageUberDieFehlendeInformationDefiningcode.UNKNOWN_QUALIFIER_VALUE) ;
             } else {
                 throw new UnprocessableEntityException("Expected snomed-code for history of travel, but got '" + code + "' instead ");
             }

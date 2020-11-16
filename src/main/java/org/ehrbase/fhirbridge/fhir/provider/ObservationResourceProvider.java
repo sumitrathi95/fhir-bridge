@@ -36,7 +36,7 @@ import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrai
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.laborbefundcomposition.LaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
-import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.ReiseaktivitaetComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
