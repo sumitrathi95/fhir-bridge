@@ -39,11 +39,8 @@ import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposit
 import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.ReiseaktivitatComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
-import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
 import org.hl7.fhir.r4.model.AuditEvent;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
@@ -543,7 +540,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             else if (ProfileUtils.hasProfile(observation, Profile.HISTORY_OF_TRAVEL)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HISTORY_OF_TRAVEL");
-                ReiseaktivitatComposition composition = FhirObservationHistoryOfTravelOpenehrHistoryOfTravel.map(observation);
+                ReiseaktivitatComposition composition = FhirObservationHistoryOfTravelOpenehrReiseaktivitaet.map(observation);
                 VersionUid versionUid = ehrbaseService.saveHistoryOfTravel(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HISTORY_OF_TRAVEL);
             }

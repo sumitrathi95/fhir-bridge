@@ -1,7 +1,8 @@
-package org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition;
+package org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartyProxy;
+import java.lang.String;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalAmount;
 import java.util.List;
@@ -10,28 +11,36 @@ import org.ehrbase.client.annotations.Entity;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.MathFunctionDefiningcode;
-import org.ehrbase.fhirbridge.opt.shareddefinition.ReiseDefiningcode;
 
 @Entity
 @Archetype("openEHR-EHR-OBSERVATION.travel_event.v0")
 public class ReiseaktivitatObservation {
-  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value|defining_code")
-  private ReiseDefiningcode reiseDefiningcode;
-
   @Path("/language")
   private Language language;
 
-  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0010]")
-  private List<ReiseaktivitatBestimmtesReisezielCluster> bestimmtesReiseziel;
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0010]/items[at0011]/value|defining_code")
+  private LandDefiningcode landDefiningcode;
+
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0025]")
+  private List<Cluster> zusatzlicheReisedetails;
+
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0010]/items[at0012]/value|defining_code")
+  private BundeslandRegionDefiningcode bundeslandRegionDefiningcode;
+
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0010]/items[at0013]/value|value")
+  private String stadtValue;
+
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0010]/items[at0024]")
+  private List<Cluster> zusatzlicheAngabenZumZielort;
+
+  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value|defining_code")
+  private ReiseDefiningcode reiseDefiningcode;
 
   @Path("/protocol[at0007]/items[at0021]")
   private List<Cluster> erweiterung;
 
   @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0009]/value|value")
   private TemporalAccessor abreisedatumValue;
-
-  @Path("/data[at0001]/events[at0002]/data[at0003]/items[at0008]/items[at0025]")
-  private List<Cluster> zusatzlicheReisedetails;
 
   @Path("/data[at0001]/events[at0002]/width|value")
   private TemporalAmount widthValue;
@@ -51,14 +60,6 @@ public class ReiseaktivitatObservation {
   @Path("/data[at0001]/events[at0002]/math_function|defining_code")
   private MathFunctionDefiningcode mathFunctionDefiningcode;
 
-  public void setReiseDefiningcode(ReiseDefiningcode reiseDefiningcode) {
-     this.reiseDefiningcode = reiseDefiningcode;
-  }
-
-  public ReiseDefiningcode getReiseDefiningcode() {
-     return this.reiseDefiningcode ;
-  }
-
   public void setLanguage(Language language) {
      this.language = language;
   }
@@ -67,13 +68,53 @@ public class ReiseaktivitatObservation {
      return this.language ;
   }
 
-  public void setBestimmtesReiseziel(
-      List<ReiseaktivitatBestimmtesReisezielCluster> bestimmtesReiseziel) {
-     this.bestimmtesReiseziel = bestimmtesReiseziel;
+  public void setLandDefiningcode(LandDefiningcode landDefiningcode) {
+     this.landDefiningcode = landDefiningcode;
   }
 
-  public List<ReiseaktivitatBestimmtesReisezielCluster> getBestimmtesReiseziel() {
-     return this.bestimmtesReiseziel ;
+  public LandDefiningcode getLandDefiningcode() {
+     return this.landDefiningcode ;
+  }
+
+  public void setZusatzlicheReisedetails(List<Cluster> zusatzlicheReisedetails) {
+     this.zusatzlicheReisedetails = zusatzlicheReisedetails;
+  }
+
+  public List<Cluster> getZusatzlicheReisedetails() {
+     return this.zusatzlicheReisedetails ;
+  }
+
+  public void setBundeslandRegionDefiningcode(
+      BundeslandRegionDefiningcode bundeslandRegionDefiningcode) {
+     this.bundeslandRegionDefiningcode = bundeslandRegionDefiningcode;
+  }
+
+  public BundeslandRegionDefiningcode getBundeslandRegionDefiningcode() {
+     return this.bundeslandRegionDefiningcode ;
+  }
+
+  public void setStadtValue(String stadtValue) {
+     this.stadtValue = stadtValue;
+  }
+
+  public String getStadtValue() {
+     return this.stadtValue ;
+  }
+
+  public void setZusatzlicheAngabenZumZielort(List<Cluster> zusatzlicheAngabenZumZielort) {
+     this.zusatzlicheAngabenZumZielort = zusatzlicheAngabenZumZielort;
+  }
+
+  public List<Cluster> getZusatzlicheAngabenZumZielort() {
+     return this.zusatzlicheAngabenZumZielort ;
+  }
+
+  public void setReiseDefiningcode(ReiseDefiningcode reiseDefiningcode) {
+     this.reiseDefiningcode = reiseDefiningcode;
+  }
+
+  public ReiseDefiningcode getReiseDefiningcode() {
+     return this.reiseDefiningcode ;
   }
 
   public void setErweiterung(List<Cluster> erweiterung) {
@@ -90,14 +131,6 @@ public class ReiseaktivitatObservation {
 
   public TemporalAccessor getAbreisedatumValue() {
      return this.abreisedatumValue ;
-  }
-
-  public void setZusatzlicheReisedetails(List<Cluster> zusatzlicheReisedetails) {
-     this.zusatzlicheReisedetails = zusatzlicheReisedetails;
-  }
-
-  public List<Cluster> getZusatzlicheReisedetails() {
-     return this.zusatzlicheReisedetails ;
   }
 
   public void setWidthValue(TemporalAmount widthValue) {

@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition;
+package org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition;
 
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;

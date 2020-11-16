@@ -1,4 +1,4 @@
-package org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition;
+package org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition;
 
 import com.nedap.archie.rm.archetyped.FeederAudit;
 import com.nedap.archie.rm.datastructures.Cluster;
@@ -14,8 +14,10 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition.ReiseaktivitatObservation;
-import org.ehrbase.fhirbridge.opt.reiseaktivitatcomposition.definition.StatusDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.KeineReiseaktivitatEvaluation;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseaktivitatObservation;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.StatusDefiningcode;
+import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.UnbekannteReiseaktivitatEvaluation;
 import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
@@ -23,10 +25,13 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.registereintrag.v1")
-@Template("Reiseaktivität")
-public class ReiseaktivitatComposition {
+@Template("Reiseaktivitaet")
+public class ReiseaktivitaetComposition {
   @Id
   private VersionUid versionUid;
+
+  @Path("/content[openEHR-EHR-EVALUATION.exclusion_specific.v1 and name/value='Keine Reiseaktivität']")
+  private KeineReiseaktivitatEvaluation keineReiseaktivitat;
 
   @Path("/context/end_time|value")
   private TemporalAccessor endTimeValue;
@@ -51,6 +56,9 @@ public class ReiseaktivitatComposition {
 
   @Path("/context/start_time|value")
   private TemporalAccessor startTimeValue;
+
+  @Path("/content[openEHR-EHR-EVALUATION.absence.v2 and name/value='Unbekannte Reiseaktivität']")
+  private UnbekannteReiseaktivitatEvaluation unbekannteReiseaktivitat;
 
   @Path("/composer")
   private PartyProxy composer;
@@ -79,6 +87,14 @@ public class ReiseaktivitatComposition {
 
   public void setVersionUid(VersionUid versionUid) {
      this.versionUid = versionUid;
+  }
+
+  public void setKeineReiseaktivitat(KeineReiseaktivitatEvaluation keineReiseaktivitat) {
+     this.keineReiseaktivitat = keineReiseaktivitat;
+  }
+
+  public KeineReiseaktivitatEvaluation getKeineReiseaktivitat() {
+     return this.keineReiseaktivitat ;
   }
 
   public void setEndTimeValue(TemporalAccessor endTimeValue) {
@@ -143,6 +159,15 @@ public class ReiseaktivitatComposition {
 
   public TemporalAccessor getStartTimeValue() {
      return this.startTimeValue ;
+  }
+
+  public void setUnbekannteReiseaktivitat(
+      UnbekannteReiseaktivitatEvaluation unbekannteReiseaktivitat) {
+     this.unbekannteReiseaktivitat = unbekannteReiseaktivitat;
+  }
+
+  public UnbekannteReiseaktivitatEvaluation getUnbekannteReiseaktivitat() {
+     return this.unbekannteReiseaktivitat ;
   }
 
   public void setComposer(PartyProxy composer) {
