@@ -17,6 +17,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.AusgeschlossenesSymptomEvaluation;
+import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.KategorieDefiningcode;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.StatusDefiningcode;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.UnbekanntesSymptomEvaluation;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.VorliegendesSymptomObservation;
@@ -34,7 +35,7 @@ public class SymptomCompositionContainment extends Containment {
 
   public SelectAqlField<StatusDefiningcode> STATUS_DEFININGCODE = new AqlFieldImp<StatusDefiningcode>(SymptomComposition.class, "/context/other_context[at0001]/items[at0004]/value|defining_code", "statusDefiningcode", StatusDefiningcode.class, this);
 
-  public SelectAqlField<String> KATEGORIE_VALUE = new AqlFieldImp<String>(SymptomComposition.class, "/context/other_context[at0001]/items[at0005]/value|value", "kategorieValue", String.class, this);
+  public SelectAqlField<KategorieDefiningcode> KATEGORIE_DEFININGCODE = new AqlFieldImp<KategorieDefiningcode>(SymptomComposition.class, "/context/other_context[at0001]/items[at0005]/value|defining_code", "kategorieDefiningcode", KategorieDefiningcode.class, this);
 
   public SelectAqlField<Territory> TERRITORY = new AqlFieldImp<Territory>(SymptomComposition.class, "/territory", "territory", Territory.class, this);
 

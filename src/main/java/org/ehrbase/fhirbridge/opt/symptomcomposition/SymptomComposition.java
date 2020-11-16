@@ -19,6 +19,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.AusgeschlossenesSymptomEvaluation;
+import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.KategorieDefiningcode;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.StatusDefiningcode;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.UnbekanntesSymptomEvaluation;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.definition.VorliegendesSymptomObservation;
@@ -45,8 +46,8 @@ public class SymptomComposition {
   @Path("/context/other_context[at0001]/items[at0004]/value|defining_code")
   private StatusDefiningcode statusDefiningcode;
 
-  @Path("/context/other_context[at0001]/items[at0005]/value|value")
-  private String kategorieValue;
+  @Path("/context/other_context[at0001]/items[at0005]/value|defining_code")
+  private KategorieDefiningcode kategorieDefiningcode;
 
   @Path("/territory")
   private Territory territory;
@@ -129,12 +130,12 @@ public class SymptomComposition {
      return this.statusDefiningcode ;
   }
 
-  public void setKategorieValue(String kategorieValue) {
-     this.kategorieValue = kategorieValue;
+  public void setKategorieDefiningcode(KategorieDefiningcode kategorieDefiningcode) {
+     this.kategorieDefiningcode = kategorieDefiningcode;
   }
 
-  public String getKategorieValue() {
-     return this.kategorieValue ;
+  public KategorieDefiningcode getKategorieDefiningcode() {
+     return this.kategorieDefiningcode ;
   }
 
   public void setTerritory(Territory territory) {

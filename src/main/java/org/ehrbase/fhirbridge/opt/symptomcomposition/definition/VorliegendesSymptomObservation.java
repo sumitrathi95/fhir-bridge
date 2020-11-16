@@ -2,7 +2,6 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartyProxy;
-import java.lang.String;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import org.ehrbase.client.annotations.Archetype;
@@ -13,8 +12,8 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 @Entity
 @Archetype("openEHR-EHR-OBSERVATION.symptom_sign.v0")
 public class VorliegendesSymptomObservation {
-  @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|value")
-  private String schweregradValue;
+  @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|defining_code")
+  private SchweregradDefiningcode schweregradDefiningcode;
 
   @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0147]")
   private List<Cluster> spezifischeAnatomischeLokalisation;
@@ -55,12 +54,12 @@ public class VorliegendesSymptomObservation {
   @Path("/data[at0190]/events[at0191]/data[at0192]/items[at0161]/value|value")
   private TemporalAccessor datumUhrzeitDesRuckgangsValue;
 
-  public void setSchweregradValue(String schweregradValue) {
-     this.schweregradValue = schweregradValue;
+  public void setSchweregradDefiningcode(SchweregradDefiningcode schweregradDefiningcode) {
+     this.schweregradDefiningcode = schweregradDefiningcode;
   }
 
-  public String getSchweregradValue() {
-     return this.schweregradValue ;
+  public SchweregradDefiningcode getSchweregradDefiningcode() {
+     return this.schweregradDefiningcode ;
   }
 
   public void setSpezifischeAnatomischeLokalisation(

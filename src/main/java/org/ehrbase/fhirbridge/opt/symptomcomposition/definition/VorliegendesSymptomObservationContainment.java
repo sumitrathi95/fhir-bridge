@@ -2,7 +2,6 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 
 import com.nedap.archie.rm.datastructures.Cluster;
 import com.nedap.archie.rm.generic.PartyProxy;
-import java.lang.String;
 import java.time.temporal.TemporalAccessor;
 import org.ehrbase.client.aql.containment.Containment;
 import org.ehrbase.client.aql.field.AqlFieldImp;
@@ -14,7 +13,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 public class VorliegendesSymptomObservationContainment extends Containment {
   public SelectAqlField<VorliegendesSymptomObservation> VORLIEGENDES_SYMPTOM_OBSERVATION = new AqlFieldImp<VorliegendesSymptomObservation>(VorliegendesSymptomObservation.class, "", "VorliegendesSymptomObservation", VorliegendesSymptomObservation.class, this);
 
-  public SelectAqlField<String> SCHWEREGRAD_VALUE = new AqlFieldImp<String>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|value", "schweregradValue", String.class, this);
+  public SelectAqlField<SchweregradDefiningcode> SCHWEREGRAD_DEFININGCODE = new AqlFieldImp<SchweregradDefiningcode>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value|defining_code", "schweregradDefiningcode", SchweregradDefiningcode.class, this);
 
   public ListSelectAqlField<Cluster> SPEZIFISCHE_ANATOMISCHE_LOKALISATION = new ListAqlFieldImp<Cluster>(VorliegendesSymptomObservation.class, "/data[at0190]/events[at0191]/data[at0192]/items[at0147]", "spezifischeAnatomischeLokalisation", Cluster.class, this);
 

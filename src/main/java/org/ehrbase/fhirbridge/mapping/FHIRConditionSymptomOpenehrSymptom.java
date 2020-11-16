@@ -16,6 +16,7 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,17 +26,17 @@ public class FHIRConditionSymptomOpenehrSymptom {
     private static final Logger logger = LoggerFactory.getLogger(FhirConditionOpenehrDiagnose.class);
 
     private static final Map<String, ProblemDiagnoseDefiningcode> krankheitszeichenMap = new HashMap<>();
-    private static final Map<String, Definingcode> aussageUeberFehlendeInformationMap = new HashMap<>();
+
+    private static final Map<String, SchweregradDefiningcode> schweregradMap = new HashMap<>();
+
 
     static {
         for (ProblemDiagnoseDefiningcode krankheitszeichen : ProblemDiagnoseDefiningcode.values()) {
             krankheitszeichenMap.put(krankheitszeichen.getCode(), krankheitszeichen);
         }
-    }
 
-    static {
-        for (Definingcode aussageUeberFehlendeInformation : Definingcode.values()) {
-            aussageUeberFehlendeInformationMap.put(aussageUeberFehlendeInformation.getCode(), aussageUeberFehlendeInformation);
+        for (SchweregradDefiningcode schweregrad : SchweregradDefiningcode.values()) {
+            schweregradMap.put(schweregrad.getCode(), schweregrad);
         }
     }
 
@@ -62,7 +63,7 @@ public class FHIRConditionSymptomOpenehrSymptom {
         // Required fields by API
 
         composition.setStatusDefiningcode(StatusDefiningcode.FINAL);
-        composition.setKategorieValue("Test");
+        composition.setKategorieDefiningcode(KategorieDefiningcode.N753251);
 
         composition.setLanguage(Language.DE);
         composition.setLocation("test");
@@ -98,8 +99,7 @@ public class FHIRConditionSymptomOpenehrSymptom {
             vorliegendesSymptom.setNameDesSymptomsKrankheitsanzeichensDefiningcode(krankheitszeichen);
 
 
-            if (condition.getOnset() != null && !condition.getOnset().isEmpty())
-            {
+            if (condition.getOnset() != null && !condition.getOnset().isEmpty()) {
                 vorliegendesSymptom.setBeginnDerEpisodeValue(
                         condition.getOnsetDateTimeType().getValueAsCalendar().toZonedDateTime());
             }
@@ -124,7 +124,19 @@ public class FHIRConditionSymptomOpenehrSymptom {
             }
 
             if (condition.getSeverity() != null && !condition.getSeverity().isEmpty()) {
-                vorliegendesSymptom.setSchweregradValue(condition.getSeverity().getCoding().get(0).getCode());
+
+                SchweregradDefiningcode schweregrad = null;
+
+                if (condition.getSeverity().getCoding().get(0).getSystem().equals("http://snomed.info/sct")) {
+                    schweregrad = schweregradMap.get(condition.getSeverity().getCoding().get(0).getCode());
+                }
+
+                if(schweregrad == null)
+                {
+                    throw new UnprocessableEntityException("Schweregrad has unknown system");
+                }
+
+                vorliegendesSymptom.setSchweregradDefiningcode(schweregrad);
             }
 
 
@@ -159,9 +171,7 @@ public class FHIRConditionSymptomOpenehrSymptom {
                 throw new UnprocessableEntityException("Unbekanntes Diagnose/Problem.");
             }
 
-            // TODO: Check why this throws an error
-            //ausgeschlossenesSymptom.setProblemDiagnoseDefiningcode(krankheitszeichen);
-
+            ausgeschlossenesSymptom.setProblemDiagnoseDefiningcode(krankheitszeichen);
         } catch (Exception e) {
             throw new UnprocessableEntityException("Some parts of the condition did not contain the required elements. "
                     + e.getMessage(), e);
@@ -169,7 +179,7 @@ public class FHIRConditionSymptomOpenehrSymptom {
 
 
         // Only one value possible.
-        ausgeschlossenesSymptom.setAussageUberDenAusschlussDefiningcode(AussageUberDenAusschlussDefiningcode.KNOWN_ABSENT_QUALIFIER_VALUE);
+        ausgeschlossenesSymptom.setAussageUberDenAusschlussDefiningcode(AussageUberDenAusschlussDefiningcode.N410594000);
 
 
         ausgeschlossenesSymptom.setSubject(new PartySelf());
@@ -206,8 +216,17 @@ public class FHIRConditionSymptomOpenehrSymptom {
 
         // UnbekanntesSymptomAussage can only have one value.
         UnbekanntesSymptomAussageUberDieFehlendeInformationElement aussageUberDieFehlendeInformationElement = new UnbekanntesSymptomAussageUberDieFehlendeInformationElement();
-        aussageUberDieFehlendeInformationElement.setDefiningcode(Definingcode.UNKNOWN_QUALIFIER_VALUE);
+        aussageUberDieFehlendeInformationElement.setDefiningcode(Definingcode.N261665006);
+
+
+        if (unbekanntesSymptom.getAussageUberDieFehlendeInformation() == null) {
+            unbekanntesSymptom.setAussageUberDieFehlendeInformation(new ArrayList<>());
+        }
+
         unbekanntesSymptom.getAussageUberDieFehlendeInformation().add(aussageUberDieFehlendeInformationElement);
+        unbekanntesSymptom.setSubject(new PartySelf());
+        unbekanntesSymptom.setLanguage(Language.DE);
+
 
         composition.setUnbekanntesSymptom(unbekanntesSymptom);
     }

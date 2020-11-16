@@ -4,85 +4,85 @@ import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
 public enum ProblemDiagnoseDefiningcode implements EnumValueSet {
-  ASTHENIA_FINDING("Asthenia (finding)", null, "SNOMED Clinical Terms", "13791008"),
+  N49727002("49727002", "49727002", "SNOMED Clinical Terms", "49727002"),
 
-  DIARRHEA_FINDING("Diarrhea (finding)", null, "SNOMED Clinical Terms", "62315008"),
+  N44169009("44169009", "44169009", "SNOMED Clinical Terms", "44169009"),
 
-  CLOUDED_CONSCIOUSNESS_FINDING("Clouded consciousness (finding)", null, "SNOMED Clinical Terms", "40917007"),
+  N56018004("56018004", "56018004", "SNOMED Clinical Terms", "56018004"),
 
-  ASYMPTOMATIC_FINDING("Asymptomatic (finding)", null, "SNOMED Clinical Terms", "84387000"),
+  N271807003("271807003", "271807003", "SNOMED Clinical Terms", "271807003"),
 
-  DRY_COUGH_FINDING("Dry cough (finding)", null, "SNOMED Clinical Terms", "11833005"),
+  N103001002("103001002", "103001002", "SNOMED Clinical Terms", "103001002"),
 
-  CHEST_PAIN_FINDING("Chest pain (finding)", null, "SNOMED Clinical Terms", "29857009"),
+  N162397003("162397003", "162397003", "SNOMED Clinical Terms", "162397003"),
 
-  MUSCLE_PAIN_FINDING("Muscle pain (finding)", null, "SNOMED Clinical Terms", "68962001"),
+  N386661006("386661006", "386661006", "SNOMED Clinical Terms", "386661006"),
 
-  SEIZURE_FINDING("Seizure (finding)", null, "SNOMED Clinical Terms", "91175000"),
+  N29857009("29857009", "29857009", "SNOMED Clinical Terms", "29857009"),
 
-  PRODUCTIVE_COUGH_FINDING("Productive cough (finding)", null, "SNOMED Clinical Terms", "28743005"),
+  N9826008("9826008", "9826008", "SNOMED Clinical Terms", "9826008"),
 
-  VOMITING_DISORDER("Vomiting (disorder)", null, "SNOMED Clinical Terms", "422400008"),
+  N28743005("28743005", "28743005", "SNOMED Clinical Terms", "28743005"),
 
-  PAIN_FINDING("Pain (finding)", null, "SNOMED Clinical Terms", "22253000"),
+  N267036007("267036007", "267036007", "SNOMED Clinical Terms", "267036007"),
 
-  NAUSEA_FINDING("Nausea (finding)", null, "SNOMED Clinical Terms", "422587007"),
+  N66857006("66857006", "66857006", "SNOMED Clinical Terms", "66857006"),
 
-  LOSS_OF_SENSE_OF_SMELL_FINDING("Loss of sense of smell (finding)", null, "SNOMED Clinical Terms", "44169009"),
+  N13791008("13791008", "13791008", "SNOMED Clinical Terms", "13791008"),
 
-  DISTURBANCE_OF_CONSCIOUSNESS_FINDING("Disturbance of consciousness (finding)", null, "SNOMED Clinical Terms", "3006004"),
+  N62315008("62315008", "62315008", "SNOMED Clinical Terms", "62315008"),
 
-  PAIN_IN_THROAT_FINDING("Pain in throat (finding)", null, "SNOMED Clinical Terms", "162397003"),
+  N3006004("3006004", "3006004", "SNOMED Clinical Terms", "3006004"),
 
-  ERUPTION_OF_SKIN_DISORDER("Eruption of skin (disorder)", null, "SNOMED Clinical Terms", "271807003"),
+  N84387000("84387000", "84387000", "SNOMED Clinical Terms", "84387000"),
 
-  HEADACHE_FINDING("Headache (finding)", null, "SNOMED Clinical Terms", "25064002"),
+  N11833005("11833005", "11833005", "SNOMED Clinical Terms", "11833005"),
 
-  JOINT_PAIN_FINDING("Joint pain (finding)", null, "SNOMED Clinical Terms", "57676002"),
+  N43724002("43724002", "43724002", "SNOMED Clinical Terms", "43724002"),
 
-  FATIGUE_FINDING("Fatigue (finding)", null, "SNOMED Clinical Terms", "84229001"),
+  N25064002("25064002", "25064002", "SNOMED Clinical Terms", "25064002"),
 
-  WHEEZING_FINDING("Wheezing (finding)", null, "SNOMED Clinical Terms", "56018004"),
+  N68962001("68962001", "68962001", "SNOMED Clinical Terms", "68962001"),
 
-  LOSS_OF_TASTE_FINDING("Loss of taste (finding)", null, "SNOMED Clinical Terms", "36955009"),
+  N79890006("79890006", "79890006", "SNOMED Clinical Terms", "79890006"),
 
-  INDRAWING_OF_RIBS_DURING_RESPIRATION_FINDING("Indrawing of ribs during respiration (finding)", null, "SNOMED Clinical Terms", "248567008"),
+  N84229001("84229001", "84229001", "SNOMED Clinical Terms", "84229001"),
 
-  BLEEDING_FINDING("Bleeding (finding)", null, "SNOMED Clinical Terms", "131148009"),
+  N46742003("46742003", "46742003", "SNOMED Clinical Terms", "46742003"),
 
-  UNABLE_TO_WALK_FINDING("Unable to walk (finding)", null, "SNOMED Clinical Terms", "282145008"),
+  N422400008("422400008", "422400008", "SNOMED Clinical Terms", "422400008"),
 
-  SKIN_ULCER_DISORDER("Skin ulcer (disorder)", null, "SNOMED Clinical Terms", "46742003"),
+  N64531003("64531003", "64531003", "SNOMED Clinical Terms", "64531003"),
 
-  NASAL_DISCHARGE_FINDING("Nasal discharge (finding)", null, "SNOMED Clinical Terms", "64531003"),
+  N30746006("30746006", "30746006", "SNOMED Clinical Terms", "30746006"),
 
-  COUGH_FINDING("Cough (finding)", null, "SNOMED Clinical Terms", "49727002"),
+  N248567008("248567008", "248567008", "SNOMED Clinical Terms", "248567008"),
 
-  ABDOMINAL_PAIN_FINDING("Abdominal pain (finding)", null, "SNOMED Clinical Terms", "21522001"),
+  N21522001("21522001", "21522001", "SNOMED Clinical Terms", "21522001"),
 
-  MALAISE_FINDING("Malaise (finding)", null, "SNOMED Clinical Terms", "367391008"),
+  N367391008("367391008", "367391008", "SNOMED Clinical Terms", "367391008"),
 
-  HEMOPTYSIS_FINDING("Hemoptysis (finding)", null, "SNOMED Clinical Terms", "66857006"),
+  N40917007("40917007", "40917007", "SNOMED Clinical Terms", "40917007"),
 
-  N38_CELSIUS_FINDING("Fever greater than 100.4 Fahrenheit / 38° Celsius (finding)", null, "SNOMED Clinical Terms", "426000000"),
+  N131148009("131148009", "131148009", "SNOMED Clinical Terms", "131148009"),
 
-  CHILL_FINDING("Chill (finding)", null, "SNOMED Clinical Terms", "43724002"),
+  N22253000("22253000", "22253000", "SNOMED Clinical Terms", "22253000"),
 
-  RIGOR_FINDING("Rigor (finding)", null, "SNOMED Clinical Terms", "38880002"),
+  N282145008("282145008", "282145008", "SNOMED Clinical Terms", "282145008"),
 
-  LYMPHADENOPATHY_DISORDER("Lymphadenopathy (disorder)", null, "SNOMED Clinical Terms", "30746006"),
+  N36955009("36955009", "36955009", "SNOMED Clinical Terms", "36955009"),
 
-  FEVER_FINDING("Fever (finding)", null, "SNOMED Clinical Terms", "386661006"),
+  N422587007("422587007", "422587007", "SNOMED Clinical Terms", "422587007"),
 
-  FEELING_FEVERISH_FINDING("Feeling feverish (finding)", null, "SNOMED Clinical Terms", "103001002"),
+  N426000000("426000000", "426000000", "SNOMED Clinical Terms", "426000000"),
 
-  NASAL_CONGESTION_FINDING("Nasal congestion (finding)", null, "SNOMED Clinical Terms", "68235000"),
+  N38880002("38880002", "38880002", "SNOMED Clinical Terms", "38880002"),
 
-  LOSS_OF_APPETITE_FINDING("Loss of appetite (finding)", null, "SNOMED Clinical Terms", "79890006"),
+  N91175000("91175000", "91175000", "SNOMED Clinical Terms", "91175000"),
 
-  CONJUNCTIVITIS_DISORDER("Conjunctivitis (disorder)", null, "SNOMED Clinical Terms", "9826008"),
+  N57676002("57676002", "57676002", "SNOMED Clinical Terms", "57676002"),
 
-  DYSPNEA_FINDING("Dyspnea (finding)", null, "SNOMED Clinical Terms", "267036007");
+  N68235000("68235000", "68235000", "SNOMED Clinical Terms", "68235000");
 
   private String value;
 

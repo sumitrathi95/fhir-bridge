@@ -3,8 +3,8 @@ package org.ehrbase.fhirbridge.opt.symptomcomposition.definition;
 import java.lang.String;
 import org.ehrbase.client.classgenerator.EnumValueSet;
 
-public enum Definingcode implements EnumValueSet {
-  N261665006("261665006", "261665006", "SNOMED Clinical Terms", "261665006");
+public enum KategorieDefiningcode implements EnumValueSet {
+  N753251("75325-1", "75325-1", "LOINC", "75325-1");
 
   private String value;
 
@@ -14,7 +14,7 @@ public enum Definingcode implements EnumValueSet {
 
   private String code;
 
-  Definingcode(String value, String description, String terminologyId, String code) {
+  KategorieDefiningcode(String value, String description, String terminologyId, String code) {
     this.value = value;
     this.description = description;
     this.terminologyId = terminologyId;
