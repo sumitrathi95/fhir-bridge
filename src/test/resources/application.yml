@@ -22,10 +22,6 @@ server:
     context-path: /fhir-bridge
   port: 8888
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:9999/fhir_bridge
-    username: fhir_bridge
-    password: fhir_bridge
   batch:
     job:
       enabled: false
