@@ -12,14 +12,17 @@ import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteCompos
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
+import org.ehrbase.fhirbridge.opt.atemfrequenzcomposition.AtemfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
+import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
 import org.ehrbase.fhirbridge.opt.prozedurcomposition.ProzedurComposition;
+import org.ehrbase.fhirbridge.opt.raucherstatuscomposition.RaucherstatusComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.symptomcomposition.SymptomComposition;
 import org.springframework.stereotype.Service;
@@ -137,6 +140,12 @@ public class EhrbaseService {
 
         return composition.getVersionUid();
     }
+    
+    public VersionUid saveRespRate(UUID ehrId, AtemfrequenzComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 
     public VersionUid savePatientInICU(UUID ehrId, PatientAufICUComposition composition) {
 
@@ -166,11 +175,22 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-    public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
-        // TODO invoke post processing
+    public VersionUid saveSmokingStatus(UUID ehrId, RaucherstatusComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
 
+
+    public VersionUid saveBodyWeight(UUID ehrId, KorpergewichtComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+
+    public VersionUid saveSOFAScore(UUID ehrId, SOFAComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
 
@@ -184,9 +204,9 @@ public class EhrbaseService {
     public VersionUid saveProcedure(UUID ehrId, ProzedurComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
+      
     public VersionUid saveClinicalFrailtyScale(UUID ehrId, KlinischeFrailtySkalaComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
@@ -196,7 +216,6 @@ public class EhrbaseService {
     public VersionUid savePregnancyStatus(UUID ehrId, SchwangerschaftsstatusComposition composition) {
 
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
-
         return composition.getVersionUid();
     }
 
@@ -205,5 +224,6 @@ public class EhrbaseService {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
+
 }
 
