@@ -98,10 +98,6 @@ update Profile
                         Run Keyword And Return If    $profile=="missing"
                         ...    Delete Object From Json  ${payload}  $.meta.profile[0]
 
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $profile=="valid"
-                        ...    Update Value To Json    ${payload}    $.meta.profile[0]    http://hl7.org/fhir/StructureDefinition/heartrate
-
                         # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.meta.profile[0]    ${profile}
@@ -147,10 +143,6 @@ update Identifier coding system
                         Run Keyword And Return If    $Identifiercodingsystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].type.coding[0].system
 
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $Identifiercodingsystem=="valid"
-                        ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   http://terminology.hl7.org/CodeSystem/v2-0203
-
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   ${Identifiercodingsystem}
@@ -180,11 +172,6 @@ update Identifier system
                         # Run Keyword only when resourcetype is missing
                         Run Keyword And Return If    $Identifiersystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].system
-
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $Identifiersystem=="valid"
-                        ...    Update Value To Json    ${payload}    $.identifier[0].system   https://www.charite.de/fhir/CodeSystem/observation-identifiers
-
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.identifier[0].system   ${Identifiersystem}
@@ -238,10 +225,6 @@ update Category System
                         # Run Keyword only when resourcetype is missing
                         Run Keyword And Return If    $categorysystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.category[0].coding[0].system
-
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $categorysystem=="valid"
-                        ...    Update Value To Json    ${payload}    $.category[0].coding[0].system    http://terminology.hl7.org/CodeSystem/observation-category
 
                         # Else 
                         Run Keyword  
@@ -299,10 +282,6 @@ update Code 0 System
                         Run Keyword And Return If    $code0system=="missing"
                         ...    Delete Object From Json    ${payload}    $.code.coding[0].system
 
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $code0system=="valid"
-                        ...    Update Value To Json    ${payload}    $.code.coding[0].system    http://loinc.org
-
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.code.coding[0].system    ${code0system}
@@ -333,10 +312,6 @@ update Code 1 System
                         Run Keyword And Return If    $code1system=="missing"
                         ...    Delete Object From Json    ${payload}    $.code.coding[1].system
 
-                        # Run Keyword only when resourcetype is valid
-                        Run Keyword And Return If    $code1system=="valid"
-                        ...    Update Value To Json    ${payload}    $.code.coding[1].system    http://snomed.info/sct
-
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.code.coding[1].system    ${code1system}
@@ -350,7 +325,7 @@ update Code 1 Code
 
                         # Run Keyword only when 1.Code is missing
                         Run Keyword And Return If    $code1code=="missing"
-                        ...    Delete Object From Json    ${payload}    $$.code.coding[1].code
+                        ...    Delete Object From Json    ${payload}    $.code.coding[1].code
 
                         # Else 
                         Run Keyword  
@@ -457,10 +432,6 @@ update Value Quantity System
                         Run Keyword And Return If    $vQsystem=="missing"
                         ...    Delete Object From Json  ${payload}  $.valueQuantity.system
 
-                        # Run Keyword only when value Quantity System is valid
-                        Run Keyword And Return If    $vQsystem=="valid"
-                        ...    Update Value To Json    ${payload}    $.valueQuantity.system    http://unitsofmeasure.org
-
                         # Else
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.valueQuantity.system    ${vQsystem}
@@ -483,36 +454,17 @@ update Value Quantity Code
 update Data Absent Reason
     [Arguments]         ${dataabsentreason}
 
-                        # Run Keyword only if value quantity is available
+                        # Run Keyword only if value quantity is available (todo)
                         Run Keyword And Return If    $dataabsentreason=="truevalid"
                         ...    Run Keywords
                         ...    
 
-                        # Run Keyword only if value quantity is available
+                        # Run Keyword only if value quantity is available (todo)
                         Run Keyword And Return If    $dataabsentreason=="trueinvalid"
                         ...    Run Keywords
                         ...    Add Object To Json  json_object  json_path  object_to_add
 
                         # Run Keyword only if value quantity is not available
                         Run Keyword And Return If    $dataabsentreason=="false"
-                        ...    Delete Object From Json  ${payload}  $.dataabsentreason
+                        ...    Delete Object From Json  ${payload}  $.dataAbsentReason
 
-# how it should look like
-#"dataAbsentReason": {
-#   "coding": [
-#       {
-#           "system": "//terminology.hl7.org/CodeSystem/v3-ObservationInterpretationhttp:",
-#           "code": "unknown",
-#           "display": "normal"
-#       } 
-#   ],
-#   "text": "Normal"   
-#},
-#
-# or
-#
-#"dataAbsentReason": {
-#           "system": "//terminology.hl7.org/CodeSystem/v3-ObservationInterpretationhttp:",
-#           "code": "unknown",
-#           "display": "normal" 
-#},

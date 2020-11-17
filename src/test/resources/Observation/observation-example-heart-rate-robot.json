@@ -63,5 +63,10 @@
       "unit": "per minute",
       "system": "http://unitsofmeasure.org",
       "code": "/min"
+  },
+  "dataAbsentReason": {
+      "system": "//terminology.hl7.org/CodeSystem/v3-ObservationInterpretationhttp:",
+      "code": "unknown",
+      "display": "normal" 
   }
 }
