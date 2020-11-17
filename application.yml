@@ -26,9 +26,9 @@ spring:
     job:
       enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/fhir_bridge
-    username: ehrbase
-    password: ehrbase
+    url: jdbc:postgresql://localhost:9999/fhir_bridge
+    username: fhir_bridge
+    password: fhir_bridge
   jpa:
     hibernate:
       ddl-auto: update
