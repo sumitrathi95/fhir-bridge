@@ -295,7 +295,7 @@ update Code 0 Code
 
                         # Run Keyword only when 0.Code is missing
                         Run Keyword And Return If    $code0code=="missing"
-                        ...    Delete Object From Json    ${payload}    $$.code.coding[0].code
+                        ...    Delete Object From Json    ${payload}    $.code.coding[0].code
 
                         # Else 
                         Run Keyword  
@@ -356,6 +356,10 @@ update Reference
                         # Run Keyword only when resourcetype is valid
                         Run Keyword And Return If    $reference=="valid"
                         ...    Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+                        # Run Keyword only when resourcetype is invalid
+                        Run Keyword And Return If    $reference=="invalid"
+                        ...    Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${{str(uuid.uuid4())}}
 
                         # Else 
                         Run Keyword  
