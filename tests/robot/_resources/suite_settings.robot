@@ -32,7 +32,7 @@ Resource    ${EXECDIR}/robot/_resources/keywords/diagnostic.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/observation.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/procedure.robot
 Resource    ${EXECDIR}/robot/_resources/keywords/questionaire.robot
-Resource    ${EXECDIR}/robot/_resources/keywords/json.robot
+Resource    ${EXECDIR}/robot/_resources/keywords/json-manipulation.robot
 
 
 

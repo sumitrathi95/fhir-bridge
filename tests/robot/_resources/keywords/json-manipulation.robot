@@ -461,12 +461,16 @@ update Data Absent Reason
                         # Run Keyword only if value quantity is available (todo)
                         Run Keyword And Return If    $dataabsentreason=="truevalid"
                         ...    Run Keywords
-                        ...    
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].system          http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation           AND
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].code            unknown                                                                      AND
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].display         unknown  
 
                         # Run Keyword only if value quantity is available (todo)
                         Run Keyword And Return If    $dataabsentreason=="trueinvalid"
                         ...    Run Keywords
-                        ...    Add Object To Json  json_object  json_path  object_to_add
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].system          ${EMPTY}           AND
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].code            ${EMPTY}           AND
+                        ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].display         ${EMPTY}
 
                         # Run Keyword only if value quantity is not available
                         Run Keyword And Return If    $dataabsentreason=="false"
