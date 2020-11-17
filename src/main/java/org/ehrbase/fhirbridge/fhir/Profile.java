@@ -17,7 +17,7 @@ public enum Profile {
 
     BODY_TEMP("http://hl7.org/fhir/StructureDefinition/bodytemp", ResourceType.Observation),
 
-    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration", ResourceType.Observation),
+    FIO2("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2", ResourceType.Observation),
 
     BLOOD_PRESSURE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure", ResourceType.Observation),
 
@@ -33,11 +33,15 @@ public enum Profile {
 
     SOFA_SCORE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score", ResourceType.Observation),
 
+    BODY_WEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight", ResourceType.Observation),
+
     CLINICAL_FRAILTY_SCALE("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score", ResourceType.Observation),
 
     BODY_HEIGHT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height", ResourceType.Observation),
 
-    BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle);
+    BLOOD_GAS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-gas-panel", ResourceType.Bundle),
+
+    SMOKING_STATUS("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status", ResourceType.Observation);
 
     private final String url;
 

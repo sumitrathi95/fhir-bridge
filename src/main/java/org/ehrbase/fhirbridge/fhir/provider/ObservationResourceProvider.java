@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.composition.Evaluation;
 import com.nedap.archie.rm.datavalues.quantity.DvQuantity;
 import com.nedap.archie.rm.datavalues.quantity.datetime.DvDateTime;
 import org.ehrbase.client.aql.query.Query;
@@ -26,7 +27,23 @@ import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.fhir.ProfileUtils;
 import org.ehrbase.fhirbridge.fhir.audit.AuditService;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
+import org.ehrbase.fhirbridge.mapping.FHIRConditionSmokingStatusOpenehrSmokingStatus;
+import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
+import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
+import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
+import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
+import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.mapping.*;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationBodyWeightOpenehrBodyWeight;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
+import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
+import org.ehrbase.fhirbridge.mapping.FhirDiagnosticReportOpenehrLabResults;
+import org.ehrbase.fhirbridge.mapping.FhirObservationBloodPressureOpenehrBloodPressure;
+import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
+import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
+import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
@@ -35,6 +52,8 @@ import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2compositio
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
+import org.ehrbase.fhirbridge.opt.raucherstatuscomposition.RaucherstatusComposition;
+import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.schwangerschaftsstatuscomposition.SchwangerschaftsstatusComposition;
 import org.ehrbase.fhirbridge.opt.sofacomposition.SOFAComposition;
@@ -45,12 +64,14 @@ import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Date.from;
+
 
 /**
  * Resource provider for Observation
@@ -349,10 +370,10 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             */
 
         String aql =
-            "SELECT c " +
-            "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] " +
-            "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND " +
-            "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
+                "SELECT c " +
+                        "FROM EHR e CONTAINS COMPOSITION c CONTAINS EVALUATION eval[openEHR-EHR-EVALUATION.flag_pathogen.v0] " +
+                        "WHERE c/archetype_details/template_id/value = 'Kennzeichnung Erregernachweis SARS-CoV-2' AND " +
+                        "e/ehr_status/subject/external_ref/id/value = '" + subjectId.getValue() + "'";
 
         if (dateRange != null) {
             // with date range we can also receive just one bound
@@ -461,7 +482,6 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 // Map Patient in ICU to openEHR
 
-
                 // test map FHIR to openEHR
                 PatientAufICUComposition composition = FhirObservationPatientAufICUOpenehrPatientAufICU.map(observation);
 
@@ -500,8 +520,7 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 VersionUid versionUid = ehrbaseService.saveBloodPressure(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BLOOD_PRESSURE);
 
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
+            } else if (ProfileUtils.hasProfile(observation, Profile.CLINICAL_FRAILTY_SCALE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION CLINICAL_FRAILTY_SCALE");
 
@@ -509,8 +528,8 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 VersionUid versionUid = ehrbaseService.saveClinicalFrailtyScale(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.CLINICAL_FRAILTY_SCALE);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
+              
+            } else if (ProfileUtils.hasProfile(observation, Profile.HEART_RATE)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION HR");
 
@@ -519,13 +538,31 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
 
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.PREGNANCY_STATUS))
-            {
+
+            } else if (ProfileUtils.hasProfile(observation, Profile.SMOKING_STATUS)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION Smoking Status");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                RaucherstatusComposition composition = FHIRConditionSmokingStatusOpenehrSmokingStatus.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveSmokingStatus(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.SMOKING_STATUS);
+
+            } else if (ProfileUtils.hasProfile(observation, Profile.BODY_WEIGHT)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION WEIGHT");
+
+                KorpergewichtComposition composition = FHIRObservationBodyWeightOpenehrBodyWeight.map(observation);
+                VersionUid versionUid = ehrbaseService.saveBodyWeight(ehrUid, composition);
+              
+            } else if (ProfileUtils.hasProfile(observation, Profile.PREGNANCY_STATUS)) {
+              
                 SchwangerschaftsstatusComposition composition = FhirObservationPregnancyStatusOpenehrPregnancyStatus.map(observation);
                 VersionUid versionUid = ehrbaseService.savePregnancyStatus(ehrUid, composition);
-            }
-            else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
+              
+            } else if (ProfileUtils.hasProfile(observation, Profile.BODY_HEIGHT)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION BODY_HEIGHT");
 
@@ -538,15 +575,14 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
             }
 
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._0, "Success", observation);
-
         } catch (Exception e) {
             auditService.registerMapResourceEvent(AuditEvent.AuditEventOutcome._8, e.getMessage(), observation);
             throw new UnprocessableEntityException("There was a problem saving the composition" + e.getMessage(), e);
         }
 
         return new MethodOutcome()
-            .setCreated(true)
-            .setResource(observation);
+                .setCreated(true)
+                .setResource(observation);
     }
 
     @Override
