@@ -10,7 +10,7 @@ public enum OperationalTemplateData {
     CLINICAL_FRAILTY_SCALE("", "KlinischeFrailty.opt", "Klinische Frailty-Skala"),
     CORONA_TEST("", "Kennzeichnung Erregernachweis SARS-CoV-2.opt", "Kennzeichnung Erregernachweis SARS-CoV-2"),
     CORONA_LAB("", "GECCO_Laborbefund.opt", "GECCO_Laborbefund"),
-
+    PATIENT("", "GECCO_Personendaten.opt", "GECCO_Personendaten"),
     PROCEDURE("", "Prozedur.opt", "Prozedur"),
     FI02("", "Beatmungswerte.opt", "Beatmungswerte"),
     CORONA_SOFA_SCORE("", "SOFA.opt", "SOFA"),

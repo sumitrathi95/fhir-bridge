@@ -16,6 +16,7 @@ import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperatu
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
 import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.GECCOLaborbefundComposition;
+import org.ehrbase.fhirbridge.opt.geccopersonendatencomposition.GECCOPersonendatenComposition;
 import org.ehrbase.fhirbridge.opt.klinischefrailtyskalacomposition.KlinischeFrailtySkalaComposition;
 import org.ehrbase.fhirbridge.opt.korpergrossecomposition.KorpergrosseComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
@@ -96,6 +97,12 @@ public class EhrbaseService {
             return null;
     }
 
+    public VersionUid savePatient(UUID ehrId, GECCOPersonendatenComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
+        return composition.getVersionUid();
+    }
+    
     public VersionUid saveLab(UUID ehrId, GECCOLaborbefundComposition composition) {
         // TODO invoke post processing
 

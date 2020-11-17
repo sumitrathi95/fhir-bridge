@@ -8,7 +8,11 @@ import java.util.Objects;
  * List of profiles supported by the FHIR Bridge
  */
 public enum Profile {
+	
+	// Patient Profile
 
+	PATIENT("https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/Patient", ResourceType.Patient),
+	
     // DiagnosticReport Profiles
 
     DIAGNOSTIC_REPORT_LAB("https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/DiagnosticReportLab", ResourceType.DiagnosticReport),

@@ -6,9 +6,11 @@ import org.hl7.fhir.r4.model.Coding;
 @DatatypeDef(name="Coding")
 public class AuditEventEntityType extends Coding {
 
+	public static final AuditEventEntityType PATIENT = new AuditEventEntityType("Patient");
+	
     public static final AuditEventEntityType CONDITION = new AuditEventEntityType("Condition");
 
-    public static final AuditEventEntityType DIAGNOSTIC_REPORT = new AuditEventEntityType("DiagnosticReport");
+	public static final AuditEventEntityType DIAGNOSTIC_REPORT = new AuditEventEntityType("DiagnosticReport");
 
     public static final AuditEventEntityType OBSERVATION = new AuditEventEntityType("Observation");
 

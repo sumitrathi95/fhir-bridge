@@ -3,6 +3,7 @@ package org.ehrbase.fhirbridge.fhir.audit;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
@@ -13,6 +14,7 @@ public class AuditEventEntityTypeResolver {
     private static final HashMap<Class<?>, AuditEventEntityType> map = new HashMap<>();
 
     static {
+    	map.put(Patient.class, AuditEventEntityType.PATIENT);
         map.put(Condition.class, AuditEventEntityType.CONDITION);
         map.put(DiagnosticReport.class, AuditEventEntityType.DIAGNOSTIC_REPORT);
         map.put(Observation.class, AuditEventEntityType.OBSERVATION);
