@@ -53,6 +53,15 @@ validate response - 422 (profile not supported)
     ...        pattern=Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected:
 
 
+validate response - 422 (with error message)
+    [Arguments]    ${error_message}
+    Integer    response status    422
+
+    String     response body resourceType    OperationOutcome
+    String     response body issue 0 diagnostics
+    ...        pattern=${error_message}
+
+
 
 #                                                 oooo                     
 #                                                 `888                     
