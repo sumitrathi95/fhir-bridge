@@ -38,12 +38,12 @@ load JSON
 
 
 validation JSON
-    [Arguments]         ${responsecode}    ${diagnosticINDEX}    ${diagnostics}
+    [Arguments]         ${responsecode}    ${diagnosticINDEX}    ${diagnosticsENG}    ${diagnosticsDE}
 
                         Integer    response status    ${responsecode}
 
                         Run Keyword And Return If  $responsecode!="201"
-                        ...     String     response body issue ${diagnosticINDEX} diagnostics    pattern=${diagnostics}
+                        ...     String     response body issue ${diagnosticINDEX} diagnostics    pattern=${diagnosticsENG}|${diagnosticsDE}
 
 
 update Resource Type
