@@ -1,14 +1,22 @@
 package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.datetime.DateTimeParsers;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.*;
 import org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.*;
+import org.openehr.odin.TimeIntervalObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Period;
+import java.time.chrono.ChronoZonedDateTime;
+import java.time.chrono.Chronology;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
 import java.util.List;
 
 /**
@@ -82,10 +90,30 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         return composition;
     }
 
-    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation, org.ehrbase.fhirbridge.opt.reiseaktivitaetcomposition.definition.ReiseDefiningcode reiseCode)
+    private static void getObservationComponent(Observation fhirObservation)
+    {
+        for (Observation.ObservationComponentComponent component: fhirObservation.getComponent()) {
+
+           mapObservationComponent(component);
+        }
+    }
+
+    private static void mapObservationComponent(Observation.ObservationComponentComponent component){
+
+    }
+
+    private static void mapIntervalEvent(Observation.ObservationComponentComponent observationComponent, ReiseaktivitatObservation observation_travel)
+    {
+        observation_travel.setMathFunctionDefiningcode(MathFunctionDefiningcode.TOTAL);
+        observation_travel.setWidthValue(Period.ofDays(3));
+    }
+
+    private static ReiseaktivitaetComposition mapTravel_yes(Observation fhirObservation, ReiseDefiningcode reiseCode)
     {
         ReiseaktivitaetComposition composition = new ReiseaktivitaetComposition();
         ReiseaktivitatObservation observation_travel = new ReiseaktivitatObservation();
+
+
 
     DateTimeType  fhirEffectiveDateTime = null;
         try {
@@ -100,22 +128,22 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
         // special mapping content
         observation_travel.setReiseDefiningcode(reiseCode);
 
-        // TravelStartDate
-        observation_travel.setAbreisedatumValue(
-                fhirObservation.getComponent().get(0).getValueDateTimeType().getValueAsCalendar().toZonedDateTime());
-
-        // TravelEndDate
-        observation_travel.setRuckreisedatumValue(
-                fhirObservation.getComponent().get(4).getValueDateTimeType().getValueAsCalendar().toZonedDateTime());
-
         // TravelDestination
+            // for each fhirObservation.getComponent().get(i).
+            // Alt Enter
+            // Shift+f6 Refactor
+
         for (int i = 0; i < fhirObservation.getComponent().size(); i++) {
 
             String urlOfCodingSystem;
             String codeOfConcept;
 
+            //getCodingObject()
             urlOfCodingSystem = fhirObservation.getComponent().get(i).getCode().getCoding().get(0).getSystem();
             codeOfConcept = fhirObservation.getComponent().get(i).getCode().getCoding().get(0).getCode();
+
+            //observation_travel.setMathFunctionDefiningcode();
+            mapIntervalEvent(fhirObservation.getComponent().get(i), observation_travel);
 
             // check for loinc code
             if (!urlOfCodingSystem.equals(loinc_url)) {
@@ -124,6 +152,13 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
             java.time.ZonedDateTime dateTime = null;
             String contentString = null;
             //do the mapping concrete
+
+            // getKalenderDatum
+            //getString
+            //getCode
+
+
+            //getComponentEntry(int i)
             if (codeOfConcept.equals(loinc_DateTravelStarted)){
                 dateTime = fhirObservation.getComponent().get(i).getValueDateTimeType().getValueAsCalendar().toZonedDateTime();
                 observation_travel.setAbreisedatumValue(dateTime);
@@ -221,7 +256,8 @@ public class FhirObservationHistoryOfTravelOpenehrReiseaktivitaet {
 
         return composition;
     }
-
+    // optional
+    //bloodgas panel
     public static ReiseaktivitaetComposition map(Observation fhirObservation) {
 
         String code = fhirObservation.getValueCodeableConcept().getCoding().get(0).getCode();
