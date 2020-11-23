@@ -8,8 +8,9 @@ import org.ehrbase.client.aql.query.Query;
 import org.ehrbase.client.aql.record.Record1;
 import org.ehrbase.client.openehrclient.VersionUid;
 import org.ehrbase.client.openehrclient.defaultrestclient.DefaultRestClient;
-import org.ehrbase.fhirbridge.opt.CompositionAbstract;
+import org.ehrbase.fhirbridge.fhir.resource.bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.opt.beatmungswertecomposition.BeatmungswerteComposition;
+import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
@@ -211,7 +212,7 @@ public class EhrbaseService {
         return composition.getVersionUid();
     }
 
-    public VersionUid saveComposition(UUID ehrId, CompositionAbstract composition) {
+    public VersionUid saveBloodGas(UUID ehrId, BefundDerBlutgasanalyseComposition composition) {
         client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }

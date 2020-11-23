@@ -59,7 +59,7 @@ public class TransactionProvider extends AbstractResourceProvider {
 
     protected void saveCompositions(MappedBundleComposition composition, SupportedBundle supportedBundle){
         UUID ehrUid = getEhrUidForSubjectId(composition.getSubjectId());
-        VersionUid versionUid = ehrbaseService.saveComposition(ehrUid, composition.getComposition());
+        VersionUid versionUid = ehrbaseService.saveBloodGas(ehrUid, composition.getComposition());
         supportedBundle.createdLog(versionUid);
     }
 

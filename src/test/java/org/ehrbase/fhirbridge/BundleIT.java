@@ -109,4 +109,25 @@ public class BundleIT extends FhirBridgeApplicationTestAbstract {
         Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "Oxygen saturation profile is duplicated within the bundle, please delete one of them");
     }
 
+    @Test
+    public void createBloodGasWithWrongMembers() throws IOException {
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> client.create().resource(getContent(
+                        "classpath:/Bundle/WrongMembers.json"))
+                        .execute());
+
+        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "BloodgasPanel references a set of Fhir resources as members, that need to be contained in this bundle. Nevertheless the id Observation/63bd2c95-baa5-4a9a-8075-80f8c22a38ff is missing.");
+    }
+
+    @Test
+    public void createBloodGasWithToMuchMembers() throws IOException {
+        UnprocessableEntityException exception = Assertions.assertThrows(UnprocessableEntityException.class,
+                () -> client.create().resource(getContent(
+                        "classpath:/Bundle/ToMuchMembers.json"))
+                        .execute());
+
+        Assertions.assertEquals(OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()), "BloodgasPanel contains references to a resource/s that is not contained within this bundle, please check the hasMembers within the blood gas panel resource to match the amount and value of the resources contained in the bundle.");
+    }
+
+
 }

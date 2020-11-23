@@ -40,7 +40,7 @@ public class BloodGasPanelBundle extends SupportedBundle {
     public MappedBundleComposition processBundle() {
         SupportedBundle.logger.info(">>>>>>>>>>>>>>>>>> BLOOD GAS PANEL");
         String ehrUid = getEhrUID();
-        return new MappedBundleComposition(FHIRObservationBloodGasOpenehrBlutgasAnalyse.map(this), ehrUid);
+        return new MappedBundleComposition( new FHIRObservationBloodGasOpenehrBlutgasAnalyse().map(this), ehrUid);
     }
 
     @Override

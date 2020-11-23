@@ -1,20 +1,32 @@
 package org.ehrbase.fhirbridge.mapping.blutgasanalyse;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.generic.PartySelf;
+import org.ehrbase.fhirbridge.fhir.provider.TransactionProvider;
 import org.ehrbase.fhirbridge.fhir.resource.bundle.BloodGasPanelBundle;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBlutgasanalyseComposition;
 import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.definition.StatusDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 
 public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
+    private final Logger logger = LoggerFactory.getLogger(TransactionProvider.class);
 
-    private FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
+    public FHIRObservationBloodGasOpenehrBlutgasAnalyse() {
     }
 
-    private static StatusDefiningcode mapStatus(Observation fhirObservation) {
+    private StatusDefiningcode mapStatus(Observation fhirObservation) {
         switch (fhirObservation.getStatusElement().getCode()) {
             case "registered":
                 return StatusDefiningcode.REGISTRIERT;
@@ -30,7 +42,7 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         }
     }
 
-    private static String mapKategorie(Observation fhirObservation) {
+    private String mapKategorie(Observation fhirObservation) {
         Optional<String> categoryCode;
         for (CodeableConcept codingEntry : fhirObservation.getCategory()) {
             categoryCode = getObservationCategory(codingEntry);
@@ -42,7 +54,7 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
 
     }
 
-    private static Optional<String> getObservationCategory(CodeableConcept codings) {
+    private Optional<String> getObservationCategory(CodeableConcept codings) {
         for (Coding categoryEntry : codings.getCoding()) {
             if (isObservationCategory(categoryEntry)) {
                 return Optional.of(categoryEntry.getCode());
@@ -51,24 +63,62 @@ public class FHIRObservationBloodGasOpenehrBlutgasAnalyse {
         return Optional.empty();
     }
 
-
-    private static boolean isObservationCategory(Coding categories) {
+    private boolean isObservationCategory(Coding categories) {
         return categories.getSystem().equals("http://terminology.hl7.org/CodeSystem/observation-category");
     }
 
-    public static BefundDerBlutgasanalyseComposition map(BloodGasPanelBundle bloodGasPanelBundle) {
-        Observation bloodGasPanel = bloodGasPanelBundle.getBloodGasPanel();
 
+    private void checkHasMemberResources(BloodGasPanelBundle bloodGasPanelBundle) {
+        List<Reference> members = bloodGasPanelBundle.getBloodGasPanel().getHasMember();
+        checkReferenceContained(bloodGasPanelBundle.getCarbonDioxidePartialPressure(), members);
+        checkReferenceContained(bloodGasPanelBundle.getOxygenPartialPressure(), members);
+        checkReferenceContained(bloodGasPanelBundle.getOxygenSaturation(), members);
+        checkReferenceContained(bloodGasPanelBundle.getpH(), members);
+        allMembersContained(members);
+    }
+
+    private void checkReferenceContained(Optional<Observation> fhirObservation, List<Reference> members) {
+        if (fhirObservation.isPresent()) {
+            String extractedReferenceId = fhirObservation.get().getId().substring(fhirObservation.get().getId().indexOf("Observation"));
+            isReferenceContained(members, extractedReferenceId);
+        }
+    }
+
+    private void isReferenceContained(List<Reference> members, String extractedReferenceId) {
+        for (Reference reference : members) {
+            if (reference.getReference().equals(extractedReferenceId)) {
+                members.remove(reference);
+                return;
+            }
+        }
+        throw new UnprocessableEntityException("BloodgasPanel references a set of Fhir resources as members, that need to be contained in this bundle. Nevertheless the id " + extractedReferenceId + " is missing.");
+    }
+
+    private void allMembersContained(List<Reference> members){
+        if (members.size() > 0) {
+            throw new UnprocessableEntityException("BloodgasPanel contains references to a resource/s that is not contained within this bundle, please check the hasMembers within the blood gas panel resource to match the amount and value of the resources contained in the bundle.");
+        }
+    }
+
+    private void setMandatoryFields(BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition) {
+        befundDerBlutgasanalyseComposition.setLanguage(Language.DE);
+        befundDerBlutgasanalyseComposition.setLocation("test");
+        befundDerBlutgasanalyseComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        befundDerBlutgasanalyseComposition.setTerritory(Territory.DE);
+        befundDerBlutgasanalyseComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        befundDerBlutgasanalyseComposition.setComposer(new PartySelf());
+    }
+
+    public BefundDerBlutgasanalyseComposition map(BloodGasPanelBundle bloodGasPanelBundle) {
+        Observation bloodGasPanel = bloodGasPanelBundle.getBloodGasPanel();
         BefundDerBlutgasanalyseComposition befundDerBlutgasanalyseComposition = new BefundDerBlutgasanalyseComposition();
+        setMandatoryFields(befundDerBlutgasanalyseComposition);
 
         befundDerBlutgasanalyseComposition.setStatusDefiningcode(mapStatus(bloodGasPanel));
         befundDerBlutgasanalyseComposition.setKategorieValue(mapKategorie(bloodGasPanel));
-        befundDerBlutgasanalyseComposition.setMandatoryFields();
         befundDerBlutgasanalyseComposition.setStartTimeValue(bloodGasPanel.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-
         befundDerBlutgasanalyseComposition.setLaborergebnis(LaborergebnisBefundMapper.map(bloodGasPanelBundle));
-
-
+        checkHasMemberResources(bloodGasPanelBundle);
         return befundDerBlutgasanalyseComposition;
     }
 }

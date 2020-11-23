@@ -65,6 +65,15 @@
         "hasMember": [
           {
             "reference": "Observation/b84b5eba-d768-4938-bccf-593d662b2f38"
+          },
+          {
+            "reference": "Observation/e6021602-29e9-4fdf-aa8f-495a7bf44ce7"
+          },
+          {
+            "reference": "Observation/5d97ebb6-9508-4265-9622-2fc7c11cc32f"
+          },
+          {
+            "reference": "Observation/63bd2c95-baa5-4a9a-8075-80f8c22a38ff"
           }
         ]
       },
