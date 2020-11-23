@@ -14,6 +14,7 @@ import org.ehrbase.fhirbridge.opt.befundderblutgasanalysecomposition.BefundDerBl
 import org.ehrbase.fhirbridge.opt.blutdruckcomposition.BlutdruckComposition;
 import org.ehrbase.fhirbridge.opt.diagnosecomposition.DiagnoseComposition;
 import org.ehrbase.fhirbridge.opt.herzfrequenzcomposition.HerzfrequenzComposition;
+import org.ehrbase.fhirbridge.opt.atemfrequenzcomposition.AtemfrequenzComposition;
 import org.ehrbase.fhirbridge.opt.intensivmedizinischesmonitoringkorpertemperaturcomposition.IntensivmedizinischesMonitoringKorpertemperaturComposition;
 import org.ehrbase.fhirbridge.opt.kennzeichnungerregernachweissarscov2composition.KennzeichnungErregernachweisSARSCoV2Composition;
 import org.ehrbase.fhirbridge.opt.korpergewichtcomposition.KorpergewichtComposition;
@@ -138,6 +139,12 @@ public class EhrbaseService {
             throw new UnprocessableEntityException("There was a Error in saveHeartRate", e);
         }
 
+        return composition.getVersionUid();
+    }
+    
+    public VersionUid saveRespRate(UUID ehrId, AtemfrequenzComposition composition) {
+
+        client.compositionEndpoint(ehrId).mergeCompositionEntity(composition);
         return composition.getVersionUid();
     }
 

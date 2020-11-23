@@ -36,6 +36,7 @@ import org.ehrbase.fhirbridge.mapping.FhirObservationSofaScoreOpenehrSofa;
 import org.ehrbase.fhirbridge.mapping.FhirObservationTempOpenehrBodyTemperature;
 import org.ehrbase.fhirbridge.mapping.FhirSarsTestResultOpenehrPathogenDetection;
 import org.ehrbase.fhirbridge.mapping.*;
+import org.ehrbase.fhirbridge.opt.atemfrequenzcomposition.AtemfrequenzComposition;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationBodyWeightOpenehrBodyWeight;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationFiO2OpenehrBeatmungswerte;
 import org.ehrbase.fhirbridge.mapping.FHIRObservationHeartRateOpenehrHeartRate;
@@ -416,12 +417,12 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 // COMPOSITION => Coronavirus Lab Result Observation
                 observation = FhirSarsTestResultOpenehrPathogenDetection.map(compo);
 
+
                 // adds observation to the result
                 result.add(observation);
             }
 
             logger.info("Results {}", results.size());
-
         } catch (Exception e) {
             throw new InternalErrorException("There was a problem retrieving the results", e);
         }
@@ -499,7 +500,6 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 //UUID ehrId = service.createEhr(); // <<< reflections error!
                 VersionUid versionUid = ehrbaseService.saveTemp(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.BODY_TEMP);
-
             } else if (ProfileUtils.hasProfile(observation, Profile.FIO2)) {
 
                 logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION FIO2");
@@ -537,6 +537,17 @@ public class ObservationResourceProvider extends AbstractResourceProvider {
                 HerzfrequenzComposition composition = FHIRObservationHeartRateOpenehrHeartRate.map(observation);
 
                 VersionUid versionUid = ehrbaseService.saveHeartRate(ehrUid, composition);
+                logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
+
+            } else if (ProfileUtils.hasProfile(observation, Profile.RESP_RATE)) {
+
+                logger.info(">>>>>>>>>>>>>>>>>> OBSERVATION RESP_RATE");
+
+                // FHIR Observation Temp => openEHR COMPOSITION
+                AtemfrequenzComposition composition = FHIRObservationRespRateOpenehrRespRate.map(observation);
+
+                //UUID ehrId = service.createEhr(); // <<< reflections error!
+                VersionUid versionUid = ehrbaseService.saveRespRate(ehrUid, composition);
                 logger.info("Composition created with UID {} for FHIR profile {}", versionUid, Profile.HEART_RATE);
 
             } else if (ProfileUtils.hasProfile(observation, Profile.SMOKING_STATUS)) {

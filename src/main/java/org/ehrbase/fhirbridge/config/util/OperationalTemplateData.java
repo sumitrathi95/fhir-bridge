@@ -20,9 +20,9 @@ public enum OperationalTemplateData {
     HEART_RATE("", "Herzfrequenz.opt", "Herzfrequenz"),
     BLOOD_GAS("", "Befund_der_Blutgasanalyse.opt", "Befund der Blutgasanalyse"),
     BODY_HEIGHT("","Koerpergroesse.opt","Körpergröße"),
+    RESP_RATE("", "Atemfrequenz.opt", "Atemfrequenz"),
     SMOKING_STATUS("", "Raucherstatus.opt", "Raucherstatus"),
     BODY_WEIGHT("", "Körpergewicht.opt", "Körpergewicht");
-
 
     private final String filename;
     private final String templateId;

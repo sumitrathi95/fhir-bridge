@@ -15,7 +15,6 @@ import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
 import org.ehrbase.fhirbridge.rest.EhrbaseService;
-import org.hamcrest.Matchers;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,8 +34,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration Tests
@@ -256,8 +253,13 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
             "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
             "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
+
             OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
@@ -405,6 +407,19 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
     }
 
     @Test
+    public void createRespRate() throws IOException {
+        String resource = getContent("classpath:/Observation/observation-example-respiratory-rate.json");
+        resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
+
+        MethodOutcome outcome = client.create().resource(resource).execute();
+
+        Assertions.assertEquals(true, outcome.getCreated());
+        Assertions.assertTrue(outcome.getResource() instanceof Observation);
+        Assertions.assertNotNull(outcome.getResource());
+        Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
+    }
+
+    @Test
     public void createBloodPressure() throws IOException {
         String resource = getContent("classpath:/Observation/observation-bloodpressure-example.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
@@ -433,7 +448,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-
+  
     @Test
     public void createBodyWeight() throws IOException {
         String resource = getContent("classpath:/Observation/observation-example-body-weight.json");
@@ -446,7 +461,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
         Assertions.assertNotNull(outcome.getResource());
         Assertions.assertEquals("1", outcome.getResource().getMeta().getVersionId());
     }
-
+    
     @Test
     public void createSofaScore() throws IOException {
         String resource = getContent("classpath:/Observation/observation-sofa-score-example.json");
