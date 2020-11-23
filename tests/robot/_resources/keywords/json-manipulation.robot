@@ -118,15 +118,16 @@ update Status
                         ...    Update Value To Json    ${payload}    $.status   ${status}
 
 update Identifier
-    [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}
+    [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${Identifierassigner}    ${Identifierreference}
 
                         # Run Keywords only if identifier is available
                         Run Keyword And Return If    $Identifieravailable=="true"
                         ...    Run Keywords
-                        ...    update Identifier coding system    ${Identifiercodingsystem}    AND
-                        ...    update Identifier coding code      ${Identifiercodingcode}      AND
+                        ...    update Identifier coding system    ${Identifiercodingsystem}     AND
+                        ...    update Identifier coding code      ${Identifiercodingcode}       AND
                         ...    update Identifier system           ${Identifiersystem}           AND
-                        ...    update Identifier value             ${Identifiervalue}
+                        ...    update Identifier value            ${Identifiervalue}            AND
+                        ...    update Identifier assigner         ${Identifierassigner}         ${Identifierreference}
 
                         # Run Keyword only if Identifier is not available
                         Run Keyword And Return If    $Identifieravailable=="false"
@@ -190,6 +191,32 @@ update Identifier value
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
+
+update Identifier assigner
+    [Arguments]         ${Identifierassigner}    ${Identifierreference}
+
+                        # Run Keywords only if Identifier assigner is available
+                        Run Keyword And Return If    $Identifierassigner=="true"
+                        ...    update Identifier reference    ${Identifierreference}
+
+                        # Run Keyword only if Identifier assigner is not available
+                        Run Keyword And Return If    $Identifierassigner=="false"
+                        ...    Delete Object From Json  ${payload}  $.identifier.[0].assigner
+
+update Identifier reference
+    [Arguments]         ${Identifierreference}
+
+                        # Run Keyword only when Identifierreference is empty
+                        Run Keyword And Return If    $Identifierreference=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier.[0].assigner.reference    ${Identifierreference}
+
+                        # Run Keyword only when Identifierreference is missing
+                        Run Keyword And Return If    $Identifierreference=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier.[0].assigner.reference
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier.[0].assigner.reference    ${Identifierreference}
 
 update Category
     [Arguments]         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}
