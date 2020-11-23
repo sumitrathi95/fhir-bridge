@@ -1,8 +1,6 @@
 package org.ehrbase.fhirbridge;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.OperationOutcomeUtil;
 import com.nedap.archie.rm.datavalues.DvText;
@@ -10,30 +8,20 @@ import com.nedap.archie.rm.ehr.EhrStatus;
 import com.nedap.archie.rm.generic.PartySelf;
 import com.nedap.archie.rm.support.identification.HierObjectId;
 import com.nedap.archie.rm.support.identification.PartyRef;
-import org.apache.commons.io.IOUtils;
-import org.ehrbase.fhirbridge.config.FhirConfiguration;
 import org.ehrbase.fhirbridge.config.TerminologyMode;
 import org.ehrbase.fhirbridge.fhir.Profile;
-import org.ehrbase.fhirbridge.rest.EhrbaseService;
+import org.hamcrest.Matchers;
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration Tests
@@ -42,17 +30,22 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
 
-    String profileListing = "[http://hl7.org/fhir/StructureDefinition/bodytemp, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, "
-            + "http://hl7.org/fhir/StructureDefinition/heartrate, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, "
-            + "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, "
-            + "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "
-            + "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]";
+    String profileListing ="[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/inhaled-oxygen-concentration, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
+            "http://hl7.org/fhir/StructureDefinition/heartrate, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
+            "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
+            "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
+            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]";
+
+
     @Test
     public void createDiagnoseCondition() throws IOException {
         Date now = new Date();
@@ -244,23 +237,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract {
 
         Assertions.assertEquals(
             "Default profile is not supported for Observation. One of the following profiles is expected: " +
-            "[http://hl7.org/fhir/StructureDefinition/bodytemp, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/FiO2, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/blood-pressure, " +
-            "http://hl7.org/fhir/StructureDefinition/heartrate, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/patient-in-icu, " +
-            "https://charite.infectioncontrol.de/fhir/core/StructureDefinition/CoronavirusNachweisTest, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/pregnancy-status, " +
-            "https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab, " +
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/sofa-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-weight, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/frailty-score, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height]",
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/body-height, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/respiratory-rate, "+
-            "https://www.netzwerk-universitaetsmedizin.de/fhir/StructureDefinition/smoking-status]",
-
-            OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
+            profileListing, OperationOutcomeUtil.getFirstIssueDetails(context, exception.getOperationOutcome()));
     }
 
     @Test
