@@ -2,10 +2,8 @@ package org.ehrbase.fhirbridge.mapping;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.archetyped.FeederAudit;
-import com.nedap.archie.rm.datavalues.quantity.DvProportion;
 import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.config.util.CommonData;
-import org.ehrbase.fhirbridge.opt.geccolaborbefundcomposition.definition.UntersuchterAnalytDefiningcode;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.PatientAufICUComposition;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.PatientAufDerIntensivstationObservation;
 import org.ehrbase.fhirbridge.opt.patientauficucomposition.definition.StatusDefiningcode;
@@ -13,10 +11,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.*;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -46,18 +41,14 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
 
         Observation.ObservationStatus status = fhirObservation.getStatus();
 
-        switch (status) {
-            case FINAL:
-                composition.setStatusDefiningcode(StatusDefiningcode.FINAL);
-                break;
-            default:
-                throw new UnprocessableEntityException("Status has invalid code " + status.toCode());
+        if (status.equals(Observation.ObservationStatus.FINAL)) {
+            composition.setStatusDefiningcode(StatusDefiningcode.FINAL);
+        } else {
+            throw new UnprocessableEntityException("Status has invalid code " + status.toCode());
         }
 
-        mapObservation(composition, fhirObservation);
-
-        DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
-        composition.setStartTimeValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
+        composition.setPatientAufDerIntensivstation(mapPatientAufIntensivstation(fhirObservation));
+        composition.setStartTimeValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
 
         //obligatory stuff block
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
@@ -69,7 +60,7 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         return composition;
     }
 
-    private static void mapObservation(PatientAufICUComposition composition, Observation fhirObservation)
+    private static PatientAufDerIntensivstationObservation mapPatientAufIntensivstation(Observation fhirObservation)
     {
         PatientAufDerIntensivstationObservation patientAufDerIntensivstation = new PatientAufDerIntensivstationObservation();
         patientAufDerIntensivstation.setNameDerAktivitatValue("Behandlung auf der Intensivstation");
@@ -97,7 +88,7 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         patientAufDerIntensivstation.setSubject(new PartySelf());
 
 
-        composition.setPatientAufDerIntensivstation(patientAufDerIntensivstation);
+        return patientAufDerIntensivstation;
     }
 
 }
