@@ -226,3 +226,28 @@ create frailty scale score
 
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
+
+
+
+create Observation Heart Rate JSON
+    [Arguments]         ${resourceType}    ${ID}    ${meta}    ${profile}    ${status}     ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}    ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}    ${subject}    ${reference}    ${effectivedatetime}    ${vQavailable}    ${vQvalue}    ${vQunit}    ${vQsystem}    ${vQcode}    ${dataabsentreason}    ${responsecode}    ${diagnosticINDEX}    ${diagnosticsENG}    ${diagnosticsDE}
+
+                        prepare new request session  Prefer=return=representation
+
+    &{resp}             Run Keywords
+                        ...    ehr.create new ehr               000_ehr_status.json                             AND
+                        ...    load JSON                        observation-example-heart-rate-robot.json       AND
+                        ...    update Resource Type             ${resourceType}                                 AND
+                        ...    update ID                        ${ID}                                           AND
+                        ...    update Meta Profile              ${meta}                                         ${profile}                     AND
+                        ...    update Status                    ${status}                                       AND
+                        ...    update Identifier                ${Identifieravailable}                          ${Identifiercodingsystem}      ${Identifiercodingcode}     ${Identifiersystem}     ${Identifiervalue}      AND
+                        ...    update Category                  ${categoryavailable}                            ${categorycodingavailable}     ${categorysystem}           ${categorycode}         AND
+                        ...    update Code                      ${codeavailable}                                ${codecodingavailable}         ${code0system}              ${code0code}            ${code1system}          ${code1code}    AND
+                        ...    update Subject                   ${subject}                                      ${reference}                   AND
+                        ...    update Effective Date Time       ${effectivedatetime}                            AND
+                        ...    update Value Quantity            ${vQavailable}                                  ${vQvalue}                     ${vQunit}                   ${vQsystem}            ${vQcode}                AND
+                        ...    update Data Absent Reason        ${dataabsentreason}                             AND
+                        ...    POST    ${BASE_URL}/Observation    body=${payload}                               AND
+                        ...    Output Debug Info To Console                                                     AND
+                        ...    validation JSON                  ${responsecode}                                 ${diagnosticINDEX}             ${diagnosticsENG}           ${diagnosticsDE}
