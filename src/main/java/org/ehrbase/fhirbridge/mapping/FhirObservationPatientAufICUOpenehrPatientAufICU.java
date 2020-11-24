@@ -14,20 +14,19 @@ import org.hl7.fhir.r4.model.Observation;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class FhirObservationPatientAufICUOpenehrPatientAufICU {
 
     private FhirObservationPatientAufICUOpenehrPatientAufICU() {
     }
 
-    private static final Map<String, WurdeDieAktivitatDurchgefuhrtDefiningcode> aktivitaetDurchgefuehrtDefiningcodeMap
+    private static final Map<String, WurdeDieAktivitatDurchgefuhrtDefiningcode> aktivitatDurchgefuehrtDefiningcodeMap
             = new HashMap<>();
 
     static {
         for (WurdeDieAktivitatDurchgefuhrtDefiningcode code : WurdeDieAktivitatDurchgefuhrtDefiningcode.values()) {
             if (code.getTerminologyId().equals("SNOMED Clinical Terms")) {
-                aktivitaetDurchgefuehrtDefiningcodeMap.put(code.getCode(), code);
+                aktivitatDurchgefuehrtDefiningcodeMap.put(code.getCode(), code);
             }
         }
     }
@@ -60,7 +59,6 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
     }
 
     private static void setMandatoryFields(PatientAufICUComposition composition) {
-        //obligatory stuff block
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
         composition.setLocation("test"); //FIXME: sensible value
         composition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
@@ -73,14 +71,7 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         PatientAufDerIntensivstationObservation patientAufDerIntensivstation = new PatientAufDerIntensivstationObservation();
         patientAufDerIntensivstation.setNameDerAktivitatValue("Behandlung auf der Intensivstation");
 
-
-        Coding coding = fhirObservation.getValueCodeableConcept().getCoding().get(0);
-
-        if (coding.getSystem().equals("http://snomed.info/sct") && aktivitaetDurchgefuehrtDefiningcodeMap.containsKey(coding.getCode())) {
-            patientAufDerIntensivstation.setWurdeDieAktivitatDurchgefuhrtDefiningcode(aktivitaetDurchgefuehrtDefiningcodeMap.get(coding.getCode()));
-        } else {
-            throw new UnprocessableEntityException("Aktivität durchgeführt has invalid code " + coding.getCode());
-        }
+        patientAufDerIntensivstation.setWurdeDieAktivitatDurchgefuhrtDefiningcode(mapWurdeDieAktivitatDurchgefuhrt(fhirObservation));
 
         DateTimeType fhirEffectiveDateTime = fhirObservation.getEffectiveDateTimeType();
 
@@ -89,8 +80,17 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         patientAufDerIntensivstation.setOriginValue(fhirEffectiveDateTime.getValueAsCalendar().toZonedDateTime());
         patientAufDerIntensivstation.setSubject(new PartySelf());
 
-
         return patientAufDerIntensivstation;
+    }
+
+    private static WurdeDieAktivitatDurchgefuhrtDefiningcode mapWurdeDieAktivitatDurchgefuhrt(Observation fhirObservation) {
+        Coding coding = fhirObservation.getValueCodeableConcept().getCoding().get(0);
+
+        if (coding.getSystem().equals("http://snomed.info/sct") && aktivitatDurchgefuehrtDefiningcodeMap.containsKey(coding.getCode())) {
+            return aktivitatDurchgefuehrtDefiningcodeMap.get(coding.getCode());
+        }
+
+        throw new UnprocessableEntityException("Aktivität durchgeführt has invalid code " + coding.getCode());
     }
 
 }
