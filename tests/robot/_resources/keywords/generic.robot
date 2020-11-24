@@ -105,8 +105,12 @@ extract subject_id from response
 
 Output Debug Info To Console
     [Documentation]     Prints all details of a request to console in JSON style.
+    ...                 Can also be used to output a single JSON
     ...                 - request headers
     ...                 - request body
     ...                 - response headers
     ...                 - response body
-    Output
+    [Arguments]         ${payload}=${None}
+    Run Keyword If      "${OUTPUT_LEVEL}"=="verbose"    Output
+    Run Keyword If      "${OUTPUT_LEVEL}"=="verbose" and ${payload}!=${None}
+                        ...    Output    ${payload}

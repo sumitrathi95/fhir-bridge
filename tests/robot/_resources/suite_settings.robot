@@ -45,3 +45,4 @@ ${DATA_SET_PATH_OBSERVATION}    ${EXECDIR}/../src/test/resources/Observation
 ${DATA_SET_PATH_PROCEDURE}      ${EXECDIR}/../src/test/resources/Procedure
 ${DATA_SET_PATH_QUESTIONAIRE}   ${EXECDIR}/../src/test/resources/QuestionnaireResponse
 ${VALID EHR DATA SETS}          ${EXECDIR}/robot/_resources/test_data/ehr/valid
+${OUTPUT_LEVEL}                 verbose
