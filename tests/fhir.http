@@ -486,7 +486,7 @@ content-type: application/json
     },
     "effectiveDateTime": "2020-09-25",
     "valueQuantity": {
-        "value": 81,
+        "value": 88888.88,
         "unit": "per minute",
         "system": "http://unitsofmeasure.org",
         "code": "/min"
