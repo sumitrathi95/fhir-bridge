@@ -19,7 +19,7 @@ public class D4LQuestionnaireIT extends FhirBridgeApplicationTestAbstract {
 
     @Test
     public void createQuestionnaire() throws IOException {
-        String resource = getContent("classpath:/QuestionnaireResponse/covapp-response.json");
+        String resource = getContent("classpath:/QuestionnaireResponse/covapp-response_old.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.patientReference);
         MethodOutcome outcome = client.create().resource(resource).execute();
         Assertions.assertEquals(true, outcome.getCreated());

@@ -266,7 +266,7 @@ public class FhirBridgeApplicationIT extends FhirBridgeApplicationTestAbstract{
 
     @Test
     public void createQuestionnaireResponse() throws IOException {
-        String resource = getContent("classpath:/QuestionnaireResponse/covapp-response.json");
+        String resource = getContent("classpath:/QuestionnaireResponse/covapp-response_old.json");
         resource = resource.replaceAll(PATIENT_REFERENCE_REGEXP, this.subjectIdValue);
 
         MethodOutcome outcome = client.create().resource(resource).execute();
