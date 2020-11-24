@@ -1,11 +1,16 @@
 package org.ehrbase.fhirbridge.mapping.questionnaire;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.nedap.archie.rm.generic.PartySelf;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Anamnesis;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.GeneralInformation;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Medication;
 import org.ehrbase.fhirbridge.mapping.questionnaire.sections.Symptoms;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.D4LQuestionnaireComposition;
+import org.ehrbase.fhirbridge.opt.shareddefinition.CategoryDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
+import org.ehrbase.fhirbridge.opt.shareddefinition.SettingDefiningcode;
+import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 
 import java.time.temporal.TemporalAccessor;
@@ -63,8 +68,19 @@ public class FhirObservationToOpenehrQuestionnaire {
         }
     }
 
+    private void setMandatoryFields(D4LQuestionnaireComposition d4LQuestionnaireComposition) {
+        //Mandatory Stuff
+        d4LQuestionnaireComposition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
+        d4LQuestionnaireComposition.setLocation("test"); //FIXME: sensible value
+        d4LQuestionnaireComposition.setSettingDefiningcode(SettingDefiningcode.SECONDARY_MEDICAL_CARE);
+        d4LQuestionnaireComposition.setTerritory(Territory.DE);
+        d4LQuestionnaireComposition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
+        d4LQuestionnaireComposition.setComposer(new PartySelf()); //FIXME: sensible value
+    }
+
+
     private D4LQuestionnaireComposition populateD4lQuestionnaireComposition(D4LQuestionnaireComposition d4LQuestionnaireComposition) {
-        d4LQuestionnaireComposition.setMandatoryFields();
+        setMandatoryFields(d4LQuestionnaireComposition);
         d4LQuestionnaireComposition.setAllgemeineAngaben(generalInformation.toComposition());
         d4LQuestionnaireComposition.setSymptome(symptoms.toComposition());
         d4LQuestionnaireComposition.setVorGrunderkrankungen(anamnesis.toComposition());

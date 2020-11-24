@@ -2,7 +2,6 @@ package org.ehrbase.fhirbridge.mapping.questionnaire.sections;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import com.nedap.archie.rm.generic.PartySelf;
-import net.sf.saxon.functions.Lang;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.*;
 import org.ehrbase.fhirbridge.opt.shareddefinition.Language;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
@@ -14,6 +13,7 @@ import java.util.Optional;
 
 public class GeneralInformation extends QuestionnaireSection {
     private static final String P0 = "P0";
+    private static final String P1 = "P1";
     private static final String P2 = "P2";
     private static final String P3 = "P3";
     private static final String P4 = "P4";
@@ -25,6 +25,7 @@ public class GeneralInformation extends QuestionnaireSection {
     private Optional<AlterObservation> alterObservationQuestion = Optional.empty();
     private Optional<WohnsituationEvaluation> wohnsituationEvaluationQuestion = Optional.empty();
     private Optional<PflegetatigkeitEvaluation> pflegetatigkeitEvaluationQuestion = Optional.empty();
+    private Optional<ZusammenfassungDerBeschaftigungEvaluation> zusammenfassungDerBeschaftigungEvaluationQuestion = Optional.empty();
     private Optional<AusschlussPflegetatigkeitEvaluation> ausschlussPflegetatigkeit = Optional.empty();
     private Optional<AusschlussRauchenEvaluation> ausschlussRauchen = Optional.empty();
     private Optional<ZusammenfassungRauchverhaltenEvaluation> zusammenfassungRauchverhaltenEvaluationQuestion = Optional.empty();
@@ -52,6 +53,9 @@ public class GeneralInformation extends QuestionnaireSection {
             case P0:
                 mapAge(getQuestionValueCodeToString(question));
                 break;
+            case P1:
+               // mapAgeOver60(getQuestionValueCodeToString(question));
+                break;
             case P2:
                 mapWohnsituationEvaluation(getQuestionValueCodeToString(question));
                 break;
@@ -59,7 +63,7 @@ public class GeneralInformation extends QuestionnaireSection {
                 mapPrivateCaregiver(getQuestionLoincYesNoToBoolean(question));
                 break;
             case P4:
-                mapNurse(getQuestionLoincYesNoToBoolean(question));
+                mapOccupation(getQuestionValueCodeToString(question));
                 break;
             case P5:
                 mapSmoker(getQuestionLoincYesNoToBoolean(question));
@@ -120,10 +124,28 @@ public class GeneralInformation extends QuestionnaireSection {
     }
 
 
-    protected void mapNurse(Boolean isNurse) {
-        PflegetatigkeitEvaluation pflegetatigkeitEvaluation = getPflegetatigkeitEvaluation();
-        pflegetatigkeitEvaluation.setBeruflichValue(isNurse);
-        pflegetatigkeitEvaluationQuestion = Optional.of(pflegetatigkeitEvaluation);
+    protected void mapOccupation(String occupationClass) {
+        ZusammenfassungDerBeschaftigungEvaluation zusammenfassungDerBeschaftigungEvaluation = new ZusammenfassungDerBeschaftigungEvaluation();
+        List<BeschaftigungCluster> beschaftigungClusterList= new ArrayList<>();
+        BeschaftigungCluster beschaftigungCluster = new BeschaftigungCluster();
+        switch (occupationClass) {
+            case "community":
+                beschaftigungCluster.setBerufsbereichDefiningcode(BerufsbereichDefiningcode.GEMEINSCHAFTSEINRICHTUNG_SCHULE_KITA_UNIVERSITAT_HEIM_ETC);
+                break;
+            case "medical":
+                beschaftigungCluster.setBerufsbereichDefiningcode(BerufsbereichDefiningcode.MEDIZINISCHEN_BEREICH_PFLEGE_ARZTPRAXIS_ODER_KRANKENHAUS);
+                break;
+            case "LA46-8":
+                beschaftigungCluster.setBerufsbereichDefiningcode(BerufsbereichDefiningcode.SONSTIGES);
+                break;
+            default:
+                throw new UnprocessableEntityException();
+        }
+
+        beschaftigungClusterList.add(beschaftigungCluster);
+        zusammenfassungDerBeschaftigungEvaluation.setBeschaftigung(beschaftigungClusterList);
+        zusammenfassungDerBeschaftigungEvaluationQuestion = Optional.of(zusammenfassungDerBeschaftigungEvaluation);
+
     }
 
     private PflegetatigkeitEvaluation getPflegetatigkeitEvaluation() {
@@ -234,6 +256,7 @@ public class GeneralInformation extends QuestionnaireSection {
         checkPflegetatigkeitAusschluss();
         pflegetatigkeitEvaluationQuestion.ifPresent(allgemeineAngabenSection::setPflegetatigkeit);
         ausschlussPflegetatigkeit.ifPresent(allgemeineAngabenSection::setAusschlussPflegetatigkeit);
+        zusammenfassungDerBeschaftigungEvaluationQuestion.ifPresent(allgemeineAngabenSection::setZusammenfassungDerBeschaftigung);
         zusammenfassungRauchverhaltenEvaluationQuestion.ifPresent(allgemeineAngabenSection::setZusammenfassungRauchverhalten);
         ausschlussRauchen.ifPresent(allgemeineAngabenSection::setAusschlussRauchen);
         statusSchwangerschaftStillzeitEvaluationQuestion.ifPresent(allgemeineAngabenSection::setStatusSchwangerschaftStillzeit);

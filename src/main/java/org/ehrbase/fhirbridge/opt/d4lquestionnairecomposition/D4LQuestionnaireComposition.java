@@ -13,7 +13,6 @@ import org.ehrbase.client.annotations.Id;
 import org.ehrbase.client.annotations.Path;
 import org.ehrbase.client.annotations.Template;
 import org.ehrbase.client.openehrclient.VersionUid;
-import org.ehrbase.fhirbridge.opt.CompositionAbstract;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.AllgemeineAngabenSection;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.DatenspendeSection;
 import org.ehrbase.fhirbridge.opt.d4lquestionnairecomposition.definition.MedikamenteImpfungenSection;
@@ -27,7 +26,7 @@ import org.ehrbase.fhirbridge.opt.shareddefinition.Territory;
 @Entity
 @Archetype("openEHR-EHR-COMPOSITION.self_monitoring.v0")
 @Template("D4L_questionnaire")
-public class D4LQuestionnaireComposition extends CompositionAbstract {
+public class D4LQuestionnaireComposition {
   @Id
   private VersionUid versionUid;
 
