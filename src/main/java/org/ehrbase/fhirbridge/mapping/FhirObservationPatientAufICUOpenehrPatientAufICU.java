@@ -39,6 +39,17 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         FeederAudit fa = CommonData.constructFeederAudit(fhirObservation);
         composition.setFeederAudit(fa);
 
+        setStatus(composition, fhirObservation);
+
+        composition.setPatientAufDerIntensivstation(mapPatientAufIntensivstation(fhirObservation));
+        composition.setStartTimeValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
+
+        setMandatoryFields(composition);
+
+        return composition;
+    }
+
+    private static void setStatus(PatientAufICUComposition composition, Observation fhirObservation) {
         Observation.ObservationStatus status = fhirObservation.getStatus();
 
         if (status.equals(Observation.ObservationStatus.FINAL)) {
@@ -46,10 +57,9 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         } else {
             throw new UnprocessableEntityException("Status has invalid code " + status.toCode());
         }
+    }
 
-        composition.setPatientAufDerIntensivstation(mapPatientAufIntensivstation(fhirObservation));
-        composition.setStartTimeValue(fhirObservation.getEffectiveDateTimeType().getValueAsCalendar().toZonedDateTime());
-
+    private static void setMandatoryFields(PatientAufICUComposition composition) {
         //obligatory stuff block
         composition.setLanguage(Language.DE); // FIXME: we need to grab the language from the template
         composition.setLocation("test"); //FIXME: sensible value
@@ -57,11 +67,9 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
         composition.setTerritory(Territory.DE);
         composition.setCategoryDefiningcode(CategoryDefiningcode.EVENT);
         composition.setComposer(new PartySelf()); //FIXME: sensible value
-        return composition;
     }
 
-    private static PatientAufDerIntensivstationObservation mapPatientAufIntensivstation(Observation fhirObservation)
-    {
+    private static PatientAufDerIntensivstationObservation mapPatientAufIntensivstation(Observation fhirObservation) {
         PatientAufDerIntensivstationObservation patientAufDerIntensivstation = new PatientAufDerIntensivstationObservation();
         patientAufDerIntensivstation.setNameDerAktivitatValue("Behandlung auf der Intensivstation");
 
