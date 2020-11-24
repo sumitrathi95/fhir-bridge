@@ -181,7 +181,7 @@ public class FhirBridgeApplicationIT {
         evaluation.setKorperstelleValue("body site");
         evaluation.setKorperstelleValueStructure("Left external ear structure");
         DateTimeType aDate = new DateTimeType("2012-05-24T00:00:00+02:00");
-        aDate.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+        aDate.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
         evaluation.setDerErstdiagnoseValue(aDate.getValueAsCalendar().toZonedDateTime());
 
         composition.setDiagnose(evaluation);
