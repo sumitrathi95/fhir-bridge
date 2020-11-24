@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -134,7 +135,9 @@ public class FhirBridgeApplicationIT {
         Condition condition = parser.parseResource(Condition.class, resource);
 
         DiagnoseComposition diagnoseComposition = FhirConditionOpenehrDiagnose.map(condition);
-        DiagnoseComposition diagnoseCompositionTest = initDiagnoseComposition();
+        TemporalAccessor aktualisiertComposition = diagnoseComposition.getDiagnose().getZuletztAktualisiertValue();
+        DiagnoseComposition diagnoseCompositionTest = initDiagnoseComposition(aktualisiertComposition);
+
 
         Assertions.assertEquals(diagnoseComposition.getTerritory(), diagnoseCompositionTest.getTerritory());
         Assertions.assertEquals(diagnoseComposition.getBerichtIdValue(), diagnoseCompositionTest.getBerichtIdValue());
@@ -162,13 +165,13 @@ public class FhirBridgeApplicationIT {
 
     }
 
-    private DiagnoseComposition initDiagnoseComposition(){
+    private DiagnoseComposition initDiagnoseComposition(TemporalAccessor aktualisiertComposition){
         DiagnoseComposition composition = new DiagnoseComposition();
         DiagnoseEvaluation evaluation = new DiagnoseEvaluation();
         evaluation.setLanguage(Language.EN);
         evaluation.setSubject(new PartySelf());
         evaluation.setZuletztAktualisiertValueTree("last update");
-        evaluation.setZuletztAktualisiertValue(OffsetDateTime.now());
+        evaluation.setZuletztAktualisiertValue(aktualisiertComposition);
 
         AtiopathogeneseSchweregradDvcodedtext severityCoded = new AtiopathogeneseSchweregradDvcodedtext();
         severityCoded.setSchweregradDefiningcode(SchweregradDefiningcode.SCHWER);
