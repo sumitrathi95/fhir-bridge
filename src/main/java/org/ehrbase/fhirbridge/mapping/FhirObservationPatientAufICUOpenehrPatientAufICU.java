@@ -76,14 +76,8 @@ public class FhirObservationPatientAufICUOpenehrPatientAufICU {
 
         Coding coding = fhirObservation.getValueCodeableConcept().getCoding().get(0);
 
-        Optional<WurdeDieAktivitatDurchgefuhrtDefiningcode> aktivitatDurchgefuhrtDefiningcode = Optional.empty();
-
-        if (coding.getSystem().equals("http://snomed.info/sct")) {
-            aktivitatDurchgefuhrtDefiningcode = Optional.ofNullable(aktivitaetDurchgefuehrtDefiningcodeMap.get(coding.getCode()));
-        }
-
-        if (aktivitatDurchgefuhrtDefiningcode.isPresent()) {
-            patientAufDerIntensivstation.setWurdeDieAktivitatDurchgefuhrtDefiningcode(aktivitatDurchgefuhrtDefiningcode.get());
+        if (coding.getSystem().equals("http://snomed.info/sct") && aktivitaetDurchgefuehrtDefiningcodeMap.containsKey(coding.getCode())) {
+            patientAufDerIntensivstation.setWurdeDieAktivitatDurchgefuhrtDefiningcode(aktivitaetDurchgefuehrtDefiningcodeMap.get(coding.getCode()));
         } else {
             throw new UnprocessableEntityException("Aktivität durchgeführt has invalid code " + coding.getCode());
         }
