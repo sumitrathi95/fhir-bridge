@@ -37,6 +37,15 @@ validate response - 201
     String     response body meta versionId    1
 
 
+validate response - 404 (with error message)
+    # [Arguments]    ${issue_index}    ${error_message}    ${location}
+    [Arguments]    ${error_message}
+    Integer     response status    404
+    String      response body resourceType    OperationOutcome
+    String      response body issue 0 diagnostics
+    ...         pattern=${error_message}
+
+
 validate response - 422 (default profile not supported)
     Integer    response status    422
 
@@ -52,6 +61,16 @@ validate response - 422 (profile not supported)
     String     response body issue 0 diagnostics
     ...        pattern=Profile http://hl7.org/fhir/StructureDefinition/vitalsigns is not supported for Observation. One of the following profiles is expected:
 
+
+validate response - 422 (with error message)
+    [Arguments]    ${issue_index}    ${error_message}    ${location}
+    Integer     response status    422
+
+    String      response body resourceType    OperationOutcome
+    String      response body issue ${issue_index} diagnostics
+    ...         pattern=${error_message}
+    Run Keyword If    $location!=None    String    response body issue ${issue_index} location 0
+    ...         ${location}
 
 
 #                                                 oooo                     
@@ -108,14 +127,17 @@ get coronavirus lab results
 
 
 create blood pressure
-    [Arguments]         ${fhir_resource}
+    # [Arguments]         ${fhir_resource}
 
-    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
-                        # Output    ${payload}
-                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+    # ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${fhir_resource}
+    #                     # Output    ${payload}
+    #                     Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
-    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
-                        Output Debug Info To Console
+    # &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+    #                     Output Debug Info To Console
+    [Arguments]         ${example_json}
+    # post fhir resource  Blood Pressure    ${example_json}
+    POST /Observation with ehr reference    Blood Pressure    ${example_json}
 
 
 create body temperature
@@ -227,6 +249,62 @@ create frailty scale score
     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
                         Output Debug Info To Console
 
+
+# [ FAIL CREATING ]
+create blood pressure without ehr reference
+    [Arguments]         ${example_json}
+    # post fhir resource with fake subject reference    Blood Pressure    ${example_json}
+    POST /Observation with fake ehr reference    Blood Pressure    ${example_json}
+
+
+# MAIN HTTP METHOD AND ENDPOINT
+POST /Observation
+    [Arguments]         ${fhir_resource_name}    ${payload}
+
+    Log To Console      POSTING '${{$fhir_resource_name.upper()}}' OBSERVATION
+    &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+                        Output Debug Info To Console
+
+
+POST /Observation with ehr reference
+    [Arguments]         ${fhir_resource_name}    ${example_json}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${example_json}
+                        # Output    ${payload}
+                        Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+                        POST /Observation    ${fhir_resource_name}    ${payload}
+
+
+POST /Observation with fake ehr reference
+    [Documentation]     Uses the hardcoded ehr reference in example_json (which does not exist
+    ...                 in EHRbase and thus can be considered fake.
+    [Arguments]         ${fhir_resource_name}    ${example_json}
+
+    ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${example_json}
+                        # Output    ${payload}
+                        POST /Observation    ${fhir_resource_name}    ${payload}
+
+
+# post fhir resource
+#     [Arguments]         ${fhir_resource}    ${example_json}
+
+#     Log To Console      POSTING OBSERVATION: ${fhir_resource}
+#     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${example_json}
+#                         # Output    ${payload}
+#                         Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
+
+#     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+#                         Output Debug Info To Console
+
+
+# post fhir resource with fake subject reference
+#     [Arguments]         ${fhir_resource}    ${example_json}
+
+#     ${payload}          Load JSON From File    ${DATA_SET_PATH_OBSERVATION}/${example_json}
+#                         # Output    ${payload}
+
+#     &{resp}             POST    ${BASE_URL}/Observation    body=${payload}
+#                         Output Debug Info To Console
 
 
 create Observation Heart Rate JSON
