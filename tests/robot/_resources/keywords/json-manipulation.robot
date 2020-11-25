@@ -64,11 +64,11 @@ update Resource Type
 update ID
     [Arguments]         ${ID}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when ID is empty
                         Run Keyword And Return If    $ID=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.id   ${ID}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when ID is missing
                         Run Keyword And Return If    $ID=="missing"
                         ...    Delete Object From Json  ${payload}  $.id
 
@@ -90,11 +90,11 @@ update Meta Profile
 update Profile
     [Arguments]         ${profile}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Profile is empty
                         Run Keyword And Return If    $profile=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.meta.profile[0]    ${profile}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Profile is missing
                         Run Keyword And Return If    $profile=="missing"
                         ...    Delete Object From Json  ${payload}  $.meta.profile[0]
 
@@ -105,11 +105,11 @@ update Profile
 update Status
     [Arguments]         ${status}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Status is empty
                         Run Keyword And Return If    $status=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.status   ${status}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Status is missing
                         Run Keyword And Return If    $status=="missing"
                         ...    Delete Object From Json  ${payload}  $.status
 
@@ -118,15 +118,16 @@ update Status
                         ...    Update Value To Json    ${payload}    $.status   ${status}
 
 update Identifier
-    [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}
+    [Arguments]         ${Identifieravailable}    ${Identifiercodingsystem}    ${Identifiercodingcode}    ${Identifiersystem}    ${Identifiervalue}    ${Identifierassigner}    ${Identifierreference}
 
                         # Run Keywords only if identifier is available
                         Run Keyword And Return If    $Identifieravailable=="true"
                         ...    Run Keywords
-                        ...    update Identifier coding system    ${Identifiercodingsystem}    AND
-                        ...    update Identifier coding code      ${Identifiercodingcode}      AND
+                        ...    update Identifier coding system    ${Identifiercodingsystem}     AND
+                        ...    update Identifier coding code      ${Identifiercodingcode}       AND
                         ...    update Identifier system           ${Identifiersystem}           AND
-                        ...    update Identifier value             ${Identifiervalue}
+                        ...    update Identifier value            ${Identifiervalue}            AND
+                        ...    update Identifier assigner         ${Identifierassigner}         ${Identifierreference}
 
                         # Run Keyword only if Identifier is not available
                         Run Keyword And Return If    $Identifieravailable=="false"
@@ -135,11 +136,11 @@ update Identifier
 update Identifier coding system
     [Arguments]         ${Identifiercodingsystem}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Identifier coding system is empty
                         Run Keyword And Return If    $Identifiercodingsystem=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].system   ${Identifiercodingsystem}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Identifier coding system is missing
                         Run Keyword And Return If    $Identifiercodingsystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].type.coding[0].system
 
@@ -150,11 +151,11 @@ update Identifier coding system
 update Identifier coding code
     [Arguments]         ${Identifiercodingcode}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Identifier coding code is empty
                         Run Keyword And Return If    $Identifiercodingcode=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.identifier[0].type.coding[0].code   ${Identifiercodingcode}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Identifier coding code is missing
                         Run Keyword And Return If    $Identifiercodingcode=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].type.coding[0].code
 
@@ -165,11 +166,11 @@ update Identifier coding code
 update Identifier system
     [Arguments]         ${Identifiersystem}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Identifier system is empty
                         Run Keyword And Return If    $Identifiersystem=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.identifier[0].system   ${Identifiersystem}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Identifier system is missing
                         Run Keyword And Return If    $Identifiersystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].system
                         # Else 
@@ -179,17 +180,43 @@ update Identifier system
 update Identifier value
     [Arguments]         ${Identifiervalue}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Identifier value is empty
                         Run Keyword And Return If    $Identifiervalue=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Identifier value is missing
                         Run Keyword And Return If    $Identifiervalue=="missing"
                         ...    Delete Object From Json    ${payload}    $.identifier[0].value
 
                         # Else 
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.identifier[0].value   ${Identifiervalue}
+
+update Identifier assigner
+    [Arguments]         ${Identifierassigner}    ${Identifierreference}
+
+                        # Run Keywords only if Identifier assigner is available
+                        Run Keyword And Return If    $Identifierassigner=="true"
+                        ...    update Identifier reference    ${Identifierreference}
+
+                        # Run Keyword only if Identifier assigner is not available
+                        Run Keyword And Return If    $Identifierassigner=="false"
+                        ...    Delete Object From Json  ${payload}  $.identifier.[0].assigner
+
+update Identifier reference
+    [Arguments]         ${Identifierreference}
+
+                        # Run Keyword only when Identifier reference is empty
+                        Run Keyword And Return If    $Identifierreference=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.identifier.[0].assigner.reference    ${Identifierreference}
+
+                        # Run Keyword only when Identifier reference is missing
+                        Run Keyword And Return If    $Identifierreference=="missing"
+                        ...    Delete Object From Json    ${payload}    $.identifier.[0].assigner.reference
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.identifier.[0].assigner.reference    ${Identifierreference}
 
 update Category
     [Arguments]         ${categoryavailable}    ${categorycodingavailable}    ${categorysystem}    ${categorycode}
@@ -218,11 +245,11 @@ update Category Coding
 update Category System
     [Arguments]         ${categorysystem}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Category System is empty
                         Run Keyword And Return If    $categorysystem=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.category[0].coding[0].system    ${categorysystem}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Category System is missing
                         Run Keyword And Return If    $categorysystem=="missing"
                         ...    Delete Object From Json    ${payload}    $.category[0].coding[0].system
 
@@ -233,11 +260,11 @@ update Category System
 update Category Code
     [Arguments]         ${categorycode}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Category Code is empty
                         Run Keyword And Return If    $categorycode=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.category[0].coding[0].code    ${categorycode}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Category Code is missing
                         Run Keyword And Return If    $categorycode=="missing"
                         ...    Delete Object From Json    ${payload}    $.category[0].coding[0].code
 
@@ -246,39 +273,42 @@ update Category Code
                         ...    Update Value To Json    ${payload}    $.category[0].coding[0].code    ${categorycode}
 
 update Code
-    [Arguments]         ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}
+    [Arguments]         ${codeavailable}    ${codecodingavailable}    ${code0system}    ${code0code}    ${code0display}    ${code1system}    ${code1code}    ${code1display}    ${codetext}
 
-                        # Run Keyword only if category is available
+                        # Run Keyword only if code is available
                         Run Keyword And Return If    $codeavailable=="true"
-                        ...    update Code Coding    ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}
+                        ...    update Code Coding    ${codecodingavailable}    ${code0system}    ${code0code}    ${code0display}    ${code1system}    ${code1code}    ${code1display}    ${codetext}
 
-                        # Run Keyword only if category is not available
+                        # Run Keyword only if code is not available
                         Run Keyword And Return If    $codeavailable=="false"
                         ...    Delete Object From Json  ${payload}  $.code
 
 update Code Coding
-    [Arguments]         ${codecodingavailable}    ${code0system}    ${code0code}    ${code1system}    ${code1code}
+    [Arguments]         ${codecodingavailable}    ${code0system}    ${code0code}    ${code0display}    ${code1system}    ${code1code}    ${code1display}    ${codetext}
 
-                        # Run Keyword only if Category-Coding is available
+                        # Run Keyword only if Code-Coding is available
                         Run Keyword And Return If    $codecodingavailable=="true"
                         ...    Run Keywords
                         ...    update Code 0 System             ${code0system}           AND
                         ...    update Code 0 Code               ${code0code}             AND
+                        ...    update Code 0 Display            ${code0display}          AND
                         ...    update Code 1 System             ${code1system}           AND
-                        ...    update Code 1 Code               ${code1code}
+                        ...    update Code 1 Code               ${code1code}             AND
+                        ...    update Code 1 Display            ${code1display}          AND
+                        ...    update Code Text                 ${codetext}
 
-                        # Run Keyword only if Category-Coding is not available
+                        # Run Keyword only if Code-Coding is not available
                         Run Keyword And Return If    $codecodingavailable=="false"
                         ...    Delete Object From Json  ${payload}  $.code.coding
 
 update Code 0 System
     [Arguments]         ${code0system}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Code 0 System is empty
                         Run Keyword And Return If    $code0system=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.code.coding[0].system    ${code0system}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Code 0 System is missing
                         Run Keyword And Return If    $code0system=="missing"
                         ...    Delete Object From Json    ${payload}    $.code.coding[0].system
 
@@ -301,14 +331,29 @@ update Code 0 Code
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.code.coding[0].code    ${code0code}
 
+update Code 0 Display
+    [Arguments]         ${code0display}
+
+                        # Run Keyword only when 0.Display is empty
+                        Run Keyword And Return If    $code0display=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.code.coding[0].display    ${code0display}
+
+                        # Run Keyword only when 0.Display is missing
+                        Run Keyword And Return If    $code0display=="missing"
+                        ...    Delete Object From Json    ${payload}    $.code.coding[0].display
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.code.coding[0].display    ${code0display}
+
 update Code 1 System
     [Arguments]         ${code1system}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Code 1 System is empty
                         Run Keyword And Return If    $code1system=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.code.coding[1].system    ${code1system}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Code 1 System is missing
                         Run Keyword And Return If    $code1system=="missing"
                         ...    Delete Object From Json    ${payload}    $.code.coding[1].system
 
@@ -331,6 +376,36 @@ update Code 1 Code
                         Run Keyword  
                         ...    Update Value To Json    ${payload}    $.code.coding[1].code    ${code1code}
 
+update Code 1 Display
+    [Arguments]         ${code1display}
+
+                        # Run Keyword only when 0.Display is empty
+                        Run Keyword And Return If    $code1display=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.code.coding[1].display    ${code1display}
+
+                        # Run Keyword only when 0.Display is missing
+                        Run Keyword And Return If    $code1display=="missing"
+                        ...    Delete Object From Json    ${payload}    $.code.coding[1].display
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.code.coding[1].display    ${code1display}
+
+update Code Text
+    [Arguments]         ${codetext}
+
+                        # Run Keyword only when Code Text is empty
+                        Run Keyword And Return If    $codetext=="${EMPTY}"
+                        ...    Update Value To Json    ${payload}    $.code.text    ${codetext}
+
+                        # Run Keyword only when Code Text is missing
+                        Run Keyword And Return If    $codetext=="missing"
+                        ...    Delete Object From Json    ${payload}    $.code.text
+
+                        # Else 
+                        Run Keyword  
+                        ...    Update Value To Json    ${payload}    $.code.text    ${codetext}
+
 update Subject
     [Arguments]         ${subject}    ${reference}
 
@@ -338,26 +413,26 @@ update Subject
                         Run Keyword And Return If    $subject=="true"
                         ...    update Reference    ${reference}
 
-                        # Run Keyword only if category is not available
+                        # Run Keyword only if subject is not available
                         Run Keyword And Return If    $subject=="false"
                         ...    Delete Object From Json  ${payload}  $.subject
 
 update Reference
     [Arguments]         ${reference}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Reference is empty
                         Run Keyword And Return If    $reference=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.subject.reference    ${reference}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Reference is missing
                         Run Keyword And Return If    $reference=="missing"
                         ...    Delete Object From Json    ${payload}    $.subject.reference
 
-                        # Run Keyword only when resourcetype is valid
+                        # Run Keyword only when Reference is valid
                         Run Keyword And Return If    $reference=="valid"
                         ...    Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${subject_id}
 
-                        # Run Keyword only when resourcetype is invalid
+                        # Run Keyword only when Reference is invalid UUID
                         Run Keyword And Return If    $reference=="invalid"
                         ...    Update Value To Json    ${payload}    $.subject.reference    urn:uuid:${{str(uuid.uuid4())}}
 
@@ -368,11 +443,11 @@ update Reference
 update Effective Date Time
     [Arguments]         ${effectivedatetime}
 
-                        # Run Keyword only when resourcetype is empty
+                        # Run Keyword only when Effective Date Time is empty
                         Run Keyword And Return If    $effectivedatetime=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.effectiveDateTime   ${effectivedatetime}
 
-                        # Run Keyword only when resourcetype is missing
+                        # Run Keyword only when Effective Date Time is missing
                         Run Keyword And Return If    $effectivedatetime=="missing"
                         ...    Delete Object From Json  ${payload}  $.effectiveDateTime
 
@@ -413,11 +488,11 @@ update Value Quantity Value
 update Value Quantity Unit
     [Arguments]         ${vQunit}
 
-                        # Run Keyword only when value Quantity Code is empty
+                        # Run Keyword only when value Quantity Unit is empty
                         Run Keyword And Return If    $vQunit=="${EMPTY}"
                         ...    Update Value To Json    ${payload}    $.valueQuantity.unit   ${vQunit}
 
-                        # Run Keyword only when value Quantity Code is missing
+                        # Run Keyword only when value Quantity Unit is missing
                         Run Keyword And Return If    $vQunit=="missing"
                         ...    Delete Object From Json  ${payload}  $.valueQuantity.unit
 
@@ -458,21 +533,21 @@ update Value Quantity Code
 update Data Absent Reason
     [Arguments]         ${dataabsentreason}
 
-                        # Run Keyword only if value quantity is available (todo)
+                        # Run Keyword only if Data Absent Reason is available and valid (todo)
                         Run Keyword And Return If    $dataabsentreason=="truevalid"
                         ...    Run Keywords
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].system          http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation           AND
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].code            unknown                                                                      AND
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].display         unknown  
 
-                        # Run Keyword only if value quantity is available (todo)
+                        # Run Keyword only if Data Absent Reason is available and invalid (todo)
                         Run Keyword And Return If    $dataabsentreason=="trueinvalid"
                         ...    Run Keywords
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].system          ${EMPTY}           AND
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].code            ${EMPTY}           AND
                         ...    Update Value To Json    ${payload}    $.dataAbsentReason.coding[0].display         ${EMPTY}
 
-                        # Run Keyword only if value quantity is not available
+                        # Run Keyword only if Data Absent Reason is not available
                         Run Keyword And Return If    $dataabsentreason=="false"
                         ...    Delete Object From Json  ${payload}  $.dataAbsentReason
 
