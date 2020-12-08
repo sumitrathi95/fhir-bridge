@@ -1,5 +1,5 @@
 ehrbase:
-  address: localhost
+  address: 35.185.186.150
   port: 8080
   path: /ehrbase/rest/openehr/v1/
 fhir-bridge:

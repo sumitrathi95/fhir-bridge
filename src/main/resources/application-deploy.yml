@@ -1,11 +1,10 @@
 
 ehrbase:
-  address: ${EHRBASE_HOST}
-  port: ${EHRBASE_PORT}
-  path: ${EHRBASE_CONTEXT_PATH}
-
+  address: 35.185.186.150
+  port: 8080
+  path: /ehrbase/rest/openehr/v1/
 spring:
   datasource:
-    url: jdbc:postgresql://${DATABASE_SERVER}/${DATABASE_NAME}?currentSchema=num
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://35.185.186.150:9999/fhir_bridge
+    username: fhir_bridge
+    password: fhir_bridge

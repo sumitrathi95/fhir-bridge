@@ -1,0 +1,9 @@
+ehrbase:
+  address:              35.185.186.150
+  port:                 8080
+  path:                 /ehrbase/rest/openehr/v1/
+spring:
+  datasource:
+    url:                jdbc:postgresql://35.185.186.150:9999/fhir_bridge
+    username:           fhir_bridge
+    password:           fhir_bridge
